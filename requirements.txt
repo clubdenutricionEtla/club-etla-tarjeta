@@ -1,7 +1,7 @@
-flask
-flask-sqlalchemy
-flask-migrate
-flask-cors
-qrcode
-python-dotenv
-gunicorn
+Flask==2.3.3
+flask-sqlalchemy==3.1.1
+flask-migrate==4.0.5
+flask-cors==4.0.0
+qrcode==7.4.2
+python-dotenv==1.0.0
+gunicorn==21.2.0
