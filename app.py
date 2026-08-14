@@ -345,17 +345,6 @@ def scan_qr():
 def employee_dashboard():
     return render_template('employee/dashboard.html')
 
-@app.route('/employee/login', methods=['POST'])
-def employee_login():
-    email = request.form.get('email')
-    password = request.form.get('password')
-    employee = Employee.query.filter_by(email=email, active=True).first()
-    if employee and employee.password == password:
-        session['employee_id'] = employee.id
-        session['employee_role'] = employee.role
-        return jsonify({'success': True, 'redirect': url_for('admin_dashboard')})
-    return jsonify({'error': 'Credenciales inválidas'}), 401
-
 # ===== ADMIN =====
 
 @app.route('/admin')
