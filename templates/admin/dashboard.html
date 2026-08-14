@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Panel Admin - Club Etla</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:'Inter',sans-serif;background:#0a0a1a;color:white;min-height:100vh;padding:20px;}
+        .container{max-width:1200px;margin:0 auto;}
+        .back{color:rgba(255,255,255,0.1);text-decoration:none;font-size:13px;display:inline-block;margin-bottom:16px;transition:color 0.3s;}
+        .back:hover{color:#00ff87;}
+        .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:10px;}
+        .header h1{font-size:28px;background:linear-gradient(135deg,#00ff87,#00d4ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+        .header .sub{color:rgba(255,255,255,0.15);font-size:14px;}
+        .header .logout{color:rgba(255,255,255,0.05);text-decoration:none;font-size:12px;padding:6px 16px;border:1px solid rgba(255,255,255,0.02);border-radius:8px;transition:all 0.3s;}
+        .header .logout:hover{color:#ff6b6b;border-color:rgba(255,50,50,0.05);}
+        
+        .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:24px;}
+        .stat{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);border-radius:16px;padding:16px;text-align:center;}
+        .stat .num{font-size:26px;font-weight:800;color:#00ff87;}
+        .stat .lbl{font-size:10px;color:rgba(255,255,255,0.15);text-transform:uppercase;letter-spacing:1px;margin-top:4px;}
+        
+        .admin-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:24px;}
+        .admin-card{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);border-radius:16px;padding:20px;text-align:center;text-decoration:none;color:white;transition:all 0.3s;cursor:pointer;}
+        .admin-card:hover{background:rgba(255,255,255,0.04);transform:translateY(-2px);}
+        .admin-card .icon{font-size:32px;display:block;margin-bottom:8px;}
+        .admin-card .title{font-weight:600;font-size:14px;}
+        .admin-card .desc{font-size:10px;color:rgba(255,255,255,0.15);margin-top:4px;}
+        
+        .footer{text-align:center;font-size:10px;color:rgba(255,255,255,0.03);margin-top:16px;}
+        
+        @media(max-width:600px){.stats{grid-template-columns:1fr 1fr;}.admin-grid{grid-template-columns:1fr 1fr;}}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back">← Volver al inicio</a>
+        
+        <div class="header">
+            <div>
+                <h1>⚙️ Panel de Administración</h1>
+                <span class="sub">Club Etla Rewards — Control total</span>
+            </div>
+            <a href="/logout" class="logout">🚪 Cerrar sesión</a>
+        </div>
+        
+        <div class="stats">
+            <div class="stat"><div class="num">{{ stats.total_clients }}</div><div class="lbl">Clientes</div></div>
+            <div class="stat"><div class="num">{{ stats.active_clients }}</div><div class="lbl">Activos</div></div>
+            <div class="stat"><div class="num">{{ stats.total_visits }}</div><div class="lbl">Visitas</div></div>
+            <div class="stat"><div class="num">{{ stats.today_visits }}</div><div class="lbl">Visitas Hoy</div></div>
+            <div class="stat"><div class="num">{{ stats.employees }}</div><div class="lbl">Empleados</div></div>
+            <div class="stat"><div class="num">{{ stats.vip_clients if stats.vip_clients else 0 }}</div><div class="lbl">VIP</div></div>
+        </div>
+        
+        <div class="admin-grid">
+            <a href="/admin/clients" class="admin-card">
+                <span class="icon">👥</span>
+                <div class="title">Clientes</div>
+                <div class="desc">Ver, editar y eliminar</div>
+            </a>
+            <a href="/admin/employees" class="admin-card">
+                <span class="icon">👨‍💼</span>
+                <div class="title">Empleados</div>
+                <div class="desc">Gestionar personal</div>
+            </a>
+            <a href="/admin/promotions" class="admin-card">
+                <span class="icon">🎁</span>
+                <div class="title">Promociones</div>
+                <div class="desc">Crear y gestionar</div>
+            </a>
+            <a href="/admin/rewards" class="admin-card">
+                <span class="icon">🏆</span>
+                <div class="title">Recompensas</div>
+                <div class="desc">Premios y canjes</div>
+            </a>
+            <a href="/admin/visits" class="admin-card">
+                <span class="icon">📅</span>
+                <div class="title">Visitas</div>
+                <div class="desc">Historial y reportes</div>
+            </a>
+            <a href="/admin/export" class="admin-card">
+                <span class="icon">📤</span>
+                <div class="title">Exportar</div>
+                <div class="desc">CSV, Excel, PDF</div>
+            </a>
+            <a href="/admin/backup" class="admin-card">
+                <span class="icon">💾</span>
+                <div class="title">Respaldo</div>
+                <div class="desc">Respaldar base de datos</div>
+            </a>
+            <a href="/admin/settings" class="admin-card">
+                <span class="icon">⚙️</span>
+                <div class="title">Configuración</div>
+                <div class="desc">Ajustes del sistema</div>
+            </a>
+        </div>
+        
+        <div class="footer">🔒 Panel exclusivo para administradores • Club Etla Rewards v3.0</div>
+    </div>
+</body>
+</html>
+            <a href="/admin/qr" class="admin-card">
+                <span class="icon">📱</span>
+                <div class="title">QR por Rol</div>
+                <div class="desc">Cliente, Empleado, Admin</div>
+            </a>
+            <a href="/qr-registro" class="admin-card">
+                <span class="icon">📱</span>
+                <div class="title">QR Registro</div>
+                <div class="desc">Para que clientes se registren</div>
+            </a>
+            <a href="/qr-empleado" class="admin-card">
+                <span class="icon">👨‍💼</span>
+                <div class="title">QR Empleado</div>
+                <div class="desc">Para registrar visitas</div>
+            </a>

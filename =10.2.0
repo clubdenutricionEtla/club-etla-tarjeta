@@ -1,0 +1,72 @@
+Looking in indexes: https://pypi.org/simple, https://www.piwheels.org/simple
+Collecting Flask==2.3.3
+  Using cached flask-2.3.3-py3-none-any.whl.metadata (3.6 kB)
+Collecting Flask-SQLAlchemy==3.0.5
+  Using cached flask_sqlalchemy-3.0.5-py3-none-any.whl.metadata (3.3 kB)
+Collecting Flask-Migrate==4.0.5
+  Using cached Flask_Migrate-4.0.5-py3-none-any.whl.metadata (3.1 kB)
+Collecting Flask-CORS==4.0.0
+  Using cached Flask_Cors-4.0.0-py2.py3-none-any.whl.metadata (5.4 kB)
+Collecting qrcode==7.4.2
+  Using cached qrcode-7.4.2-py3-none-any.whl.metadata (17 kB)
+Requirement already satisfied: Pillow in ./.venv/lib/python3.13/site-packages (12.3.0)
+Collecting python-dateutil==2.8.2
+  Downloading python_dateutil-2.8.2-py2.py3-none-any.whl.metadata (8.2 kB)
+Collecting python-dotenv==1.0.0
+  Downloading python_dotenv-1.0.0-py3-none-any.whl.metadata (21 kB)
+Collecting email-validator==2.0.0
+  Downloading email_validator-2.0.0-py3-none-any.whl.metadata (25 kB)
+Requirement already satisfied: Werkzeug>=2.3.7 in ./.venv/lib/python3.13/site-packages (from Flask==2.3.3) (3.1.8)
+Requirement already satisfied: Jinja2>=3.1.2 in ./.venv/lib/python3.13/site-packages (from Flask==2.3.3) (3.1.6)
+Requirement already satisfied: itsdangerous>=2.1.2 in ./.venv/lib/python3.13/site-packages (from Flask==2.3.3) (2.2.0)
+Requirement already satisfied: click>=8.1.3 in ./.venv/lib/python3.13/site-packages (from Flask==2.3.3) (8.4.2)
+Requirement already satisfied: blinker>=1.6.2 in ./.venv/lib/python3.13/site-packages (from Flask==2.3.3) (1.9.0)
+Requirement already satisfied: sqlalchemy>=1.4.18 in ./.venv/lib/python3.13/site-packages (from Flask-SQLAlchemy==3.0.5) (2.0.51)
+Requirement already satisfied: alembic>=1.9.0 in ./.venv/lib/python3.13/site-packages (from Flask-Migrate==4.0.5) (1.19.0)
+Requirement already satisfied: typing-extensions in ./.venv/lib/python3.13/site-packages (from qrcode==7.4.2) (4.16.0)
+Collecting pypng (from qrcode==7.4.2)
+  Downloading pypng-0.20220715.0-py3-none-any.whl.metadata (13 kB)
+Collecting six>=1.5 (from python-dateutil==2.8.2)
+  Downloading six-1.17.0-py2.py3-none-any.whl.metadata (1.7 kB)
+Requirement already satisfied: dnspython>=2.0.0 in ./.venv/lib/python3.13/site-packages (from email-validator==2.0.0) (2.8.0)
+Requirement already satisfied: idna>=2.0.0 in ./.venv/lib/python3.13/site-packages (from email-validator==2.0.0) (3.18)
+Requirement already satisfied: Mako in ./.venv/lib/python3.13/site-packages (from alembic>=1.9.0->Flask-Migrate==4.0.5) (1.4.0)
+Requirement already satisfied: MarkupSafe>=2.0 in ./.venv/lib/python3.13/site-packages (from Jinja2>=3.1.2->Flask==2.3.3) (3.0.3)
+Requirement already satisfied: greenlet>=1 in ./.venv/lib/python3.13/site-packages (from sqlalchemy>=1.4.18->Flask-SQLAlchemy==3.0.5) (3.5.4)
+Downloading flask-2.3.3-py3-none-any.whl (96 kB)
+Downloading flask_sqlalchemy-3.0.5-py3-none-any.whl (24 kB)
+Downloading Flask_Migrate-4.0.5-py3-none-any.whl (21 kB)
+Downloading Flask_Cors-4.0.0-py2.py3-none-any.whl (14 kB)
+Downloading qrcode-7.4.2-py3-none-any.whl (46 kB)
+Downloading python_dateutil-2.8.2-py2.py3-none-any.whl (247 kB)
+Downloading python_dotenv-1.0.0-py3-none-any.whl (19 kB)
+Downloading email_validator-2.0.0-py3-none-any.whl (31 kB)
+Downloading six-1.17.0-py2.py3-none-any.whl (11 kB)
+Downloading pypng-0.20220715.0-py3-none-any.whl (58 kB)
+Installing collected packages: pypng, six, qrcode, python-dotenv, email-validator, python-dateutil, Flask, Flask-SQLAlchemy, Flask-CORS, Flask-Migrate
+  Attempting uninstall: qrcode
+    Found existing installation: qrcode 8.2
+    Uninstalling qrcode-8.2:
+      Successfully uninstalled qrcode-8.2
+  Attempting uninstall: python-dotenv
+    Found existing installation: python-dotenv 1.2.2
+    Uninstalling python-dotenv-1.2.2:
+      Successfully uninstalled python-dotenv-1.2.2
+  Attempting uninstall: email-validator
+    Found existing installation: email-validator 2.3.0
+    Uninstalling email-validator-2.3.0:
+      Successfully uninstalled email-validator-2.3.0
+  Attempting uninstall: Flask
+    Found existing installation: Flask 3.1.3
+    Uninstalling Flask-3.1.3:
+      Successfully uninstalled Flask-3.1.3
+  Attempting uninstall: Flask-SQLAlchemy
+    Found existing installation: Flask-SQLAlchemy 3.1.1
+    Uninstalling Flask-SQLAlchemy-3.1.1:
+      Successfully uninstalled Flask-SQLAlchemy-3.1.1
+  Attempting uninstall: Flask-Migrate
+    Found existing installation: Flask-Migrate 4.1.0
+    Uninstalling Flask-Migrate-4.1.0:
+      Successfully uninstalled Flask-Migrate-4.1.0
+
+Successfully installed Flask-2.3.3 Flask-CORS-4.0.0 Flask-Migrate-4.0.5 Flask-SQLAlchemy-3.0.5 email-validator-2.0.0 pypng-0.20220715.0 python-dateutil-2.8.2 python-dotenv-1.0.0 qrcode-7.4.2 six-1.17.0

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>QR Empleado - Club Etla</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:'Inter',sans-serif;background:#0a0a0a;color:white;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+        .container{max-width:420px;width:100%;text-align:center;}
+        
+        .card{background:linear-gradient(160deg,#fcf6f0 0%,#f5faf5 25%,#f0f7fa 50%,#faf5f0 75%,#fcf6f0 100%);border-radius:28px;padding:30px;box-shadow:0 20px 60px rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.06);}
+        
+        .header{text-align:center;margin-bottom:20px;}
+        .header .tag{font-size:10px;font-weight:700;color:rgba(0,0,0,0.08);letter-spacing:3px;text-transform:uppercase;}
+        .header .title-row{display:flex;align-items:center;justify-content:center;gap:4px;flex-wrap:wrap;margin:4px 0;}
+        .header .title-row .club{font-size:24px;font-weight:900;color:#1a1a1a;letter-spacing:-0.5px;}
+        .header .title-row .etla{font-family:'Dancing Script',cursive;font-size:30px;font-weight:700;color:#4a8c2a;letter-spacing:1px;}
+        .header .sub{font-size:9px;color:rgba(0,0,0,0.06);letter-spacing:2.5px;text-transform:uppercase;font-weight:400;}
+        
+        .badge{display:inline-block;background:linear-gradient(135deg,#00d4ff,#0066ff);color:white;padding:4px 16px;border-radius:20px;font-size:10px;font-weight:600;letter-spacing:1px;margin-bottom:4px;}
+        
+        .qr-box{background:white;border-radius:16px;padding:16px;display:inline-block;margin:16px 0;box-shadow:0 4px 20px rgba(0,0,0,0.02);border:1px solid rgba(0,0,0,0.01);}
+        .qr-box img{width:200px;height:200px;object-fit:contain;}
+        
+        .info{font-size:13px;color:rgba(0,0,0,0.06);margin:8px 0 4px;letter-spacing:0.5px;}
+        .highlight{color:#0066ff;font-weight:600;}
+        
+        .empleado-info{background:rgba(0,212,255,0.02);border:1px solid rgba(0,212,255,0.02);border-radius:12px;padding:12px;margin:12px 0;text-align:left;}
+        .empleado-info .row{display:flex;justify-content:space-between;padding:4px 0;font-size:11px;color:rgba(0,0,0,0.06);}
+        .empleado-info .row .label{font-weight:500;}
+        .empleado-info .row .value{color:#1a1a1a;font-weight:600;}
+        
+        .btn{display:inline-block;padding:10px 24px;border:none;border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.3s;text-decoration:none;margin-top:12px;}
+        .btn-primary{background:linear-gradient(135deg,#00d4ff,#0066ff);color:white;}
+        .btn-primary:hover{transform:scale(1.02);box-shadow:0 4px 20px rgba(0,212,255,0.08);}
+        .btn-secondary{background:rgba(0,0,0,0.02);color:rgba(0,0,0,0.1);border:1px solid rgba(0,0,0,0.02);}
+        
+        .footer{color:rgba(0,0,0,0.04);font-size:9px;margin-top:12px;letter-spacing:1px;}
+        .footer .code{font-family:monospace;color:rgba(0,0,0,0.02);}
+        
+        @media(max-width:400px){.card{padding:20px;}.qr-box img{width:160px;height:160px;}}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="header">
+                <div class="tag">★ MI CLUB</div>
+                <div class="title-row">
+                    <span class="club">MI CLUB</span>
+                    <span class="etla">ETLA</span>
+                </div>
+                <div class="sub">Club de Nutrición Etla</div>
+            </div>
+            
+            <div class="badge">👨‍💼 QR DE EMPLEADO</div>
+            
+            <div class="qr-box">
+                <img src="{{ qr_empleado }}" alt="QR Empleado">
+            </div>
+            
+            <div class="info">
+                Escanea este QR para <span class="highlight">registrar visitas</span>
+            </div>
+            <div style="font-size:10px;color:rgba(0,0,0,0.04);">
+                📍 Solo para empleados autorizados
+            </div>
+            
+            <div class="empleado-info">
+                <div class="row">
+                    <span class="label">👤 Empleado</span>
+                    <span class="value">{{ empleado_nombre if empleado_nombre else '—' }}</span>
+                </div>
+                <div class="row">
+                    <span class="label">📧 Email</span>
+                    <span class="value">{{ empleado_email if empleado_email else '—' }}</span>
+                </div>
+                <div class="row">
+                    <span class="label">🔑 Rol</span>
+                    <span class="value">{{ empleado_rol if empleado_rol else 'Empleado' }}</span>
+                </div>
+            </div>
+            
+            <a href="{{ qr_empleado }}" download="qr_empleado_club_etla.png" class="btn btn-primary">
+                ⬇️ Descargar QR
+            </a>
+            <a href="/employee" class="btn btn-secondary">👨‍💼 Panel Empleado</a>
+            
+            <div class="footer">
+                Club Etla Rewards • <span class="code">empleado:{{ empleado_id if empleado_id else '1' }}</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

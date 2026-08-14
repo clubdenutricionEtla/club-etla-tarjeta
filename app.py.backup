@@ -1,0 +1,780 @@
+from flask import Flask, render_template, request, jsonify, session, redirect, url_for
+from flask_migrate import Migrate
+from flask_cors import CORS
+from datetime import datetime, date, timedelta
+import os
+import re
+import secrets
+import base64
+from io import BytesIO
+import qrcode
+
+from config import Config
+from models import db, Client, VisitHistory, Employee, Achievement, ClientAchievement, Promotion, Referral, check_achievements, init_achievements
+
+app = Flask(__name__)
+app.config.from_object(Config)
+
+db.init_app(app)
+migrate = Migrate(app, db)
+CORS(app)
+
+def clean_phone(phone):
+    phone = re.sub(r'[^\d+]', '', phone)
+    if not phone.startswith('+'):
+        phone = '+' + phone
+    return phone
+
+def generate_qr_secret():
+    return secrets.token_hex(16)
+
+def generate_referral_code(name):
+    import hashlib
+    return hashlib.md5(f"{name}{secrets.token_hex(4)}".encode()).hexdigest()[:8].upper()
+
+def generate_qr(client):
+    try:
+        qr = qrcode.QRCode(version=1, box_size=10, border=4)
+        qr.add_data(client.qr_secret)
+        qr.make(fit=True)
+        img = qr.make_image(fill_color="black", back_color="white")
+        buffered = BytesIO()
+        img.save(buffered, format="PNG")
+        img_str = base64.b64encode(buffered.getvalue()).decode()
+        client.qr_code = f"data:image/png;base64,{img_str}"
+        db.session.commit()
+        return img_str
+    except Exception as e:
+        print(f"Error generando QR: {e}")
+        return None
+
+def init_employee():
+    if not Employee.query.filter_by(email='admin@clubetla.com').first():
+        admin = Employee(
+            name='Administrador',
+            email='admin@clubetla.com',
+            password='admin123',
+            role='admin'
+        )
+        db.session.add(admin)
+        db.session.commit()
+
+def get_client_from_session():
+    if 'client_id' not in session:
+        return None
+    return Client.query.get(session['client_id'])
+
+# ========== RUTAS PRINCIPALES ==========
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        whatsapp = request.form.get('whatsapp')
+        if not whatsapp:
+            return jsonify({'error': 'Número requerido'}), 400
+        whatsapp = clean_phone(whatsapp)
+        client = Client.query.filter_by(whatsapp=whatsapp).first()
+        if client:
+            session['client_id'] = client.id
+            session.permanent = True
+            return jsonify({'success': True, 'redirect': url_for('card')})
+        else:
+            return jsonify({'error': 'No encontramos una cuenta con este número', 'redirect': url_for('register')}), 404
+    return render_template('login.html')
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    ref_code = request.args.get('ref')
+    if request.method == 'POST':
+        print("📝 Registrando...")
+        name = request.form.get('name')
+        whatsapp = request.form.get('whatsapp')
+        birthday = request.form.get('birthday')
+        referral = request.form.get('referral')
+        
+        if not name or not whatsapp:
+            return jsonify({'error': 'Nombre y WhatsApp son requeridos'}), 400
+        
+        whatsapp = clean_phone(whatsapp)
+        existing = Client.query.filter_by(whatsapp=whatsapp).first()
+        
+        if existing:
+            session['client_id'] = existing.id
+            return jsonify({'error': 'El número ya está registrado', 'redirect': url_for('card')}), 409
+        
+        try:
+            client = Client(
+                name=name,
+                whatsapp=whatsapp,
+                birthday=datetime.strptime(birthday, '%Y-%m-%d').date() if birthday else None,
+                qr_secret=generate_qr_secret(),
+                referral_code=generate_referral_code(name)
+            )
+            
+            if referral:
+                referrer = Client.query.filter_by(referral_code=referral).first()
+                if referrer and referrer.id != client.id:
+                    client.referred_by = referrer.id
+                    referrer.referrals_count += 1
+                    db.session.add(referrer)
+            
+            db.session.add(client)
+            db.session.commit()
+            generate_qr(client)
+            check_achievements(client)
+            
+            session['client_id'] = client.id
+            session.permanent = True
+            
+            print(f"✅ Cliente registrado: {name} - {whatsapp}")
+            return jsonify({
+                'success': True,
+                'message': '🎉 Registro exitoso',
+                'redirect': url_for('card')
+            })
+        except Exception as e:
+            db.session.rollback()
+            print(f"❌ Error: {e}")
+            return jsonify({'error': str(e)}), 500
+    
+    return render_template('register.html', ref_code=ref_code)
+
+@app.route('/card')
+def card():
+    client = get_client_from_session()
+    if not client:
+        return redirect(url_for('login'))
+    
+    is_birthday = False
+    if client.birthday:
+        today = date.today()
+        if client.birthday.month == today.month and client.birthday.day == today.day:
+            is_birthday = True
+    
+    # Datos de referidos
+    referral_data = {
+        'current': client.referrals_valid,
+        'needed': 3,
+        'remaining': 3 - client.referrals_valid if client.referrals_valid < 3 else 0,
+        'complete': client.referrals_valid >= 3,
+        'message': f"🎯 Llevas {client.referrals_valid} de 3 referidos válidos" if client.referrals_valid < 3 else "🎉 ¡Ya ganaste tu recompensa!"
+    }
+    
+    return render_template('client/card.html',
+                         client=client,
+                         is_birthday=is_birthday,
+                         level_data=client.get_level_data(),
+                         referral=referral_data)
+
+@app.route('/scratch')
+def scratch():
+    client = get_client_from_session()
+    if not client:
+        return redirect(url_for('login'))
+    
+    has_welcome = client.has_welcome_scratch()
+    has_normal = client.scratch_available and not client.scratch_used
+    
+    if not has_welcome and not has_normal:
+        return redirect(url_for('card'))
+    
+    return render_template('client/scratch.html', 
+                         client=client, 
+                         is_welcome=has_welcome,
+                         has_normal=has_normal,
+                         level_data=client.get_level_data())
+
+# ========== API CLIENTE ==========
+
+@app.route('/api/client/<int:client_id>')
+def get_client_data(client_id):
+    client = Client.query.get(client_id)
+    if not client:
+        return jsonify({'error': 'Cliente no encontrado'}), 404
+    
+    return jsonify({
+        'id': client.id,
+        'name': client.name,
+        'whatsapp': client.whatsapp,
+        'visits': client.visits,
+        'points': client.points,
+        'current_streak': client.current_streak,
+        'best_streak': client.best_streak,
+        'level': client.get_level(),
+        'breakfast_count': client.breakfast_count,
+        'free_breakfast': client.free_breakfast_available,
+        'qr_code': client.qr_code,
+        'has_welcome_scratch': client.has_welcome_scratch(),
+        'scratch_available': client.scratch_available,
+        'is_vip': client.is_vip,
+        'registration_date': client.registration_date.strftime('%d/%m/%Y'),
+        'last_visit': client.last_visit_date.strftime('%d/%m/%Y') if client.last_visit_date else 'Nunca'
+    })
+
+@app.route('/api/claim-free-breakfast', methods=['POST'])
+def claim_free_breakfast():
+    client = get_client_from_session()
+    if not client:
+        return jsonify({'error': 'No autorizado'}), 401
+    if client.claim_free_breakfast():
+        return jsonify({'success': True, 'message': '🎉 ¡Desayuno Gratis Canjeado!'})
+    return jsonify({'error': 'No hay desayuno gratis disponible'}), 400
+
+# ===== RASCADITA =====
+
+@app.route('/api/scratch/welcome/status')
+def welcome_scratch_status():
+    client = get_client_from_session()
+    if not client:
+        return jsonify({'error': 'No autorizado'}), 401
+    return jsonify({
+        'has_welcome_scratch': client.has_welcome_scratch(),
+        'message': '🎁 ¡Tienes una Rascadita de Bienvenida!' if client.has_welcome_scratch() else None
+    })
+
+@app.route('/api/scratch/welcome/claim', methods=['POST'])
+def welcome_scratch_claim():
+    client = get_client_from_session()
+    if not client:
+        return jsonify({'error': 'No autorizado'}), 401
+    
+    reward = client.claim_welcome_scratch()
+    if reward:
+        rewards = client.get_scratch_rewards()
+        return jsonify({
+            'success': True,
+            'reward': reward,
+            'reward_name': rewards[reward]['name'],
+            'reward_icon': rewards[reward]['icon'],
+            'message': f'🎉 ¡Bienvenido! Ganaste {rewards[reward]["icon"]} {rewards[reward]["name"]}'
+        })
+    return jsonify({'error': 'No hay rascadita de bienvenida'}), 400
+
+@app.route('/api/scratch/status')
+def scratch_status():
+    client = get_client_from_session()
+    if not client:
+        return jsonify({'error': 'No autorizado'}), 401
+    
+    return jsonify({
+        'available': client.scratch_available and not client.scratch_used,
+        'scratch_available': client.scratch_available,
+        'scratch_used': client.scratch_used
+    })
+
+@app.route('/api/scratch/claim', methods=['POST'])
+def scratch_claim():
+    client = get_client_from_session()
+    if not client:
+        return jsonify({'error': 'No autorizado'}), 401
+    
+    reward = client.claim_scratch()
+    if reward:
+        rewards = client.get_scratch_rewards()
+        return jsonify({
+            'success': True,
+            'reward': reward,
+            'reward_name': rewards[reward]['name'],
+            'reward_icon': rewards[reward]['icon'],
+            'message': f'🎉 ¡Ganaste {rewards[reward]["icon"]} {rewards[reward]["name"]}!'
+        })
+    else:
+        return jsonify({'error': 'No hay rascadita disponible'}), 400
+
+@app.route('/api/scratch/skip', methods=['POST'])
+def scratch_skip():
+    client = get_client_from_session()
+    if not client:
+        return jsonify({'error': 'No autorizado'}), 401
+    
+    if not client.scratch_available or client.scratch_used:
+        return jsonify({'error': 'No hay rascadita disponible'}), 400
+    
+    client.skip_scratch()
+    return jsonify({'success': True, 'message': '✅ Seguirás acumulando visitas'})
+
+# ===== API EMPLEADO =====
+
+@app.route('/api/scan-qr', methods=['POST'])
+def scan_qr():
+    data = request.json
+    qr_data = data.get('qr_data')
+    product_type = data.get('product_type', 'BREAKFAST')
+    employee_id = session.get('employee_id')
+    
+    client = Client.query.filter_by(qr_secret=qr_data).first()
+    if not client:
+        return jsonify({'error': 'QR no válido'}), 404
+    
+    today = date.today()
+    if client.last_visit_date == today:
+        return jsonify({
+            'error': 'Ya registraste tu visita hoy',
+            'client': client.name
+        }), 400
+    
+    try:
+        result = client.add_visit(product_type, employee_id)
+        check_achievements(client)
+        
+        return jsonify({
+            'success': True,
+            'message': f'✅ Visita registrada para {client.name}',
+            'client': client.name,
+            'visits': client.visits,
+            'points': client.points,
+            'streak': client.current_streak,
+            'free_breakfast': client.free_breakfast_available,
+            'scratch_available': client.scratch_available,
+            'has_welcome_scratch': client.has_welcome_scratch(),
+            'breakfast_count': client.breakfast_count,
+            'points_earned': result['points'],
+            'is_vip': client.is_vip,
+            'level': client.get_level()
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/employee')
+def employee_dashboard():
+    return render_template('employee/dashboard.html')
+
+@app.route('/admin')
+def admin_dashboard():
+    stats = {
+        'total_clients': Client.query.count(),
+        'active_clients': Client.query.filter_by(status='active').count(),
+        'total_visits': VisitHistory.query.count(),
+        'today_visits': VisitHistory.query.filter_by(visit_date=date.today()).count(),
+        'employees': Employee.query.count()
+    }
+    return render_template('admin/dashboard.html', stats=stats)
+
+# ===== REFERIDOS =====
+
+@app.route('/api/referral/info')
+def referral_info():
+    client = get_client_from_session()
+    if not client:
+        return jsonify({'error': 'No autorizado'}), 401
+    
+    return jsonify({
+        'code': client.referral_code,
+        'link': f"/register?ref={client.referral_code}",
+        'count': client.referrals_count,
+        'valid': client.referrals_valid,
+        'progress': {
+            'current': client.referrals_valid,
+            'needed': 3,
+            'remaining': 3 - client.referrals_valid if client.referrals_valid < 3 else 0,
+            'complete': client.referrals_valid >= 3,
+            'message': f"🎯 Llevas {client.referrals_valid} de 3 referidos válidos" if client.referrals_valid < 3 else "🎉 ¡Ya ganaste tu recompensa!"
+        },
+        'points_earned': client.referral_points_earned
+    })
+
+# ===== PROMOCIONES =====
+
+@app.route('/api/promotions', methods=['GET'])
+def get_promotions():
+    promotions = Promotion.query.filter_by(is_active=True).all()
+    return jsonify([{
+        'id': p.id,
+        'name': p.name,
+        'description': p.description,
+        'type': p.type,
+        'value': p.value,
+        'start_date': p.start_date.strftime('%d/%m/%Y'),
+        'end_date': p.end_date.strftime('%d/%m/%Y'),
+        'is_active': p.is_active,
+        'used_count': p.used_count
+    } for p in promotions])
+
+@app.route('/api/promotions', methods=['POST'])
+def create_promotion():
+    data = request.json
+    try:
+        promo = Promotion(
+            name=data['name'],
+            description=data.get('description', ''),
+            type=data['type'],
+            value=data['value'],
+            start_date=datetime.strptime(data['start_date'], '%Y-%m-%d').date(),
+            end_date=datetime.strptime(data['end_date'], '%Y-%m-%d').date()
+        )
+        db.session.add(promo)
+        db.session.commit()
+        return jsonify({'success': True, 'id': promo.id})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/promotions/<int:promo_id>/toggle', methods=['POST'])
+def toggle_promotion(promo_id):
+    promo = Promotion.query.get(promo_id)
+    if not promo:
+        return jsonify({'error': 'Promoción no encontrada'}), 404
+    promo.is_active = not promo.is_active
+    db.session.commit()
+    return jsonify({'success': True})
+
+@app.route('/api/promotions/<int:promo_id>', methods=['DELETE'])
+def delete_promotion(promo_id):
+    promo = Promotion.query.get(promo_id)
+    if not promo:
+        return jsonify({'error': 'Promoción no encontrada'}), 404
+    db.session.delete(promo)
+    db.session.commit()
+    return jsonify({'success': True})
+
+@app.route('/admin/promotions')
+def admin_promotions():
+    return render_template('admin/promotions.html')
+
+# ===== PRODUCTOS =====
+
+@app.route('/products')
+def products():
+    return render_template('products.html')
+
+# ============================================================
+# INICIALIZACIÓN
+# ============================================================
+
+with app.app_context():
+    db.create_all()
+    init_achievements()
+    init_employee()
+    print("✅ Base de datos lista")
+
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0', port=5000)
+# En la función register, asegurar que birthday se guarda correctamente
+# La línea ya existe: birthday=datetime.strptime(birthday, '%Y-%m-%d').date() if birthday else None,
+
+# ===== ADMIN - CLIENTES =====
+
+@app.route('/api/admin/clients')
+def admin_get_clients():
+    search = request.args.get('search', '')
+    if search:
+        clients = Client.query.filter(
+            (Client.name.ilike(f'%{search}%')) |
+            (Client.whatsapp.like(f'%{search}%'))
+        ).all()
+    else:
+        clients = Client.query.all()
+    
+    return jsonify([{
+        'id': c.id,
+        'name': c.name,
+        'whatsapp': c.whatsapp,
+        'visits': c.visits,
+        'points': c.points,
+        'level': c.get_level(),
+        'status': c.status
+    } for c in clients])
+
+@app.route('/api/admin/clients/<int:client_id>', methods=['DELETE'])
+def admin_delete_client(client_id):
+    client = Client.query.get(client_id)
+    if not client:
+        return jsonify({'error': 'Cliente no encontrado'}), 404
+    
+    # Eliminar historial primero
+    VisitHistory.query.filter_by(client_id=client_id).delete()
+    db.session.delete(client)
+    db.session.commit()
+    
+    return jsonify({'success': True})
+
+@app.route('/admin/clients')
+def admin_clients_page():
+    return render_template('admin/clients.html')
+
+# ===== ADMIN - COMPLETO =====
+
+@app.route('/api/admin/clients')
+def admin_get_clients():
+    search = request.args.get('search', '')
+    if search:
+        clients = Client.query.filter(
+            (Client.name.ilike(f'%{search}%')) |
+            (Client.whatsapp.like(f'%{search}%')) |
+            (Client.id == search if search.isdigit() else False)
+        ).all()
+    else:
+        clients = Client.query.all()
+    
+    return jsonify([{
+        'id': c.id,
+        'name': c.name,
+        'whatsapp': c.whatsapp,
+        'visits': c.visits,
+        'points': c.points,
+        'level': c.get_level(),
+        'status': c.status,
+        'registration_date': c.registration_date.strftime('%d/%m/%Y') if c.registration_date else None,
+        'referral_code': c.referral_code
+    } for c in clients])
+
+@app.route('/api/admin/clients/<int:client_id>', methods=['DELETE'])
+def admin_delete_client(client_id):
+    client = Client.query.get(client_id)
+    if not client:
+        return jsonify({'error': 'Cliente no encontrado'}), 404
+    
+    # Eliminar historial
+    VisitHistory.query.filter_by(client_id=client_id).delete()
+    db.session.delete(client)
+    db.session.commit()
+    
+    return jsonify({'success': True})
+
+@app.route('/admin/clients')
+def admin_clients_page():
+    return render_template('admin/clients.html')
+
+@app.route('/admin/clients/<int:client_id>/edit')
+def admin_client_edit(client_id):
+    client = Client.query.get(client_id)
+    if not client:
+        return redirect(url_for('admin_clients_page'))
+    return render_template('admin/client_edit.html', client=client)
+
+@app.route('/admin/employees')
+def admin_employees():
+    return render_template('admin/employees.html')
+
+@app.route('/admin/rewards')
+def admin_rewards():
+    return render_template('admin/rewards.html')
+
+@app.route('/admin/visits')
+def admin_visits():
+    return render_template('admin/visits.html')
+
+@app.route('/admin/export')
+def admin_export():
+    return render_template('admin/export.html')
+
+@app.route('/admin/backup')
+def admin_backup():
+    return render_template('admin/backup.html')
+
+@app.route('/admin/settings')
+def admin_settings():
+    return render_template('admin/settings.html')
+
+# ===== QR CON TIPO DE USUARIO =====
+
+def generate_qr_with_role(client):
+    """Genera QR con el rol del usuario"""
+    try:
+        # El QR contiene: {rol}:{id}
+        qr_data = f"{client.role}:{client.id}"
+        
+        qr = qrcode.QRCode(version=1, box_size=10, border=4)
+        qr.add_data(qr_data)
+        qr.make(fit=True)
+        
+        img = qr.make_image(fill_color="black", back_color="white")
+        buffered = BytesIO()
+        img.save(buffered, format="PNG")
+        img_str = base64.b64encode(buffered.getvalue()).decode()
+        
+        return f"data:image/png;base64,{img_str}"
+    except Exception as e:
+        print(f"Error generando QR: {e}")
+        return None
+
+@app.route('/api/qr/<int:client_id>')
+def get_qr_data(client_id):
+    """Devuelve el QR de un usuario con su rol"""
+    client = Client.query.get(client_id)
+    if not client:
+        return jsonify({'error': 'Usuario no encontrado'}), 404
+    
+    qr_data = f"{client.role}:{client.id}"
+    return jsonify({
+        'qr_data': qr_data,
+        'role': client.role,
+        'name': client.name,
+        'id': client.id
+    })
+
+@app.route('/api/scan-qr-role', methods=['POST'])
+def scan_qr_role():
+    """Escanea QR y devuelve el tipo de usuario"""
+    data = request.json
+    qr_text = data.get('qr_data', '')
+    
+    # Parsear QR: role:id
+    parts = qr_text.split(':')
+    if len(parts) != 2:
+        return jsonify({'error': 'QR no válido'}), 400
+    
+    role, user_id = parts[0], parts[1]
+    
+    # Buscar usuario
+    if role == 'client':
+        user = Client.query.get(user_id)
+        if not user:
+            return jsonify({'error': 'Cliente no encontrado'}), 404
+        return jsonify({
+            'type': 'client',
+            'name': user.name,
+            'id': user.id,
+            'redirect': url_for('card'),
+            'message': f'👤 Cliente: {user.name}'
+        })
+    elif role == 'employee':
+        user = Employee.query.get(user_id)
+        if not user:
+            return jsonify({'error': 'Empleado no encontrado'}), 404
+        return jsonify({
+            'type': 'employee',
+            'name': user.name,
+            'id': user.id,
+            'redirect': url_for('employee_dashboard'),
+            'message': f'👨‍💼 Empleado: {user.name}'
+        })
+    elif role == 'admin':
+        user = Employee.query.filter_by(id=user_id, role='admin').first()
+        if not user:
+            return jsonify({'error': 'Administrador no encontrado'}), 404
+        return jsonify({
+            'type': 'admin',
+            'name': user.name,
+            'id': user.id,
+            'redirect': url_for('admin_dashboard'),
+            'message': f'⚙️ Administrador: {user.name}'
+        })
+    else:
+        return jsonify({'error': 'Rol no válido'}), 400
+
+@app.route('/qr')
+def qr_reader():
+    """Página para escanear QR y detectar rol"""
+    return render_template('qr_reader.html')
+
+# Actualizar la función generate_qr para incluir el rol
+def generate_qr_with_role(client):
+    """Genera QR con el rol del usuario"""
+    try:
+        qr_data = f"{client.role}:{client.id}"
+        qr = qrcode.QRCode(version=1, box_size=10, border=4)
+        qr.add_data(qr_data)
+        qr.make(fit=True)
+        img = qr.make_image(fill_color="black", back_color="white")
+        buffered = BytesIO()
+        img.save(buffered, format="PNG")
+        img_str = base64.b64encode(buffered.getvalue()).decode()
+        return f"data:image/png;base64,{img_str}"
+    except Exception as e:
+        print(f"Error generando QR: {e}")
+        return None
+
+# En la función register, agregar:
+# role='client' al crear el cliente
+
+@app.route('/admin/qr')
+def admin_qr():
+    """Página de gestión de QR"""
+    import qrcode
+    from io import BytesIO
+    import base64
+    
+    def generate_test_qr(data):
+        qr = qrcode.QRCode(version=1, box_size=8, border=2)
+        qr.add_data(data)
+        qr.make(fit=True)
+        img = qr.make_image(fill_color="black", back_color="white")
+        buffered = BytesIO()
+        img.save(buffered, format="PNG")
+        img_str = base64.b64encode(buffered.getvalue()).decode()
+        return f"data:image/png;base64,{img_str}"
+    
+    # Generar QR para cada tipo
+    client_qr = generate_test_qr("client:1")
+    employee_qr = generate_test_qr("employee:1")
+    admin_qr = generate_test_qr("admin:1")
+    
+    return render_template('admin/qr_management.html',
+                         client_qr=client_qr,
+                         employee_qr=employee_qr,
+                         admin_qr=admin_qr)
+
+# ===== QR DE REGISTRO =====
+
+@app.route('/qr-registro')
+def qr_registro():
+    """QR para que los clientes se registren"""
+    import qrcode
+    from io import BytesIO
+    import base64
+    
+    # El QR apunta a la página de registro
+    registro_url = url_for('register', _external=True)
+    
+    qr = qrcode.QRCode(version=1, box_size=10, border=4)
+    qr.add_data(registro_url)
+    qr.make(fit=True)
+    img = qr.make_image(fill_color="black", back_color="white")
+    buffered = BytesIO()
+    img.save(buffered, format="PNG")
+    img_str = base64.b64encode(buffered.getvalue()).decode()
+    qr_data = f"data:image/png;base64,{img_str}"
+    
+    return render_template('qr_registro.html', qr_registro=qr_data)
+
+@app.route('/qr-empleado')
+def qr_empleado():
+    """QR para empleados (escáner de visitas)"""
+    import qrcode
+    from io import BytesIO
+    import base64
+    
+    # El QR apunta al panel de empleado
+    empleado_url = url_for('employee_dashboard', _external=True)
+    
+    qr = qrcode.QRCode(version=1, box_size=10, border=4)
+    qr.add_data(empleado_url)
+    qr.make(fit=True)
+    img = qr.make_image(fill_color="black", back_color="white")
+    buffered = BytesIO()
+    img.save(buffered, format="PNG")
+    img_str = base64.b64encode(buffered.getvalue()).decode()
+    qr_data = f"data:image/png;base64,{img_str}"
+    
+    # Obtener empleado actual si existe
+    empleado_nombre = None
+    empleado_email = None
+    empleado_rol = None
+    empleado_id = None
+    
+    if 'employee_id' in session:
+        empleado = Employee.query.get(session['employee_id'])
+        if empleado:
+            empleado_nombre = empleado.name
+            empleado_email = empleado.email
+            empleado_rol = empleado.role
+            empleado_id = empleado.id
+    
+    return render_template('qr_empleado.html', 
+                         qr_empleado=qr_data,
+                         empleado_nombre=empleado_nombre,
+                         empleado_email=empleado_email,
+                         empleado_rol=empleado_rol,
+                         empleado_id=empleado_id)
+
+# ===== ADMIN LOGIN =====
+
+@app.route('/admin/login')
+def admin_login_page():
+    return render_template('admin/login.html')

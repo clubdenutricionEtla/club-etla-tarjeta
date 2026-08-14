@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Escáner QR - Club Etla</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:'Inter',sans-serif;background:#0a0a0a;color:white;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+        .container{max-width:420px;width:100%;}
+        .back{color:rgba(255,255,255,0.1);text-decoration:none;font-size:13px;display:inline-block;margin-bottom:16px;}
+        .back:hover{color:#00ff87;}
+        
+        .glass{background:rgba(255,255,255,0.02);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.03);border-radius:24px;padding:24px;text-align:center;}
+        .glass h1{font-size:22px;background:linear-gradient(135deg,#00ff87,#00d4ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+        .glass p{color:rgba(255,255,255,0.15);font-size:13px;margin:4px 0 16px;}
+        
+        .scan-area{width:100%;max-width:300px;height:300px;margin:0 auto;background:rgba(0,0,0,0.4);border-radius:16px;overflow:hidden;position:relative;border:2px solid rgba(0,255,135,0.05);}
+        .scan-area video{width:100%;height:100%;object-fit:cover;}
+        .scan-line{position:absolute;top:0;left:0;width:100%;height:2px;background:linear-gradient(90deg,transparent,#00ff87,#00d4ff,transparent);animation:scan 2s linear infinite;}
+        @keyframes scan{0%{top:0;}100%{top:100%;}}
+        
+        .corner{position:absolute;width:20px;height:20px;border-color:#00ff87;border-style:solid;border-width:0;opacity:0.3;}
+        .corner.tl{top:8px;left:8px;border-top-width:2px;border-left-width:2px;}
+        .corner.tr{top:8px;right:8px;border-top-width:2px;border-right-width:2px;}
+        .corner.bl{bottom:8px;left:8px;border-bottom-width:2px;border-left-width:2px;}
+        .corner.br{bottom:8px;right:8px;border-bottom-width:2px;border-right-width:2px;}
+        
+        .result{display:none;padding:14px;border-radius:12px;margin-top:16px;font-size:13px;}
+        .result.client{display:block;background:rgba(0,255,135,0.04);border:1px solid rgba(0,255,135,0.04);color:#00ff87;}
+        .result.employee{display:block;background:rgba(0,212,255,0.04);border:1px solid rgba(0,212,255,0.04);color:#00d4ff;}
+        .result.admin{display:block;background:rgba(255,215,0,0.04);border:1px solid rgba(255,215,0,0.04);color:#ffd700;}
+        .result.error{display:block;background:rgba(255,50,50,0.04);border:1px solid rgba(255,50,50,0.04);color:#ff6b6b;}
+        
+        .status-bar{display:flex;justify-content:space-between;padding:8px 12px;background:rgba(255,255,255,0.01);border-radius:10px;font-size:10px;color:rgba(255,255,255,0.06);margin-top:12px;}
+        .dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:6px;}
+        .dot.active{background:#00ff87;animation:pulse 1.5s infinite;}
+        @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.2;}}
+        
+        .btn{width:100%;padding:10px;border:none;border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.3s;}
+        .btn-primary{background:linear-gradient(135deg,#00ff87,#00d4ff);color:#0a0a0a;}
+        .btn-danger{background:linear-gradient(135deg,#ff6b6b,#ee5a24);color:white;}
+        .buttons{display:flex;gap:8px;margin-top:12px;}
+        .buttons .btn{flex:1;}
+        
+        .info-cards{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:16px;}
+        .info-card{padding:10px;background:rgba(255,255,255,0.01);border-radius:10px;border:1px solid rgba(255,255,255,0.01);text-align:center;}
+        .info-card .icon{font-size:24px;display:block;margin-bottom:4px;}
+        .info-card .label{font-size:8px;color:rgba(255,255,255,0.06);text-transform:uppercase;letter-spacing:1px;}
+        .info-card .value{font-size:11px;color:rgba(255,255,255,0.08);}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back">← Volver</a>
+        
+        <div class="glass">
+            <h1>📷 Escáner QR</h1>
+            <p>Escanea para identificar el tipo de usuario</p>
+            
+            <div class="scan-area" id="reader">
+                <div class="corner tl"></div>
+                <div class="corner tr"></div>
+                <div class="corner bl"></div>
+                <div class="corner br"></div>
+                <div class="scan-line"></div>
+            </div>
+            
+            <div id="result" class="result"></div>
+            
+            <div class="status-bar">
+                <span><span class="dot active"></span><span id="statusText">Cámara activa</span></span>
+                <span id="scanCount">0 escaneos</span>
+            </div>
+            
+            <div class="buttons">
+                <button class="btn btn-primary" id="startBtn">▶ Iniciar</button>
+                <button class="btn btn-danger" id="stopBtn">⏹ Detener</button>
+            </div>
+            
+            <div class="manual" style="display:flex;gap:8px;margin-top:12px;">
+                <input type="text" id="manualQr" placeholder="Código QR manual" style="flex:1;padding:10px 12px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.02);border-radius:10px;color:white;font-size:12px;outline:none;">
+                <button id="manualBtn" style="padding:10px 18px;background:linear-gradient(135deg,#00ff87,#00d4ff);border:none;border-radius:10px;color:#0a0a0a;font-weight:600;cursor:pointer;">Verificar</button>
+            </div>
+            
+            <div class="info-cards">
+                <div class="info-card">
+                    <span class="icon">👤</span>
+                    <div class="label">Cliente</div>
+                    <div class="value">Tarjeta digital</div>
+                </div>
+                <div class="info-card">
+                    <span class="icon">👨‍💼</span>
+                    <div class="label">Empleado</div>
+                    <div class="value">Panel empleado</div>
+                </div>
+                <div class="info-card">
+                    <span class="icon">⚙️</span>
+                    <div class="label">Admin</div>
+                    <div class="value">Panel admin</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://unpkg.com/@zxing/library@0.18.6/umd/index.min.js"></script>
+    <script>
+        let codeReader=null, isScanning=false, scanCount=0;
+        let lastResult=null;
+        const result=document.getElementById('result'), statusText=document.getElementById('statusText');
+        
+        async function startScanner(){
+            try{
+                if(codeReader) await codeReader.reset();
+                codeReader=new ZXing.BrowserMultiFormatReader();
+                const devices=await codeReader.listVideoInputDevices();
+                if(!devices.length){ showResult('error','❌ No hay cámara'); return; }
+                await codeReader.decodeFromVideoDevice(devices[0].deviceId,'reader',(result,err)=>{
+                    if(result) handleScan(result.getText());
+                });
+                isScanning=true;
+                statusText.textContent='Escaneando...';
+                document.getElementById('startBtn').disabled=true;
+                document.getElementById('stopBtn').disabled=false;
+            }catch(e){ showResult('error','❌ Error: '+e.message); }
+        }
+        
+        async function stopScanner(){
+            if(codeReader){ await codeReader.reset(); isScanning=false; statusText.textContent='Detenido'; document.getElementById('startBtn').disabled=false; document.getElementById('stopBtn').disabled=true; }
+        }
+        
+        async function handleScan(qrData){
+            if(lastResult===qrData) return;
+            lastResult=qrData;
+            scanCount++;
+            document.getElementById('scanCount').textContent=scanCount+' escaneos';
+            
+            showResult('info','⏳ Procesando...');
+            
+            try{
+                const res=await fetch('/api/scan-qr-role',{
+                    method:'POST',
+                    headers:{'Content-Type':'application/json'},
+                    body:JSON.stringify({qr_data:qrData})
+                });
+                const data=await res.json();
+                
+                if(data.type){
+                    const icon = data.type === 'client' ? '👤' : data.type === 'employee' ? '👨‍💼' : '⚙️';
+                    showResult(data.type, `
+                        <strong>${icon} ${data.message}</strong>
+                        <br><span style="font-size:11px;color:rgba(255,255,255,0.1);">
+                            ID: ${data.id} • ${data.type.toUpperCase()}
+                        </span>
+                        <br><a href="${data.redirect}" style="color:#00ff87;text-decoration:none;font-size:12px;display:inline-block;margin-top:6px;">
+                            ➜ Ir a ${data.type === 'client' ? 'tarjeta' : data.type === 'employee' ? 'panel empleado' : 'panel admin'}
+                        </a>
+                    `);
+                    if(navigator.vibrate) navigator.vibrate(100);
+                }else{
+                    showResult('error','❌ '+data.error);
+                }
+            }catch(e){
+                showResult('error','❌ Error de conexión');
+            }
+        }
+        
+        function showResult(type, html){
+            result.className='result '+type;
+            result.innerHTML=html;
+        }
+        
+        document.getElementById('startBtn').addEventListener('click',startScanner);
+        document.getElementById('stopBtn').addEventListener('click',stopScanner);
+        
+        document.getElementById('manualBtn').addEventListener('click',()=>{
+            const val=document.getElementById('manualQr').value.trim();
+            if(val){ handleScan(val); document.getElementById('manualQr').value=''; }
+        });
+        document.getElementById('manualQr').addEventListener('keypress',e=>{if(e.key==='Enter') document.getElementById('manualBtn').click();});
+        
+        startScanner();
+        window.addEventListener('beforeunload',()=>{if(codeReader) codeReader.reset();});
+    </script>
+</body>
+</html>

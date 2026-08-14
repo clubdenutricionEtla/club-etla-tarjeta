@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Club Etla Rewards</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet" />
+    <style>
+        /* ============================================================
+           RESET Y BASE
+        ============================================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            /* ===== FONDO NACARADO INTENSIFICADO ===== */
+            background:
+                radial-gradient(ellipse 100% 80% at 10% 15%,
+                    rgba(255, 200, 200, 0.55) 0%,
+                    transparent 70%),
+                radial-gradient(ellipse 90% 70% at 5% 85%,
+                    rgba(140, 210, 140, 0.40) 0%,
+                    transparent 65%),
+                radial-gradient(ellipse 80% 60% at 50% 10%,
+                    rgba(255, 240, 180, 0.45) 0%,
+                    transparent 60%),
+                radial-gradient(ellipse 90% 70% at 92% 20%,
+                    rgba(170, 215, 250, 0.40) 0%,
+                    transparent 60%),
+                radial-gradient(ellipse 80% 70% at 90% 80%,
+                    rgba(210, 195, 250, 0.35) 0%,
+                    transparent 60%),
+                radial-gradient(ellipse 100% 100% at 50% 50%,
+                    #fcf8f4 0%,
+                    #f5efe8 100%);
+            background-attachment: fixed;
+            position: relative;
+            overflow-x: hidden;
+            cursor: default;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        /* ===== EFECTO NACARADO – SHIMMER MÁS INTENSO ===== */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background:
+                radial-gradient(ellipse 150% 100% at 20% 30%,
+                    rgba(255, 255, 255, 0.30) 0%,
+                    transparent 50%),
+                radial-gradient(ellipse 130% 80% at 75% 60%,
+                    rgba(255, 255, 255, 0.20) 0%,
+                    transparent 45%),
+                radial-gradient(ellipse 80% 50% at 45% 75%,
+                    rgba(255, 255, 240, 0.18) 0%,
+                    transparent 40%);
+            background-blend-mode: overlay;
+            animation: shimmerFloat 12s ease-in-out infinite alternate;
+        }
+
+        @keyframes shimmerFloat {
+            0% {
+                transform: translate(-3%, -2%) scale(1.05);
+                opacity: 0.8;
+            }
+            50% {
+                transform: translate(2%, 3%) scale(1.1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-1%, -3%) scale(0.95);
+                opacity: 0.9;
+            }
+        }
+
+        /* ===== DESTELLOS PERLADOS – MÁS GRANDES Y BRILLANTES ===== */
+        .sparkle {
+            position: fixed;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+            background: radial-gradient(circle at 30% 30%,
+                    rgba(255, 255, 255, 0.95) 0%,
+                    rgba(255, 255, 255, 0) 75%);
+            opacity: 0;
+            animation: sparklePulse var(--dur, 6s) ease-in-out infinite alternate;
+            width: var(--size, 8px);
+            height: var(--size, 8px);
+            top: var(--top, 10%);
+            left: var(--left, 10%);
+            filter: blur(0.8px);
+        }
+        .sparkle:nth-child(1) {
+            --top: 6%;
+            --left: 8%;
+            --size: 14px;
+            --dur: 6s;
+            animation-delay: 0s;
+        }
+        .sparkle:nth-child(2) {
+            --top: 20%;
+            --left: 82%;
+            --size: 10px;
+            --dur: 8s;
+            animation-delay: 1.0s;
+        }
+        .sparkle:nth-child(3) {
+            --top: 42%;
+            --left: 3%;
+            --size: 12px;
+            --dur: 7s;
+            animation-delay: 0.5s;
+        }
+        .sparkle:nth-child(4) {
+            --top: 65%;
+            --left: 90%;
+            --size: 9px;
+            --dur: 9s;
+            animation-delay: 1.8s;
+        }
+        .sparkle:nth-child(5) {
+            --top: 80%;
+            --left: 15%;
+            --size: 11px;
+            --dur: 6.5s;
+            animation-delay: 0.2s;
+        }
+        .sparkle:nth-child(6) {
+            --top: 12%;
+            --left: 48%;
+            --size: 16px;
+            --dur: 10s;
+            animation-delay: 1.5s;
+        }
+        .sparkle:nth-child(7) {
+            --top: 52%;
+            --left: 52%;
+            --size: 10px;
+            --dur: 7.5s;
+            animation-delay: 0.7s;
+        }
+        .sparkle:nth-child(8) {
+            --top: 88%;
+            --left: 72%;
+            --size: 13px;
+            --dur: 8.5s;
+            animation-delay: 1.2s;
+        }
+        .sparkle:nth-child(9) {
+            --top: 30%;
+            --left: 30%;
+            --size: 8px;
+            --dur: 9.5s;
+            animation-delay: 0.3s;
+        }
+        .sparkle:nth-child(10) {
+            --top: 72%;
+            --left: 45%;
+            --size: 15px;
+            --dur: 7.8s;
+            animation-delay: 1.7s;
+        }
+
+        @keyframes sparklePulse {
+            0% {
+                opacity: 0;
+                transform: scale(0.4) translateY(0) rotate(0deg);
+            }
+            30% {
+                opacity: 0.9;
+                transform: scale(1.6) translateY(-6px) rotate(20deg);
+            }
+            60% {
+                opacity: 0.4;
+                transform: scale(1.0) translateY(2px) rotate(-10deg);
+            }
+            100% {
+                opacity: 0.8;
+                transform: scale(1.4) translateY(-8px) rotate(15deg);
+            }
+        }
+
+        /* ===== REFLEJO PERLADO – MÁS ANCHO Y LUMINOSO ===== */
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background: linear-gradient(125deg,
+                    rgba(255, 255, 255, 0.15) 0%,
+                    rgba(255, 255, 255, 0) 30%,
+                    rgba(255, 255, 255, 0.08) 50%,
+                    rgba(255, 255, 255, 0) 70%,
+                    rgba(255, 255, 255, 0.12) 100%);
+            background-blend-mode: soft-light;
+            animation: sheenMove 10s ease-in-out infinite alternate;
+        }
+        @keyframes sheenMove {
+            0% {
+                transform: translateX(-15%) skewX(-8deg) scaleX(1.2);
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateX(15%) skewX(8deg) scaleX(1.2);
+                opacity: 1;
+            }
+        }
+
+        /* ============================================================
+           CONTENEDOR PRINCIPAL
+        ============================================================ */
+        .container {
+            max-width: 440px;
+            width: 100%;
+            padding: 10px 12px 12px;
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        /* ============================================================
+           ENCABEZADO PREMIUM - TODOS LOS TEXTOS EN NEGRO
+        ============================================================ */
+        .premium-header {
+            text-align: center;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+        .premium-header .tag {
+            font-size: 10px;
+            font-weight: 700;
+            color: #000000;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            text-shadow: 0 0 20px rgba(255,255,255,0.4);
+        }
+        .premium-header .title-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            flex-wrap: wrap;
+            margin: 4px 0;
+        }
+        .premium-header .title-row .club {
+            font-size: 28px;
+            font-weight: 900;
+            color: #000000;
+            letter-spacing: -0.5px;
+            text-shadow: 0 2px 30px rgba(0,0,0,0.04);
+        }
+        .premium-header .title-row .etla {
+            font-family: 'Dancing Script', cursive;
+            font-size: 34px;
+            font-weight: 700;
+            color: #4a8c2a;
+            text-shadow: 0 2px 30px rgba(74,140,42,0.15);
+        }
+        .premium-header .sub {
+            font-size: 10px;
+            color: #000000;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            margin-top: 2px;
+            font-weight: 400;
+        }
+
+        /* ============================================================
+           TARJETA DE BIENVENIDA – TODOS LOS TEXTOS EN NEGRO
+        ============================================================ */
+        .welcome-card {
+            background: rgba(255, 252, 248, 0.88);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: 28px;
+            padding: 24px 20px 20px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(120, 100, 80, 0.12),
+                        0 8px 24px rgba(120, 100, 80, 0.06),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.8),
+                        inset 0 -1px 0 rgba(255, 255, 255, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            position: relative;
+            overflow: hidden;
+            transition: box-shadow 0.4s ease, transform 0.3s ease;
+        }
+        .welcome-card:hover {
+            box-shadow: 0 30px 80px rgba(120, 100, 80, 0.18),
+                        0 12px 32px rgba(120, 100, 80, 0.08);
+            transform: translateY(-2px);
+        }
+
+        /* Borde iridiscente animado */
+        .welcome-card::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 30px;
+            padding: 2px;
+            background: conic-gradient(from 0deg,
+                    rgba(255, 180, 180, 0.4),
+                    rgba(180, 255, 180, 0.4),
+                    rgba(180, 180, 255, 0.4),
+                    rgba(255, 255, 180, 0.4),
+                    rgba(255, 180, 255, 0.4),
+                    rgba(255, 180, 180, 0.4));
+            background-size: 300% 300%;
+            animation: iridescentBorder 8s linear infinite;
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        @keyframes iridescentBorder {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .welcome-card .glare {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, transparent 40%, transparent 60%, rgba(255,255,255,0.03) 100%);
+            pointer-events: none;
+            z-index: 0;
+            border-radius: 28px;
+        }
+
+        .welcome-card .sparkle-card {
+            position: absolute;
+            top: 8%;
+            right: 12%;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(ellipse at center, rgba(255,255,255,0.10) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 1;
+            border-radius: 50%;
+            animation: sparkleFloat 8s ease-in-out infinite;
+        }
+        @keyframes sparkleFloat {
+            0%, 100% { opacity: 0.3; transform: translate(0,0) scale(1); }
+            50% { opacity: 0.7; transform: translate(-20px,-25px) scale(1.3); }
+        }
+
+        .welcome-card .content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+        }
+
+        .welcome-card .welcome-icon {
+            font-size: 34px;
+            margin-bottom: 6px;
+            display: block;
+            filter: drop-shadow(0 2px 10px rgba(0,0,0,0.02));
+        }
+        .welcome-card .welcome-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: #000000;
+            margin-bottom: 4px;
+            text-shadow: 0 1px 10px rgba(255,255,255,0.2);
+        }
+        .welcome-card .welcome-text {
+            font-size: 13px;
+            color: #000000;
+            font-weight: 400;
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+
+        .welcome-card .benefits-chips .chip {
+            padding: 4px 14px;
+            background: rgba(74, 140, 42, 0.04);
+            border: 1px solid rgba(74, 140, 42, 0.10);
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 500;
+            color: #000000;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            backdrop-filter: blur(2px);
+        }
+
+        /* ============================================================
+           OPCIONES - TODOS LOS TEXTOS EN NEGRO
+        ============================================================ */
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 16px;
+            width: 100%;
+        }
+
+        .option-card {
+            background: rgba(255, 252, 248, 0.88);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 20px;
+            padding: 20px 16px;
+            text-align: center;
+            text-decoration: none;
+            color: #000000;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .option-card::before {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            border-radius: 21px;
+            padding: 1px;
+            background: conic-gradient(from 0deg,
+                    rgba(255, 200, 200, 0.3),
+                    rgba(200, 255, 200, 0.3),
+                    rgba(200, 200, 255, 0.3),
+                    rgba(255, 255, 200, 0.3),
+                    rgba(255, 200, 255, 0.3),
+                    rgba(255, 200, 200, 0.3));
+            background-size: 200% 200%;
+            animation: iridescentBorder 6s linear infinite;
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        .option-card:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.06);
+        }
+        .option-card:active {
+            transform: scale(0.96);
+        }
+
+        .option-card .icon {
+            font-size: 32px;
+            display: block;
+            margin-bottom: 8px;
+            filter: drop-shadow(0 2px 8px rgba(0,0,0,0.02));
+        }
+
+        .option-card h3 {
+            font-size: 15px;
+            font-weight: 700;
+            color: #000000;
+            margin-bottom: 2px;
+        }
+        .option-card p {
+            font-size: 11px;
+            color: #000000;
+            font-weight: 400;
+        }
+
+        .option-card .arrow {
+            position: absolute;
+            bottom: 10px;
+            right: 14px;
+            font-size: 16px;
+            opacity: 0;
+            transform: translateX(-8px);
+            transition: all 0.4s ease;
+            color: rgba(0, 0, 0, 0.2);
+        }
+        .option-card:hover .arrow {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .option-card.login {
+            border-left: 3px solid #4a8c2a;
+        }
+        .option-card.register {
+            border-right: 3px solid #4a8c2a;
+        }
+
+        /* ============================================================
+           BENEFICIOS - TODOS LOS TEXTOS EN NEGRO
+        ============================================================ */
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-top: 16px;
+            width: 100%;
+        }
+
+        .benefit-card {
+            background: rgba(255, 252, 248, 0.85);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 14px;
+            padding: 12px 8px;
+            text-align: center;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.5);
+        }
+        .benefit-card:hover {
+            background: rgba(255, 252, 248, 0.96);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.02);
+        }
+        .benefit-card .icon {
+            font-size: 22px;
+            display: block;
+            margin-bottom: 4px;
+        }
+        .benefit-card .label {
+            font-size: 9px;
+            color: #000000;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            display: block;
+        }
+
+        /* ============================================================
+           FOOTER - TODOS LOS TEXTOS EN NEGRO
+        ============================================================ */
+        .footer {
+            text-align: center;
+            padding: 12px 0 4px;
+            color: #000000;
+            font-size: 10px;
+            margin-top: 8px;
+            letter-spacing: 1px;
+            width: 100%;
+        }
+        .footer .heart { color: rgba(200, 80, 120, 0.3); }
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 4px;
+        }
+        .footer-links a {
+            color: #000000;
+            text-decoration: none;
+            font-size: 9px;
+            letter-spacing: 1px;
+            transition: color 0.3s;
+        }
+        .footer-links a:hover {
+            color: #4a8c2a;
+        }
+
+        /* ============================================================
+           RESPONSIVE
+        ============================================================ */
+        @media (max-width: 400px) {
+            .container { padding: 8px 10px; }
+            .premium-header .title-row .club { font-size: 22px; }
+            .premium-header .title-row .etla { font-size: 28px; }
+            .welcome-card { padding: 20px 16px 16px; }
+            .welcome-card .welcome-title { font-size: 16px; }
+            .welcome-card .welcome-text { font-size: 12px; }
+            .options-grid { grid-template-columns: 1fr; }
+            .benefits-grid { grid-template-columns: repeat(2, 1fr); }
+            .option-card { padding: 16px 12px; }
+            .option-card .icon { font-size: 28px; }
+        }
+
+        @media (min-width: 768px) {
+            .container { max-width: 480px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== DESTELLOS ===== -->
+    <div class="sparkle"></div>
+    <div class="sparkle"></div>
+    <div class="sparkle"></div>
+    <div class="sparkle"></div>
+    <div class="sparkle"></div>
+    <div class="sparkle"></div>
+    <div class="sparkle"></div>
+    <div class="sparkle"></div>
+    <div class="sparkle"></div>
+    <div class="sparkle"></div>
+
+    <!-- ===== CONTENEDOR ===== -->
+    <div class="container">
+
+        <!-- ===== ENCABEZADO ===== -->
+        <div class="premium-header">
+            <div class="tag">★ MI TARJETA</div>
+            <div class="title-row">
+                <span class="club">MI CLUB</span>
+                <span class="etla">ETLA</span>
+            </div>
+            <div class="sub">Club de Nutrición Etla</div>
+        </div>
+
+        <!-- ===== TARJETA DE BIENVENIDA ===== -->
+        <div class="welcome-card">
+            <div class="glare"></div>
+            <div class="sparkle-card"></div>
+            <div class="content">
+                <span class="welcome-icon">✨</span>
+                <div class="welcome-title">Bienvenido al Club</div>
+                <div class="welcome-text">Beneficios exclusivos, puntos y recompensas por cada visita</div>
+                <div class="benefits-chips">
+                    <span class="chip"><span class="icon">⭐</span> Puntos</span>
+                    <span class="chip"><span class="icon">🎁</span> Recompensas</span>
+                    <span class="chip"><span class="icon">🔥</span> Rachas</span>
+                    <span class="chip"><span class="icon">💎</span> Niveles</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== OPCIONES ===== -->
+        <div class="options-grid">
+            <a href="/login" class="option-card login">
+                <span class="icon">🔑</span>
+                <h3>Ya soy miembro</h3>
+                <p>Accede a tu tarjeta</p>
+                <span class="arrow">→</span>
+            </a>
+            <a href="/register" class="option-card register">
+                <span class="icon">🎉</span>
+                <h3>Registrarme</h3>
+                <p>Únete al club</p>
+                <span class="arrow">→</span>
+            </a>
+        </div>
+
+        <!-- ===== BENEFICIOS ===== -->
+        <div class="benefits-grid">
+            <div class="benefit-card">
+                <span class="icon">🥤</span>
+                <span class="label">Desayunos</span>
+            </div>
+            <div class="benefit-card">
+                <span class="icon">🏆</span>
+                <span class="label">Niveles</span>
+            </div>
+            <div class="benefit-card">
+                <span class="icon">🎁</span>
+                <span class="label">Regalos</span>
+            </div>
+            <div class="benefit-card">
+                <span class="icon">💎</span>
+                <span class="label">VIP</span>
+            </div>
+        </div>
+
+        <!-- ===== FOOTER ===== -->
+        <div class="footer">
+            🏠 Club de Nutrición Etla
+            <div class="footer-links">
+                <a href="/qr-registro">📱 QR Registro</a>
+                <a href="/employee">👨‍💼 Empleado</a>
+                <a href="/admin">⚙️ Admin</a>
+            </div>
+            <span class="heart">❤️</span>
+        </div>
+
+    </div>
+
+    <script>
+        // ===== ANIMACIONES DE ENTRADA =====
+        document.addEventListener('DOMContentLoaded', function() {
+            const elements = document.querySelectorAll('.premium-header, .welcome-card, .option-card, .benefit-card');
+            elements.forEach((el, i) => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    el.style.transition = 'all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
+                    el.style.opacity = '1';
+                    el.style.transform = 'translateY(0)';
+                }, 100 + i * 80);
+            });
+        });
+    </script>
+
+</body>
+</html>

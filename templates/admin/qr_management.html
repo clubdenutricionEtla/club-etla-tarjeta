@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Gestión QR - Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:'Inter',sans-serif;background:#0a0a1a;color:white;min-height:100vh;padding:20px;}
+        .container{max-width:800px;margin:0 auto;}
+        .back{color:rgba(255,255,255,0.1);text-decoration:none;font-size:13px;display:inline-block;margin-bottom:16px;}
+        .back:hover{color:#00ff87;}
+        h1{font-size:24px;background:linear-gradient(135deg,#00ff87,#00d4ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+        .sub{color:rgba(255,255,255,0.15);font-size:13px;margin-bottom:16px;}
+        
+        .glass{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);border-radius:16px;padding:20px;margin-bottom:16px;}
+        
+        .qr-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+        .qr-card{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);border-radius:12px;padding:16px;text-align:center;}
+        .qr-card .qr-img{width:120px;height:120px;margin:0 auto 8px;background:white;border-radius:8px;padding:8px;display:flex;align-items:center;justify-content:center;}
+        .qr-card .qr-img img{width:100%;height:100%;object-fit:contain;}
+        .qr-card .role{font-size:12px;font-weight:700;color:#00ff87;}
+        .qr-card .name{font-size:11px;color:rgba(255,255,255,0.15);}
+        .qr-card .btn{display:inline-block;margin-top:8px;padding:4px 12px;border:none;border-radius:6px;font-size:10px;font-weight:600;cursor:pointer;text-decoration:none;transition:all 0.3s;}
+        .btn-download{background:rgba(0,255,135,0.05);color:#00ff87;border:1px solid rgba(0,255,135,0.05);}
+        .btn-download:hover{background:rgba(0,255,135,0.08);}
+        
+        @media(max-width:600px){.qr-grid{grid-template-columns:1fr;}}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/admin" class="back">← Volver al panel</a>
+        <h1>📱 Gestión de QR</h1>
+        <p class="sub">QR para cada tipo de usuario</p>
+        
+        <div class="glass">
+            <div class="qr-grid">
+                <!-- Cliente -->
+                <div class="qr-card">
+                    <div class="qr-img">
+                        <img src="{{ client_qr }}" alt="QR Cliente">
+                    </div>
+                    <div class="role">👤 Cliente</div>
+                    <div class="name">Tarjeta digital del cliente</div>
+                    <a href="{{ client_qr }}" download="qr_cliente.png" class="btn btn-download">⬇️ Descargar</a>
+                </div>
+                
+                <!-- Empleado -->
+                <div class="qr-card">
+                    <div class="qr-img">
+                        <img src="{{ employee_qr }}" alt="QR Empleado">
+                    </div>
+                    <div class="role">👨‍💼 Empleado</div>
+                    <div class="name">Panel de empleado</div>
+                    <a href="{{ employee_qr }}" download="qr_empleado.png" class="btn btn-download">⬇️ Descargar</a>
+                </div>
+                
+                <!-- Admin -->
+                <div class="qr-card">
+                    <div class="qr-img">
+                        <img src="{{ admin_qr }}" alt="QR Admin">
+                    </div>
+                    <div class="role">⚙️ Administrador</div>
+                    <div class="name">Panel de administración</div>
+                    <a href="{{ admin_qr }}" download="qr_admin.png" class="btn btn-download">⬇️ Descargar</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="glass" style="text-align:center;">
+            <p style="color:rgba(255,255,255,0.05);font-size:11px;margin-bottom:8px;">
+                📋 Cada QR contiene el rol y el ID del usuario
+            </p>
+            <p style="color:rgba(255,255,255,0.03);font-size:10px;">
+                Ejemplo: <code style="background:rgba(255,255,255,0.02);padding:2px 6px;border-radius:4px;">client:1</code> • <code style="background:rgba(255,255,255,0.02);padding:2px 6px;border-radius:4px;">employee:1</code> • <code style="background:rgba(255,255,255,0.02);padding:2px 6px;border-radius:4px;">admin:1</code>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

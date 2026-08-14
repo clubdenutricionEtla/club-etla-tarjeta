@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Club Etla - Empleado</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            background:
+                radial-gradient(ellipse 100% 80% at 10% 15%, rgba(200,255,200,0.30) 0%, transparent 70%),
+                radial-gradient(ellipse 90% 70% at 5% 85%, rgba(140,210,140,0.25) 0%, transparent 65%),
+                #f5efe8;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container { max-width: 500px; width: 100%; }
+        .header { text-align: center; margin-bottom: 20px; }
+        .header h1 { font-size: 24px; color: #1a1a1a; }
+        .header p { color: #6a6a6a; font-size: 14px; }
+        .card {
+            background: rgba(255,255,255,0.9);
+            backdrop-filter: blur(20px);
+            border-radius: 28px;
+            padding: 28px 24px;
+            border: 1px solid rgba(255,255,255,0.5);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.04);
+            margin-bottom: 16px;
+        }
+        .card h2 { font-size: 16px; color: #1a1a1a; margin-bottom: 12px; }
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 14px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            text-align: center;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #2d7a2d, #4a8c2a);
+            color: #fff;
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(45,122,45,0.15); }
+        .btn-secondary {
+            background: rgba(0,0,0,0.04);
+            color: #1a1a1a;
+            border: 1px solid rgba(0,0,0,0.04);
+        }
+        .btn-secondary:hover { background: rgba(0,0,0,0.06); }
+        .btn-danger {
+            background: rgba(231,76,60,0.08);
+            color: #e74c3c;
+            border: 1px solid rgba(231,76,60,0.1);
+        }
+        .btn-danger:hover { background: rgba(231,76,60,0.12); }
+        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .menu-item {
+            background: rgba(255,255,255,0.5);
+            border-radius: 16px;
+            padding: 20px 12px;
+            text-align: center;
+            text-decoration: none;
+            color: #1a1a1a;
+            border: 1px solid rgba(255,255,255,0.3);
+            transition: all 0.3s;
+        }
+        .menu-item:hover { transform: translateY(-2px); background: rgba(255,255,255,0.7); }
+        .menu-item .icon { font-size: 32px; display: block; margin-bottom: 6px; }
+        .menu-item .label { font-size: 13px; font-weight: 600; }
+        .logout { margin-top: 12px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>👨‍💼 Panel de Empleado</h1>
+            <p>Registra visitas y gestiona clientes</p>
+        </div>
+
+        <div class="card">
+            <div class="menu-grid">
+                <a href="/employee/scan" class="menu-item">
+                    <span class="icon">📷</span>
+                    <span class="label">Escanear QR</span>
+                </a>
+                <a href="/employee/clients" class="menu-item">
+                    <span class="icon">👤</span>
+                    <span class="label">Buscar Cliente</span>
+                </a>
+            </div>
+        </div>
+
+        <a href="/logout" class="btn btn-danger logout">🚪 Cerrar sesión</a>
+        <a href="/" class="btn btn-secondary" style="margin-top:8px;">← Volver al inicio</a>
+    </div>
+</body>
+</html>

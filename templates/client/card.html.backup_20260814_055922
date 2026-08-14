@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Club Etla Rewards - Mi Tarjeta</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        :root {
+            --etla-green: #2d7a2d;
+            --etla-green-light: #4a8c2a;
+            --etla-green-lime: #7ac05a;
+            --etla-pink: #ff6b8a;
+            --etla-cream: #fcf8f4;
+            --etla-black: #000000;
+            --etla-white: #ffffff;
+            --ig-color: #E4405F;
+            --fb-color: #1877F2;
+            --wa-color: #25D366;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            background:
+                radial-gradient(ellipse 100% 80% at 10% 15%, rgba(200,255,200,0.30) 0%, transparent 70%),
+                radial-gradient(ellipse 90% 70% at 5% 85%, rgba(140,210,140,0.25) 0%, transparent 65%),
+                radial-gradient(ellipse 80% 60% at 50% 10%, rgba(255,240,180,0.25) 0%, transparent 60%),
+                radial-gradient(ellipse 90% 70% at 92% 20%, rgba(170,215,250,0.20) 0%, transparent 60%),
+                radial-gradient(ellipse 80% 70% at 90% 80%, rgba(210,195,250,0.15) 0%, transparent 60%),
+                #fcf8f4;
+            background-attachment: fixed;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background:
+                radial-gradient(ellipse 150% 100% at 20% 30%, rgba(200,255,200,0.18) 0%, transparent 50%),
+                radial-gradient(ellipse 130% 80% at 75% 60%, rgba(120,200,80,0.12) 0%, transparent 45%);
+            background-blend-mode: overlay;
+            animation: shimmerFloat 15s ease-in-out infinite alternate;
+        }
+
+        @keyframes shimmerFloat {
+            0% { transform: translate(-2%, -1%) scale(1); opacity: 0.7; }
+            50% { transform: translate(2%, 3%) scale(1.02); opacity: 1; }
+            100% { transform: translate(-1%, -2%) scale(0.98); opacity: 0.8; }
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background: linear-gradient(135deg,
+                    rgba(200,255,200,0.06) 0%,
+                    rgba(255,255,255,0) 40%,
+                    rgba(120,200,80,0.04) 60%,
+                    rgba(255,255,255,0) 100%);
+            animation: sheenMove 12s ease-in-out infinite alternate;
+        }
+
+        @keyframes sheenMove {
+            0% { transform: translateX(-15%) skewX(-6deg); opacity: 0.6; }
+            100% { transform: translateX(15%) skewX(6deg); opacity: 1; }
+        }
+
+        .container {
+            max-width: 540px;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px;
+        }
+
+        .premium-header {
+            text-align: center;
+            margin-bottom: 16px;
+            width: 100%;
+        }
+
+        .premium-header .tag {
+            font-size: 10px;
+            font-weight: 700;
+            color: #000000;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            background: rgba(255,255,255,0.5);
+            padding: 4px 16px;
+            border-radius: 20px;
+            display: inline-block;
+            backdrop-filter: blur(4px);
+        }
+
+        .premium-header .title-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin: 4px 0;
+        }
+
+        .premium-header .title-row .club {
+            font-size: 30px;
+            font-weight: 900;
+            color: #000000;
+            letter-spacing: -0.5px;
+        }
+
+        .premium-header .title-row .etla {
+            font-family: 'Dancing Script', cursive;
+            font-size: 36px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #2d7a2d, #4a8c2a, #7ac05a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .premium-header .sub {
+            font-size: 10px;
+            color: #000000;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            margin-top: 2px;
+            font-weight: 400;
+            opacity: 0.5;
+        }
+
+        /* TARJETA CON NACARADO VERDE */
+        .premium-card {
+            background:
+                radial-gradient(ellipse 120% 80% at 30% 20%, rgba(200,255,200,0.25) 0%, transparent 60%),
+                radial-gradient(ellipse 100% 70% at 70% 80%, rgba(120,200,80,0.15) 0%, transparent 50%),
+                radial-gradient(ellipse 80% 60% at 50% 50%, rgba(255,248,230,0.20) 0%, transparent 40%),
+                radial-gradient(ellipse 90% 70% at 10% 90%, rgba(255,220,220,0.10) 0%, transparent 50%),
+                radial-gradient(ellipse 80% 60% at 90% 10%, rgba(200,230,255,0.08) 0%, transparent 50%),
+                rgba(255,252,248,0.92);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 32px;
+            padding: 28px 24px 24px;
+            width: 100%;
+            min-height: 480px;
+            border: 1px solid rgba(255,255,255,0.4);
+            box-shadow: 
+                0 20px 60px rgba(45,122,45,0.06), 
+                0 8px 24px rgba(45,122,45,0.03),
+                inset 0 1px 0 rgba(255,255,255,0.6);
+            transition: box-shadow 0.3s ease, transform 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .premium-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 32px;
+            padding: 1px;
+            background: linear-gradient(135deg,
+                    rgba(200,255,200,0.4) 0%,
+                    rgba(255,255,255,0.2) 30%,
+                    rgba(120,200,80,0.2) 60%,
+                    rgba(200,255,200,0.3) 100%);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+            animation: borderNacarado 8s ease-in-out infinite alternate;
+        }
+
+        @keyframes borderNacarado {
+            0% { background-position: 0% 50%; opacity: 0.6; }
+            50% { background-position: 100% 50%; opacity: 1; }
+            100% { background-position: 0% 50%; opacity: 0.6; }
+        }
+
+        .premium-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(ellipse at var(--shine-x, 30%) var(--shine-y, 40%), 
+                rgba(200,255,200,0.08) 0%, 
+                rgba(120,200,80,0.04) 30%,
+                rgba(255,248,230,0.04) 60%,
+                transparent 80%);
+            pointer-events: none;
+            border-radius: 32px;
+            transition: all 0.1s ease;
+            animation: shineMove 12s ease-in-out infinite alternate;
+            z-index: 0;
+        }
+
+        @keyframes shineMove {
+            0% { transform: translate(-10%, -10%) scale(1); opacity: 0.5; }
+            50% { transform: translate(10%, 5%) scale(1.2); opacity: 1; }
+            100% { transform: translate(-5%, 15%) scale(0.9); opacity: 0.6; }
+        }
+
+        .premium-card:hover {
+            box-shadow: 
+                0 30px 80px rgba(45,122,45,0.08), 
+                0 12px 32px rgba(45,122,45,0.04),
+                inset 0 1px 0 rgba(255,255,255,0.7);
+            transform: translateY(-2px);
+        }
+
+        .card-relative {
+            position: relative;
+            width: 100%;
+            min-height: 480px;
+        }
+
+        .card-container {
+            perspective: 1000px;
+            transform-style: preserve-3d;
+            cursor: pointer;
+            transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+            width: 100%;
+            min-height: 480px;
+        }
+
+        .card-container.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-front, .card-back {
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .card-front {
+            position: relative;
+            z-index: 2;
+        }
+
+        .card-back {
+            transform: rotateY(180deg);
+            z-index: 1;
+            min-height: 480px;
+        }
+
+        .card-front > *,
+        .card-back > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* QR */
+        .qr-wrapper {
+            display: flex;
+            justify-content: center;
+            margin: 4px 0 10px;
+        }
+
+        .qr-code {
+            width: 130px;
+            height: 130px;
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(0,0,0,0.04);
+            position: relative;
+            z-index: 1;
+        }
+
+        .qr-code img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .qr-code .placeholder {
+            font-size: 44px;
+            opacity: 0.1;
+        }
+
+        /* Cliente */
+        .client-info-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin: 6px 0 12px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .client-avatar {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2d7a2d, #4a8c2a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 700;
+            color: #ffffff;
+            flex-shrink: 0;
+        }
+
+        .client-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #000000;
+        }
+
+        .client-status {
+            font-size: 11px;
+            color: #2d7a2d;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .client-status .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #2d7a2d;
+            display: inline-block;
+            animation: pulse-dot 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.8); }
+        }
+
+        /* Vasos */
+        .vasos-section {
+            margin: 10px 0 14px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .vasos-grid {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .vaso {
+            aspect-ratio: 1;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 700;
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            background: rgba(0,0,0,0.02);
+            border: 1px solid rgba(0,0,0,0.04);
+            color: rgba(0,0,0,0.04);
+            min-height: 48px;
+        }
+
+        .vaso.cubierto {
+            background: rgba(0,0,0,0.02);
+            border: 1px dashed rgba(0,0,0,0.06);
+            color: rgba(0,0,0,0.04);
+        }
+
+        .vaso.cubierto .cover {
+            font-size: 18px;
+            opacity: 0.2;
+        }
+
+        .vaso.destapado {
+            background: linear-gradient(135deg, #ff6b8a, #ff4080);
+            color: #ffffff;
+            border-color: rgba(255,64,128,0.2);
+            box-shadow: 0 4px 16px rgba(255,64,128,0.15);
+            transform: scale(1.02);
+        }
+
+        .vaso.destapado .check {
+            font-size: 18px;
+        }
+
+        .vaso.trofeo {
+            background: linear-gradient(135deg, #d4a017, #f5d060);
+            color: #3a2500;
+            border-color: rgba(212,160,23,0.3);
+            box-shadow: 0 4px 24px rgba(212,160,23,0.25);
+            transform: scale(1.08);
+            animation: premioPulse 2s ease-in-out infinite;
+            font-size: 28px;
+        }
+
+        .vaso.trofeo-bloqueado {
+            background: rgba(0,0,0,0.02);
+            border: 1px dashed rgba(0,0,0,0.06);
+            color: rgba(0,0,0,0.04);
+            font-size: 18px;
+        }
+
+        @keyframes premioPulse {
+            0%, 100% { transform: scale(1.08); box-shadow: 0 4px 24px rgba(212,160,23,0.25); }
+            50% { transform: scale(1.15); box-shadow: 0 8px 40px rgba(212,160,23,0.4); }
+        }
+
+        @keyframes descubrir {
+            0% { transform: scale(0.6) rotate(-10deg); opacity: 0; }
+            50% { transform: scale(1.15) rotate(2deg); opacity: 0.8; }
+            100% { transform: scale(1.02) rotate(0deg); opacity: 1; }
+        }
+
+        .vaso.animar {
+            animation: descubrir 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        .progress-text {
+            font-size: 13px;
+            font-weight: 600;
+            color: #000000;
+            text-align: center;
+            margin-top: 8px;
+        }
+
+        .progress-text .count {
+            color: #2d7a2d;
+            font-weight: 700;
+        }
+
+        /* Referidos y Recompensas */
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 12px 0 4px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .info-card {
+            background: rgba(255,255,255,0.3);
+            backdrop-filter: blur(4px);
+            border-radius: 14px;
+            padding: 12px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .info-card .label {
+            font-size: 9px;
+            text-transform: uppercase;
+            color: #000000;
+            opacity: 0.4;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .info-card .value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #000000;
+            margin-top: 2px;
+        }
+
+        .info-card .value.green {
+            color: #2d7a2d;
+        }
+
+        .info-card .value.gold {
+            color: #d4a017;
+        }
+
+        .flip-hint {
+            text-align: center;
+            font-size: 9px;
+            color: #000000;
+            opacity: 0.15;
+            margin-top: 8px;
+            letter-spacing: 1px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ============================================================
+           REVERSO - TODOS LOS TEXTOS EN NEGRO INTENSO
+           ============================================================ */
+        .back-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            min-height: 460px;
+            padding: 16px 8px;
+            text-align: center;
+            width: 100%;
+        }
+
+        .back-logo {
+            margin-bottom: 4px;
+        }
+
+        .back-logo .star {
+            font-size: 16px;
+            color: #000000;
+            opacity: 0.3;
+            letter-spacing: 4px;
+        }
+
+        .back-logo .club-name {
+            font-size: 20px;
+            font-weight: 900;
+            color: #000000;
+            letter-spacing: -0.5px;
+            line-height: 1.2;
+        }
+
+        .back-logo .club-name .etla-script {
+            font-family: 'Dancing Script', cursive;
+            font-size: 26px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #2d7a2d, #4a8c2a, #7ac05a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* ===== CORREGIDO: CLUB DE NUTRICIÓN ETLA EN NEGRO INTENSO ===== */
+        .back-logo .sub-title {
+            font-size: 9px;
+            color: #000000;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-top: 1px;
+            opacity: 1;
+        }
+
+        .back-quote {
+            margin: 6px 0;
+        }
+
+        .back-quote .line1 {
+            font-size: 16px;
+            font-weight: 800;
+            color: #000000;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            line-height: 1.3;
+        }
+
+        .back-quote .line2 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 22px;
+            font-weight: 700;
+            color: #2d7a2d;
+            line-height: 1.3;
+        }
+
+        .back-quote .line2 .heart {
+            color: #ff6b8a;
+        }
+
+        .back-motivation {
+            margin: 4px 0 6px;
+        }
+
+        .back-motivation .formula {
+            font-size: 12px;
+            font-weight: 700;
+            color: #2d7a2d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .back-motivation .encouragement {
+            font-size: 15px;
+            font-weight: 800;
+            color: #000000;
+            margin-top: 2px;
+        }
+
+        .back-motivation .encouragement .heart {
+            color: #ff6b8a;
+        }
+
+        .back-divider {
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(45,122,45,0.2), transparent);
+            margin: 4px auto;
+            border-radius: 2px;
+        }
+
+        .back-social {
+            margin: 2px 0;
+        }
+
+        .back-social .social-title {
+            font-size: 10px;
+            font-weight: 600;
+            color: #000000;
+            letter-spacing: 4px;
+            margin-bottom: 6px;
+        }
+
+        .back-social .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 18px;
+            margin: 4px 0;
+        }
+
+        .back-social .social-icons a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(45,122,45,0.04);
+            border: 1px solid rgba(45,122,45,0.06);
+            text-decoration: none;
+            font-size: 20px;
+            color: #2d7a2d;
+            transition: all 0.3s ease;
+        }
+
+        .back-social .social-icons a:hover {
+            background: rgba(45,122,45,0.08);
+            border-color: #2d7a2d;
+            transform: translateY(-2px);
+        }
+
+        .back-social .social-icons a.instagram { color: #E4405F; }
+        .back-social .social-icons a.facebook { color: #1877F2; }
+        .back-social .social-icons a.whatsapp { color: #25D366; }
+
+        .back-social .social-info {
+            font-size: 10px;
+            color: #000000;
+            line-height: 1.6;
+            margin-top: 4px;
+            font-weight: 500;
+        }
+
+        .back-social .social-info .username {
+            font-weight: 600;
+            color: #000000;
+        }
+
+        .back-birthday {
+            font-size: 11px;
+            color: #000000;
+            margin-top: 2px;
+            font-weight: 600;
+        }
+
+        .back-birthday .heart {
+            color: #ff6b8a;
+        }
+
+        .back-flip-hint {
+            font-size: 9px;
+            color: #000000;
+            opacity: 0.15;
+            margin-top: 4px;
+            letter-spacing: 1px;
+        }
+
+        /* Responsive */
+        @media (max-width: 400px) {
+            .premium-card { padding: 18px 14px 16px; border-radius: 24px; min-height: 400px; }
+            .card-relative { min-height: 400px; }
+            .card-container { min-height: 400px; }
+            .card-back { min-height: 400px; }
+            .back-content { min-height: 380px; padding: 12px 4px; }
+            .premium-header .title-row .club { font-size: 22px; }
+            .premium-header .title-row .etla { font-size: 28px; }
+            .qr-code { width: 100px; height: 100px; }
+            .client-avatar { width: 40px; height: 40px; font-size: 16px; }
+            .client-name { font-size: 15px; }
+            .vasos-grid { gap: 6px; }
+            .vaso { font-size: 14px; border-radius: 10px; min-height: 36px; }
+            .vaso.trofeo { font-size: 20px; }
+            .info-card { padding: 8px; }
+            .info-card .value { font-size: 15px; }
+            .back-logo .club-name { font-size: 17px; }
+            .back-logo .club-name .etla-script { font-size: 22px; }
+            .back-logo .sub-title { font-size: 8px; }
+            .back-quote .line1 { font-size: 13px; }
+            .back-quote .line2 { font-size: 18px; }
+            .back-motivation .formula { font-size: 10px; }
+            .back-motivation .encouragement { font-size: 13px; }
+            .back-social .social-icons a { width: 36px; height: 36px; font-size: 16px; }
+            .back-social .social-info { font-size: 9px; }
+            .back-birthday { font-size: 10px; }
+        }
+
+        @media (min-width: 768px) {
+            .container { max-width: 580px; }
+        }
+
+        .fade-up {
+            opacity: 0;
+            animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .fade-up-delay-1 { animation-delay: 0.1s; }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(30px) scale(0.97); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <div class="premium-header fade-up">
+            <div class="tag">★ MI TARJETA</div>
+            <div class="title-row">
+                <span class="club">MI CLUB</span>
+                <span class="etla">ETLA</span>
+            </div>
+            <div class="sub">CLUB DE NUTRICIÓN ETLA</div>
+        </div>
+
+        <div class="card-relative fade-up fade-up-delay-1">
+            <div class="card-container" id="cardWrapper">
+
+                <!-- FRENTE -->
+                <div class="premium-card card-front">
+                    <!-- QR -->
+                    <div class="qr-wrapper">
+                        <div class="qr-code">
+                            {% if client.qr_code %}
+                                <img src="{{ client.qr_code }}" alt="QR" />
+                            {% else %}
+                                <span class="placeholder">📱</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Cliente -->
+                    <div class="client-info-row">
+                        <div class="client-avatar">{{ client.name[0]|upper }}</div>
+                        <div>
+                            <div class="client-name">{{ client.name }}</div>
+                            <div class="client-status">
+                                <span class="dot"></span>
+                                MIEMBRO ACTIVO
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Vasos -->
+                    <div class="vasos-section">
+                        <div class="vasos-grid" id="vasosGrid">
+                            {% for i in range(1, 11) %}
+                                {% set is_completed = i <= client.visits %}
+                                <div class="vaso 
+                                    {% if i == 10 %}
+                                        {% if is_completed %}trofeo{% else %}trofeo-bloqueado{% endif %}
+                                    {% else %}
+                                        {% if is_completed %}destapado{% else %}cubierto{% endif %}
+                                    {% endif %}" 
+                                    data-visita="{{ i }}">
+                                    {% if i == 10 %}
+                                        {% if is_completed %}🏆{% else %}🔒{% endif %}
+                                    {% else %}
+                                        {% if is_completed %}✓{% else %}<span class="cover">🔒</span>{% endif %}
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="progress-text">
+                            Visitas: <span class="count">{{ client.visits }}</span> / 10
+                        </div>
+                    </div>
+
+                    <!-- Referidos y Recompensas -->
+                    <div class="info-grid">
+                        <div class="info-card">
+                            <div class="label">Código de Referido</div>
+                            <div class="value">{{ client.referral_code or '---' }}</div>
+                        </div>
+                        <div class="info-card">
+                            <div class="label">Referidos Válidos</div>
+                            <div class="value green">{{ client.referrals_valid or 0 }}</div>
+                        </div>
+                    </div>
+
+                    <div class="info-grid" style="margin-top:0;">
+                        <div class="info-card" style="grid-column: span 2;">
+                            <div class="label">Mis Recompensas</div>
+                            <div class="value gold">
+                                {% if client.visits >= 10 %}🏆 10 Visitas - ¡Premio Desbloqueado!{% else %}🎯 Completa 10 visitas para tu premio{% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flip-hint">👆 Toca la tarjeta para ver el reverso</div>
+                </div>
+
+                <!-- REVERSO - TODOS LOS TEXTOS EN NEGRO INTENSO -->
+                <div class="premium-card card-back">
+                    <div class="back-content">
+
+                        <!-- LOGO -->
+                        <div class="back-logo">
+                            <div class="star">★</div>
+                            <div class="club-name">
+                                MI CLUB <span class="etla-script">ETLA</span>
+                            </div>
+                            <!-- ===== AHORA ES NEGRO INTENSO ===== -->
+                            <div class="sub-title">CLUB DE NUTRICIÓN ETLA</div>
+                        </div>
+
+                        <!-- MENSAJE PRINCIPAL -->
+                        <div class="back-quote">
+                            <div class="line1">CADA VISITA TE ACERCA</div>
+                            <div class="line2">a tu mejor versión <span class="heart">♡</span></div>
+                        </div>
+
+                        <!-- MOTIVACIÓN -->
+                        <div class="back-motivation">
+                            <div class="formula">CONSTANCIA + HÁBITOS SALUDABLES = RESULTADOS</div>
+                            <div class="encouragement">¡Tú puedes, sigue así! <span class="heart">♡</span></div>
+                        </div>
+
+                        <div class="back-divider"></div>
+
+                        <!-- REDES SOCIALES -->
+                        <div class="back-social">
+                            <div class="social-title">S Í G U E N O S</div>
+                            <div class="social-icons">
+                                <a href="https://www.instagram.com/clubdenutricion_etla" target="_blank" class="instagram" title="Instagram">
+                                    <i class="fab fa-instagram"></i>
+                                </a>
+                                <a href="https://www.facebook.com/ClubDeNutricionEtla" target="_blank" class="facebook" title="Facebook">
+                                    <i class="fab fa-facebook-f"></i>
+                                </a>
+                                <a href="https://wa.me/529512470417" target="_blank" class="whatsapp" title="WhatsApp">
+                                    <i class="fab fa-whatsapp"></i>
+                                </a>
+                            </div>
+                            <div class="social-info">
+                                <span class="username">@clubdenutricion_etla</span><br />
+                                Club De Nutrición Etla<br />
+                                951 247 0417
+                            </div>
+                        </div>
+
+                        <!-- CUMPLEAÑOS -->
+                        <div class="back-birthday">
+                            🎂 Cumpleaños: 
+                            {% if client.birthday %}
+                                {{ client.birthday.strftime('%d/%m') }}
+                            {% else %}
+                                No registrado
+                            {% endif %}
+                            <span class="heart">♡</span>
+                        </div>
+
+                        <!-- FLIP HINT -->
+                        <div class="back-flip-hint">☝️ Toca para volver</div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const cardWrapper = document.getElementById('cardWrapper');
+        let isFlipped = false;
+
+        cardWrapper.addEventListener('click', function() {
+            isFlipped = !isFlipped;
+            this.classList.toggle('flipped', isFlipped);
+        });
+
+        function actualizarVasos(visitas) {
+            const vasos = document.querySelectorAll('.vaso');
+            vasos.forEach((vaso, index) => {
+                const num = index + 1;
+                const isCompleted = num <= visitas;
+                const isLast = num === 10;
+                
+                vaso.className = 'vaso';
+                if (isLast) {
+                    vaso.classList.add(isCompleted ? 'trofeo' : 'trofeo-bloqueado');
+                } else {
+                    vaso.classList.add(isCompleted ? 'destapado' : 'cubierto');
+                }
+                if (isCompleted && !isLast) {
+                    vaso.classList.add('animar');
+                }
+                
+                if (isLast) {
+                    vaso.textContent = isCompleted ? '🏆' : '🔒';
+                } else {
+                    vaso.innerHTML = isCompleted ? '✓' : '<span class="cover">🔒</span>';
+                }
+            });
+            
+            const countSpan = document.querySelector('.progress-text .count');
+            if (countSpan) {
+                countSpan.textContent = visitas;
+            }
+        }
+    </script>
+
+</body>
+</html>

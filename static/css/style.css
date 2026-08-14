@@ -1,0 +1,410 @@
+/* ============================================================
+   CLUB ETLA REWARDS - ESTILOS GLOBALES
+   Identidad visual premium
+   ============================================================ */
+
+:root {
+    /* Colores principales */
+    --etla-green: #2d7a2d;
+    --etla-green-light: #4a8c2a;
+    --etla-green-dark: #1a5a1a;
+    --etla-pink: #ff6b8a;
+    --etla-cream: #fcf8f4;
+    --etla-blue: #aad7fa;
+    --etla-lavender: #d2c3fa;
+    --etla-black: #0B0B0B;
+    --etla-white: #ffffff;
+    
+    /* Fuentes */
+    --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-script: 'Dancing Script', cursive;
+    
+    /* Sombras */
+    --shadow-card: 0 20px 60px rgba(0,0,0,0.08), 0 8px 24px rgba(0,0,0,0.04);
+    --shadow-hover: 0 30px 80px rgba(0,0,0,0.12), 0 12px 32px rgba(0,0,0,0.06);
+    --shadow-btn: 0 4px 20px rgba(45,122,45,0.20);
+    --shadow-btn-hover: 0 8px 32px rgba(45,122,45,0.30);
+    
+    /* Radios */
+    --radius-card: 32px;
+    --radius-input: 16px;
+    --radius-btn: 16px;
+    --radius-badge: 20px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: var(--font-primary);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: var(--etla-cream);
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* ============================================================
+   FONDO NACARADO
+   ============================================================ */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+        radial-gradient(ellipse 100% 80% at 10% 15%, rgba(255,200,200,0.30) 0%, transparent 70%),
+        radial-gradient(ellipse 90% 70% at 5% 85%, rgba(140,210,140,0.25) 0%, transparent 65%),
+        radial-gradient(ellipse 80% 60% at 50% 10%, rgba(255,240,180,0.30) 0%, transparent 60%),
+        radial-gradient(ellipse 90% 70% at 92% 20%, rgba(170,215,250,0.25) 0%, transparent 60%),
+        radial-gradient(ellipse 80% 70% at 90% 80%, rgba(210,195,250,0.20) 0%, transparent 60%);
+    animation: nacaradoFloat 20s ease-in-out infinite alternate;
+}
+
+@keyframes nacaradoFloat {
+    0% { transform: scale(1) rotate(0deg); opacity: 0.8; }
+    50% { transform: scale(1.05) rotate(1deg); opacity: 1; }
+    100% { transform: scale(1) rotate(-1deg); opacity: 0.9; }
+}
+
+/* ============================================================
+   DESTELLOS
+   ============================================================ */
+.sparkle {
+    position: fixed;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 0;
+    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 70%);
+    opacity: 0;
+    animation: sparklePulse var(--dur, 8s) ease-in-out infinite alternate;
+    width: var(--size, 10px);
+    height: var(--size, 10px);
+    top: var(--top, 10%);
+    left: var(--left, 10%);
+    filter: blur(1px);
+}
+
+.sparkle:nth-child(1) { --top: 5%; --left: 10%; --size: 14px; --dur: 7s; animation-delay: 0s; }
+.sparkle:nth-child(2) { --top: 20%; --left: 88%; --size: 8px; --dur: 9s; animation-delay: 1s; }
+.sparkle:nth-child(3) { --top: 45%; --left: 3%; --size: 10px; --dur: 8s; animation-delay: 0.5s; }
+.sparkle:nth-child(4) { --top: 70%; --left: 92%; --size: 6px; --dur: 10s; animation-delay: 2s; }
+.sparkle:nth-child(5) { --top: 85%; --left: 15%; --size: 9px; --dur: 7.5s; animation-delay: 0.3s; }
+.sparkle:nth-child(6) { --top: 10%; --left: 50%; --size: 12px; --dur: 11s; animation-delay: 1.5s; }
+
+@keyframes sparklePulse {
+    0% { opacity: 0; transform: scale(0.4) translateY(0); }
+    30% { opacity: 0.8; transform: scale(1.4) translateY(-6px); }
+    60% { opacity: 0.2; transform: scale(0.8) translateY(2px); }
+    100% { opacity: 0.9; transform: scale(1.2) translateY(-4px); }
+}
+
+/* ============================================================
+   REFLEJO PERLADO
+   ============================================================ */
+body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background: linear-gradient(135deg,
+        rgba(255,255,255,0.06) 0%,
+        rgba(255,255,255,0) 30%,
+        rgba(255,255,255,0.04) 50%,
+        rgba(255,255,255,0) 70%,
+        rgba(255,255,255,0.08) 100%);
+    animation: sheenMove 14s ease-in-out infinite alternate;
+}
+
+@keyframes sheenMove {
+    0% { transform: translateX(-15%) skewX(-6deg); opacity: 0.6; }
+    100% { transform: translateX(15%) skewX(6deg); opacity: 1; }
+}
+
+/* ============================================================
+   CONTENEDOR
+   ============================================================ */
+.container {
+    max-width: 460px;
+    width: 100%;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px;
+}
+
+/* ============================================================
+   TARJETA PREMIUM
+   ============================================================ */
+.premium-card {
+    background: rgba(255,252,248,0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: var(--radius-card);
+    padding: 32px 24px 28px;
+    width: 100%;
+    border: 1px solid rgba(255,255,255,0.5);
+    box-shadow: var(--shadow-card);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.premium-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-card);
+    padding: 1px;
+    background: linear-gradient(135deg,
+        rgba(255,255,255,0.6) 0%,
+        rgba(255,255,255,0.1) 30%,
+        rgba(255,255,255,0.05) 60%,
+        rgba(255,255,255,0.3) 100%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+}
+
+.premium-card:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-2px);
+}
+
+/* ============================================================
+   ENCABEZADO PREMIUM
+   ============================================================ */
+.premium-header {
+    text-align: center;
+    margin-bottom: 24px;
+    width: 100%;
+}
+
+.premium-header .tag {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--etla-black);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    background: rgba(255,255,255,0.6);
+    padding: 4px 16px;
+    border-radius: var(--radius-badge);
+    display: inline-block;
+    backdrop-filter: blur(4px);
+    opacity: 0.6;
+}
+
+.premium-header .title-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin: 6px 0;
+}
+
+.premium-header .title-row .club {
+    font-size: 32px;
+    font-weight: 900;
+    color: var(--etla-black);
+    letter-spacing: -0.5px;
+}
+
+.premium-header .title-row .etla {
+    font-family: var(--font-script);
+    font-size: 38px;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--etla-green), var(--etla-green-light), #6aac4a);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.premium-header .sub {
+    font-size: 11px;
+    color: var(--etla-black);
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    margin-top: 2px;
+    font-weight: 400;
+    opacity: 0.5;
+}
+
+/* ============================================================
+   TEXTO
+   ============================================================ */
+.text-black { color: var(--etla-black); }
+.text-green { color: var(--etla-green); }
+.text-center { text-align: center; }
+
+/* ============================================================
+   BOTONES
+   ============================================================ */
+.btn {
+    padding: 16px 24px;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: var(--font-primary);
+    border: none;
+    border-radius: var(--radius-btn);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--etla-green), var(--etla-green-light));
+    color: var(--etla-white);
+    box-shadow: var(--shadow-btn);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-btn-hover);
+}
+
+.btn-primary:active {
+    transform: scale(0.97);
+}
+
+.btn-secondary {
+    background: transparent;
+    color: var(--etla-black);
+    border: 2px solid rgba(0,0,0,0.06);
+}
+
+.btn-secondary:hover {
+    background: rgba(0,0,0,0.02);
+    border-color: rgba(0,0,0,0.1);
+}
+
+/* Ripple */
+.btn .ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    transform: scale(0);
+    animation: rippleEffect 0.6s ease-out;
+    pointer-events: none;
+}
+
+@keyframes rippleEffect {
+    to { transform: scale(4); opacity: 0; }
+}
+
+/* ============================================================
+   FORMULARIOS
+   ============================================================ */
+.input-group {
+    position: relative;
+    margin-bottom: 16px;
+    width: 100%;
+}
+
+.input-group .input-icon {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 20px;
+    color: rgba(0,0,0,0.2);
+    transition: color 0.3s ease;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 16px 16px 16px 52px;
+    font-size: 16px;
+    font-weight: 500;
+    font-family: var(--font-primary);
+    background: var(--etla-white);
+    border: 2px solid rgba(0,0,0,0.06);
+    border-radius: var(--radius-input);
+    color: var(--etla-black);
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.input-group input::placeholder {
+    color: rgba(0,0,0,0.2);
+    font-weight: 400;
+}
+
+.input-group input:focus {
+    border-color: var(--etla-green-light);
+    box-shadow: 0 0 0 4px rgba(74,140,42,0.08);
+}
+
+.input-group input:focus ~ .input-icon,
+.input-group input:focus + .input-icon {
+    color: var(--etla-green-light);
+}
+
+/* ============================================================
+   LINKS
+   ============================================================ */
+.link {
+    color: var(--etla-green);
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border-bottom: 2px solid transparent;
+}
+
+.link:hover {
+    border-bottom-color: var(--etla-green);
+}
+
+.link:active {
+    transform: scale(0.95);
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 400px) {
+    .premium-card { padding: 24px 16px 20px; }
+    .premium-header .title-row .club { font-size: 24px; }
+    .premium-header .title-row .etla { font-size: 28px; }
+    .btn { padding: 14px 18px; font-size: 15px; }
+    .input-group input { padding: 14px 14px 14px 44px; font-size: 15px; }
+}
+
+@media (min-width: 768px) {
+    .container { max-width: 520px; }
+}
+
+/* ============================================================
+   ANIMACIONES
+   ============================================================ */
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px) scale(0.97); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.fade-up {
+    opacity: 0;
+    animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.fade-up-delay-1 { animation-delay: 0.1s; }
+.fade-up-delay-2 { animation-delay: 0.2s; }
+.fade-up-delay-3 { animation-delay: 0.3s; }

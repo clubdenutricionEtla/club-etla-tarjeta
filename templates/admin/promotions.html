@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Promociones - Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:'Inter',sans-serif;background:#0a0a1a;color:white;min-height:100vh;padding:20px;}
+        .container{max-width:800px;margin:0 auto;}
+        .back{color:rgba(255,255,255,0.1);text-decoration:none;font-size:13px;display:inline-block;margin-bottom:16px;}
+        .back:hover{color:#00ff87;}
+        h1{font-size:24px;background:linear-gradient(135deg,#00ff87,#00d4ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+        .sub{color:rgba(255,255,255,0.15);font-size:13px;margin-bottom:16px;}
+        
+        .glass{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);border-radius:16px;padding:20px;margin-bottom:16px;}
+        
+        .promo-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+        .promo-card{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);border-radius:12px;padding:16px;transition:all 0.3s;}
+        .promo-card:hover{background:rgba(255,255,255,0.04);transform:translateY(-2px);}
+        .promo-card .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+        .promo-card .name{font-weight:600;font-size:14px;color:white;}
+        .promo-card .badge{font-size:9px;padding:2px 10px;border-radius:12px;font-weight:600;}
+        .badge.active{background:rgba(0,255,135,0.1);color:#00ff87;border:1px solid rgba(0,255,135,0.05);}
+        .badge.inactive{background:rgba(255,50,50,0.1);color:#ff6b6b;border:1px solid rgba(255,50,50,0.05);}
+        .promo-card .desc{font-size:12px;color:rgba(255,255,255,0.2);margin-bottom:6px;}
+        .promo-card .meta{font-size:10px;color:rgba(255,255,255,0.1);display:flex;gap:12px;}
+        
+        .form-group{margin-bottom:12px;}
+        .form-group label{display:block;font-size:12px;color:rgba(255,255,255,0.2);margin-bottom:4px;}
+        .form-group input, .form-group select, .form-group textarea{
+            width:100%;padding:10px 12px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);border-radius:10px;color:white;font-size:13px;outline:none;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus{
+            border-color:rgba(0,255,135,0.08);
+        }
+        .form-group textarea{resize:vertical;min-height:60px;}
+        
+        .btn{ padding:10px 20px;border:none;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.3s;}
+        .btn-primary{background:linear-gradient(135deg,#00ff87,#00d4ff);color:#0a0a0a;}
+        .btn-primary:hover{transform:scale(1.02);}
+        .btn-success{background:linear-gradient(135deg,#00ff87,#00d4ff);color:#0a0a0a;}
+        .btn-danger{background:linear-gradient(135deg,#ff6b6b,#ee5a24);color:white;}
+        .btn-sm{padding:6px 14px;font-size:11px;}
+        
+        .flex{display:flex;gap:8px;flex-wrap:wrap;}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/admin" class="back">← Volver al panel</a>
+        <h1>🎁 Promociones</h1>
+        <p class="sub">Gestiona las promociones del club</p>
+
+        <!-- Formulario para crear promoción -->
+        <div class="glass">
+            <h3 style="font-size:14px;margin-bottom:12px;color:rgba(255,255,255,0.2);">➕ Nueva Promoción</h3>
+            <form id="promoForm">
+                <div class="form-group">
+                    <label>Nombre</label>
+                    <input type="text" id="promoName" placeholder="Ej: Desayuno Gratis" required>
+                </div>
+                <div class="form-group">
+                    <label>Descripción</label>
+                    <textarea id="promoDesc" placeholder="Descripción de la promoción"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Tipo</label>
+                    <select id="promoType">
+                        <option value="breakfast">Desayuno Gratis</option>
+                        <option value="double_points">Puntos Dobles</option>
+                        <option value="free_tea">Té Gratis</option>
+                        <option value="discount">Descuento</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Valor</label>
+                    <input type="number" id="promoValue" placeholder="5" value="5">
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                    <div class="form-group">
+                        <label>Fecha Inicio</label>
+                        <input type="date" id="promoStart">
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha Fin</label>
+                        <input type="date" id="promoEnd">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Crear Promoción</button>
+            </form>
+        </div>
+
+        <!-- Lista de promociones -->
+        <div class="promo-grid" id="promoList">
+            <!-- Se llena con JavaScript -->
+        </div>
+    </div>
+
+    <script>
+        // Cargar promociones
+        function loadPromotions(){
+            fetch('/api/promotions')
+                .then(res => res.json())
+                .then(data => {
+                    const container = document.getElementById('promoList');
+                    if(data.length === 0){
+                        container.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:30px;color:rgba(255,255,255,0.05);font-size:13px;">No hay promociones activas</div>';
+                        return;
+                    }
+                    container.innerHTML = data.map(p => `
+                        <div class="promo-card">
+                            <div class="header">
+                                <span class="name">${p.name}</span>
+                                <span class="badge ${p.is_active ? 'active' : 'inactive'}">${p.is_active ? 'ACTIVA' : 'INACTIVA'}</span>
+                            </div>
+                            <div class="desc">${p.description || 'Sin descripción'}</div>
+                            <div class="meta">
+                                <span>${p.type}</span>
+                                <span>${p.start_date} → ${p.end_date}</span>
+                                <span>Usos: ${p.used_count || 0}</span>
+                            </div>
+                            <div style="margin-top:8px;display:flex;gap:6px;">
+                                <button class="btn btn-sm btn-success" onclick="togglePromotion(${p.id})">
+                                    ${p.is_active ? 'Desactivar' : 'Activar'}
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="deletePromotion(${p.id})">Eliminar</button>
+                            </div>
+                        </div>
+                    `).join('');
+                })
+                .catch(console.error);
+        }
+
+        // Crear promoción
+        document.getElementById('promoForm').addEventListener('submit', async function(e){
+            e.preventDefault();
+            const data = {
+                name: document.getElementById('promoName').value,
+                description: document.getElementById('promoDesc').value,
+                type: document.getElementById('promoType').value,
+                value: parseInt(document.getElementById('promoValue').value),
+                start_date: document.getElementById('promoStart').value,
+                end_date: document.getElementById('promoEnd').value
+            };
+            
+            try {
+                const res = await fetch('/api/promotions', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                });
+                const result = await res.json();
+                if(result.success){
+                    alert('✅ Promoción creada');
+                    this.reset();
+                    loadPromotions();
+                } else {
+                    alert('❌ Error: ' + result.error);
+                }
+            } catch(e) {
+                alert('❌ Error de conexión');
+            }
+        });
+
+        // Toggle promoción
+        async function togglePromotion(id){
+            if(!confirm('¿Cambiar estado de esta promoción?')) return;
+            try {
+                const res = await fetch(`/api/promotions/${id}/toggle`, {method: 'POST'});
+                const data = await res.json();
+                if(data.success){
+                    loadPromotions();
+                }
+            } catch(e) {
+                alert('❌ Error');
+            }
+        }
+
+        // Eliminar promoción
+        async function deletePromotion(id){
+            if(!confirm('¿Eliminar esta promoción permanentemente?')) return;
+            try {
+                const res = await fetch(`/api/promotions/${id}`, {method: 'DELETE'});
+                const data = await res.json();
+                if(data.success){
+                    loadPromotions();
+                }
+            } catch(e) {
+                alert('❌ Error');
+            }
+        }
+
+        loadPromotions();
+    </script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Club Etla - Empleado</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background:
+                radial-gradient(ellipse 100% 80% at 10% 15%, rgba(200,255,200,0.30) 0%, transparent 70%),
+                radial-gradient(ellipse 90% 70% at 5% 85%, rgba(140,210,140,0.25) 0%, transparent 65%),
+                #f5efe8;
+            padding: 20px;
+        }
+        .card {
+            background: rgba(255,255,255,0.9);
+            backdrop-filter: blur(20px);
+            border-radius: 28px;
+            padding: 36px 28px;
+            max-width: 400px;
+            width: 100%;
+            border: 1px solid rgba(255,255,255,0.5);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.04);
+        }
+        .card h1 { font-size: 22px; color: #1a1a1a; margin-bottom: 4px; }
+        .card p { font-size: 14px; color: #6a6a6a; margin-bottom: 24px; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 12px; font-weight: 600; color: #3a3a3a; margin-bottom: 4px; }
+        .form-group input { width: 100%; padding: 12px 16px; border: 1px solid rgba(0,0,0,0.06); border-radius: 12px; font-size: 14px; background: #ffffff; transition: all 0.3s; }
+        .form-group input:focus { border-color: #2d7a2d; outline: none; box-shadow: 0 0 0 3px rgba(45,122,45,0.06); }
+        .btn { width: 100%; padding: 14px; border: none; border-radius: 12px; font-weight: 600; font-size: 16px; cursor: pointer; transition: all 0.3s; background: linear-gradient(135deg, #2d7a2d, #4a8c2a); color: #fff; }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(45,122,45,0.15); }
+        .message { padding: 12px; border-radius: 12px; margin-bottom: 16px; display: none; }
+        .message.error { display: block; background: rgba(231,76,60,0.06); border: 1px solid rgba(231,76,60,0.1); color: #e74c3c; }
+        .back-link { display: block; text-align: center; margin-top: 16px; color: #2d7a2d; text-decoration: none; font-weight: 600; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>🔑 Empleado</h1>
+        <p>Acceso para empleados del club</p>
+        <div id="message" class="message"></div>
+        <form id="loginForm">
+            <div class="form-group">
+                <label>Correo electrónico</label>
+                <input type="email" id="email" placeholder="ejemplo@clubetla.com" required />
+            </div>
+            <div class="form-group">
+                <label>Contraseña</label>
+                <input type="password" id="password" placeholder="••••••••" required />
+            </div>
+            <button type="submit" class="btn">Ingresar</button>
+        </form>
+        <a href="/" class="back-link">← Volver al inicio</a>
+    </div>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const message = document.getElementById('message');
+            message.className = 'message';
+            
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            
+            try {
+                const res = await fetch('/employee/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`
+                });
+                const data = await res.json();
+                if (data.success) {
+                    window.location.href = data.redirect;
+                } else {
+                    message.textContent = '❌ ' + (data.error || 'Credenciales incorrectas');
+                    message.className = 'message error';
+                }
+            } catch (err) {
+                message.textContent = '❌ Error de conexión';
+                message.className = 'message error';
+            }
+        });
+    </script>
+</body>
+</html>
