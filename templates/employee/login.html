@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Club Etla - Empleado</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <style>
@@ -39,6 +39,7 @@
         .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(45,122,45,0.15); }
         .message { padding: 12px; border-radius: 12px; margin-bottom: 16px; display: none; }
         .message.error { display: block; background: rgba(231,76,60,0.06); border: 1px solid rgba(231,76,60,0.1); color: #e74c3c; }
+        .message.success { display: block; background: rgba(45,122,45,0.06); border: 1px solid rgba(45,122,45,0.1); color: #2d7a2d; }
         .back-link { display: block; text-align: center; margin-top: 16px; color: #2d7a2d; text-decoration: none; font-weight: 600; font-size: 14px; }
     </style>
 </head>
@@ -77,7 +78,9 @@
                 });
                 const data = await res.json();
                 if (data.success) {
-                    window.location.href = data.redirect;
+                    message.textContent = '✅ Acceso exitoso';
+                    message.className = 'message success';
+                    setTimeout(() => window.location.href = data.redirect, 500);
                 } else {
                     message.textContent = '❌ ' + (data.error || 'Credenciales incorrectas');
                     message.className = 'message error';

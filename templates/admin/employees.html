@@ -97,7 +97,7 @@
                     <tr>
                         <td>${e.name}</td>
                         <td>${e.email}</td>
-                        <td><span class="badge badge-${e.role === 'admin' ? 'active' : 'active'}">${e.role || 'empleado'}</span></td>
+                        <td><span class="badge badge-active">${e.role || 'empleado'}</span></td>
                         <td><span class="badge ${e.active ? 'badge-active' : 'badge-inactive'}">${e.active ? 'Activo' : 'Inactivo'}</span></td>
                         <td>
                             ${e.role !== 'admin' ? `<button class="btn btn-danger" style="padding:4px 12px; font-size:11px;" onclick="deleteEmployee(${e.id})">Eliminar</button>` : '—'}

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Club Etla - Escáner QR</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -105,30 +106,27 @@
             <h1>📷 Escanear QR</h1>
             <p>Registra la visita de un cliente</p>
         </div>
-
         <div class="card">
             <div id="message" class="message"></div>
-
             <div class="camera-area" id="cameraArea">
                 <span class="icon">📷</span>
                 <span class="hint">Activa la cámara para escanear</span>
                 <video id="video" playsinline></video>
+                <canvas id="canvas" style="display:none;"></canvas>
             </div>
-
             <button class="btn btn-primary" id="scanBtn">📸 Iniciar escáner</button>
-
             <div class="result" id="result">
                 <div class="status">✅ Visita registrada</div>
                 <div class="name" id="clientName">-</div>
                 <div class="visits">Visita <strong id="visitNumber">0</strong> de 10</div>
             </div>
-
             <a href="/employee" class="back-link">← Volver al panel</a>
         </div>
     </div>
-
     <script>
         const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const canvasCtx = canvas.getContext('2d', { willReadFrequently: true });
         const cameraArea = document.getElementById('cameraArea');
         const scanBtn = document.getElementById('scanBtn');
         const result = document.getElementById('result');
@@ -138,9 +136,15 @@
 
         let scannerActive = false;
         let stream = null;
-        let scanInterval = null;
+        let rafId = null;
         let lastScanTime = 0;
-        let lastScannedSecret = null;
+        let processingRequest = false;
+
+        function showMessage(text) {
+            message.textContent = text;
+            message.classList.add('visible');
+            setTimeout(() => message.classList.remove('visible'), 3000);
+        }
 
         async function startCamera() {
             try {
@@ -152,10 +156,9 @@
                 cameraArea.classList.add('scanning');
                 scanBtn.textContent = '⏹ Detener escáner';
                 scannerActive = true;
-                startScanning();
+                requestAnimationFrame(tick);
             } catch (err) {
-                message.textContent = '⚠️ No se pudo acceder a la cámara. Permite el acceso.';
-                message.classList.add('visible');
+                showMessage('⚠️ No se pudo acceder a la cámara. Permite el acceso.');
                 console.error('Camera error:', err);
             }
         }
@@ -169,61 +172,63 @@
             cameraArea.classList.remove('scanning');
             scanBtn.textContent = '📸 Iniciar escáner';
             scannerActive = false;
-            if (scanInterval) {
-                clearInterval(scanInterval);
-                scanInterval = null;
+            if (rafId) {
+                cancelAnimationFrame(rafId);
+                rafId = null;
             }
             message.classList.remove('visible');
         }
 
-        function startScanning() {
-            console.log('Escáner activo...');
-            // Simulación de escaneo automático
-            let counter = 0;
-            scanInterval = setInterval(() => {
-                if (!scannerActive) {
-                    clearInterval(scanInterval);
-                    return;
-                }
-                counter++;
-                // Simular escaneo después de 4 segundos
-                if (counter > 4) {
-                    clearInterval(scanInterval);
-                    if (scannerActive) {
-                        // Simular escaneo exitoso con datos de prueba
-                        const visits = Math.floor(Math.random() * 10) + 1;
-                        registerVisit('Cliente Ejemplo', visits);
+        function tick() {
+            if (!scannerActive) return;
+
+            if (video.readyState === video.HAVE_ENOUGH_DATA && !processingRequest) {
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                canvasCtx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                const imageData = canvasCtx.getImageData(0, 0, canvas.width, canvas.height);
+                const code = jsQR(imageData.data, imageData.width, imageData.height, {
+                    inversionAttempts: 'dontInvert'
+                });
+
+                if (code && code.data) {
+                    const now = Date.now();
+                    if (now - lastScanTime > 2500) {
+                        lastScanTime = now;
+                        handleScan(code.data);
                     }
                 }
-            }, 1000);
+            }
+
+            rafId = requestAnimationFrame(tick);
         }
 
-        function registerVisit(name, visits) {
-            const now = Date.now();
-            // Evitar escaneos duplicados en corto tiempo
-            if (now - lastScanTime < 2000) {
-                message.textContent = '⏳ Espera un momento antes de escanear nuevamente';
-                message.classList.add('visible');
-                setTimeout(() => message.classList.remove('visible'), 3000);
-                return;
-            }
-            lastScanTime = now;
-
-            clientNameEl.textContent = name;
-            visitNumberEl.textContent = visits;
-            result.classList.add('visible');
+        async function handleScan(qrSecret) {
+            processingRequest = true;
             scanBtn.disabled = true;
+            try {
+                const response = await fetch('/api/employee/scan', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ qr_secret: qrSecret, product_type: 'BREAKFAST' })
+                });
+                const data = await response.json();
 
-            // En producción, aquí se envía al servidor
-            // fetch('/api/employee/scan', { method: 'POST', ... })
-
-            setTimeout(() => {
-                scanBtn.disabled = false;
-                if (scannerActive) {
-                    if (scanInterval) clearInterval(scanInterval);
-                    startScanning();
+                if (response.ok && data.success) {
+                    clientNameEl.textContent = data.client_name;
+                    visitNumberEl.textContent = data.visits;
+                    result.classList.add('visible');
+                } else {
+                    showMessage(data.error || 'No se pudo registrar la visita');
                 }
-            }, 2500);
+            } catch (err) {
+                showMessage('⚠️ Error de conexión al registrar la visita');
+                console.error('Scan error:', err);
+            } finally {
+                processingRequest = false;
+                scanBtn.disabled = false;
+                setTimeout(() => result.classList.remove('visible'), 4000);
+            }
         }
 
         scanBtn.addEventListener('click', function() {
