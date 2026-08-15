@@ -527,7 +527,6 @@ def api_employee_scan():
     
     # Registrar visita
     result = client.add_visit(product_type, session['employee_id'])
-    check_achievements(client)
     
     return jsonify({
         'success': True,

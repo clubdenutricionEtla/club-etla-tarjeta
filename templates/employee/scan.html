@@ -138,6 +138,7 @@
         let stream = null;
         let rafId = null;
         let processingRequest = false;
+        let cooldownUntil = 0;
 
         function showMessage(text) {
             message.textContent = text;
@@ -175,13 +176,12 @@
                 cancelAnimationFrame(rafId);
                 rafId = null;
             }
-            message.classList.remove('visible');
         }
 
         function tick() {
             if (!scannerActive) return;
 
-            if (video.readyState === video.HAVE_ENOUGH_DATA && !processingRequest) {
+            if (video.readyState === video.HAVE_ENOUGH_DATA && !processingRequest && Date.now() > cooldownUntil) {
                 canvas.width = video.videoWidth;
                 canvas.height = video.videoHeight;
                 canvasCtx.drawImage(video, 0, 0, canvas.width, canvas.height);
@@ -213,16 +213,18 @@
                     clientNameEl.textContent = data.client_name;
                     visitNumberEl.textContent = data.visits;
                     result.classList.add('visible');
+                    stopCamera();
                 } else {
                     showMessage(data.error || 'No se pudo registrar la visita');
+                    cooldownUntil = Date.now() + 2000;
                 }
             } catch (err) {
                 showMessage('⚠️ Error de conexión al registrar la visita');
                 console.error('Scan error:', err);
+                cooldownUntil = Date.now() + 2000;
             } finally {
                 processingRequest = false;
                 scanBtn.disabled = false;
-                setTimeout(() => result.classList.remove('visible'), 4000);
             }
         }
 
