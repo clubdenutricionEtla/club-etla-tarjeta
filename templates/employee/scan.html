@@ -137,7 +137,6 @@
         let scannerActive = false;
         let stream = null;
         let rafId = null;
-        let lastScanTime = 0;
         let processingRequest = false;
 
         function showMessage(text) {
@@ -191,12 +190,8 @@
                     inversionAttempts: 'dontInvert'
                 });
 
-                if (code && code.data) {
-                    const now = Date.now();
-                    if (now - lastScanTime > 2500) {
-                        lastScanTime = now;
-                        handleScan(code.data);
-                    }
+                if (code && code.data && !processingRequest) {
+                    handleScan(code.data);
                 }
             }
 
