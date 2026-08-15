@@ -642,39 +642,6 @@ def employee_logout():
     session.pop('employee_role', None)
     return redirect(url_for('login'))
 
-# ===== EMPLEADO - ESCÁNER QR =====
-@app.route('/employee/scan')
-def employee_scan():
-    if 'employee_id' not in session:
-        return redirect(url_for('employee_login'))
-    return render_template('employee/scan.html')
-
-@app.route('/api/employee/scan', methods=['POST'])
-def api_employee_scan():
-    if 'employee_id' not in session:
-        return jsonify({'error': 'No autorizado'}), 401
-    
-    data = request.json
-    qr_secret = data.get('qr_secret')
-    product_type = data.get('product_type', 'BREAKFAST')
-    
-    client = Client.query.filter_by(qr_secret=qr_secret).first()
-    if not client:
-        return jsonify({'error': 'Cliente no encontrado'}), 404
-    
-    # Registrar visita
-    result = client.add_visit(product_type, session['employee_id'])
-    check_achievements(client)
-    
-    return jsonify({
-        'success': True,
-        'client_name': client.name,
-        'visits': client.visits,
-        'points': client.points,
-        'level': client.get_level(),
-        'message': f'✅ Visita registrada para {client.name}'
-    })
-
 @app.route('/employee')
 def employee_dashboard():
     if 'employee_id' not in session:
