@@ -45,10 +45,39 @@ class Client(db.Model):
     registration_date = db.Column(db.DateTime, default=datetime.utcnow)
     qr_code = db.Column(db.String(500), nullable=True)
     qr_secret = db.Column(db.String(64), unique=True)
+    cycle_month = db.Column(db.String(7), nullable=True)
     
     visits_history = db.relationship('VisitHistory', backref='client', lazy=True)
     achievements = db.relationship('ClientAchievement', backref='client', lazy=True)
     
+    def check_monthly_reset(self):
+        current_month = date.today().strftime('%Y-%m')
+        if self.cycle_month != current_month:
+            self.cycle_month = current_month
+            self.visits = 0
+            self.points = 0
+            self.breakfast_count = 0
+            self.free_breakfast_available = False
+            self.scratch_available = False
+            self.scratch_used = False
+            self.scratch_reward = None
+            self.scratch_visits_used = 0
+            db.session.commit()
+
+    def get_tier_index(self):
+        if self.visits <= 0:
+            return 0
+        return min((self.visits - 1) // 10, 3)
+
+    def get_tier_name(self):
+        tiers = ['BRONCE', 'PLATA', 'ORO', 'DIAMANTE']
+        return tiers[self.get_tier_index()]
+
+    def get_cycle_progress(self):
+        if self.visits <= 0:
+            return 0
+        return ((self.visits - 1) % 10) + 1
+
     def get_level(self):
         from config import Config
         for level, data in Config.LEVELS.items():
@@ -105,6 +134,7 @@ class Client(db.Model):
     
     def add_visit(self, product_type='BREAKFAST', employee_id=None):
         from config import Config
+        self.check_monthly_reset()
         today = date.today()
         now = datetime.now()
         

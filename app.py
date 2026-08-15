@@ -158,6 +158,7 @@ def card():
     client = get_client_from_session()
     if not client:
         return redirect(url_for('login'))
+    client.check_monthly_reset()
     
     is_birthday = False
     if client.birthday:

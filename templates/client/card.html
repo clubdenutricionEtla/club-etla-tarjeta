@@ -112,6 +112,8 @@
         }
 
         .card-wrapper {
+            -webkit-tap-highlight-color: transparent;
+            outline: none;
             perspective: 1000px;
             width: 100%;
             height: auto;
@@ -463,6 +465,26 @@
             100% { transform: scale(1); opacity: 1; }
         }
         .visita-anim { animation: visitaRegistrada 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+
+        /* ===== NIVELES POR CICLO MENSUAL ===== */
+        .tier-plata .vaso.destapado {
+            background: linear-gradient(145deg, #c7d0d8, #98a5b0);
+            box-shadow: 0 4px 16px rgba(140,152,163,0.25), inset 0 -3px 8px rgba(0,0,0,0.05), inset 0 3px 8px rgba(255,255,255,0.25);
+        }
+        .tier-oro .vaso.destapado {
+            background: linear-gradient(145deg, #f5d060, #d4a017);
+            box-shadow: 0 4px 16px rgba(212,160,23,0.25), inset 0 -3px 8px rgba(0,0,0,0.05), inset 0 3px 8px rgba(255,255,255,0.25);
+        }
+        .tier-diamante .vaso.destapado {
+            background: linear-gradient(145deg, #9fd8ff, #4aa8e8);
+            box-shadow: 0 4px 16px rgba(74,168,232,0.25), inset 0 -3px 8px rgba(0,0,0,0.05), inset 0 3px 8px rgba(255,255,255,0.25);
+        }
+        .tier-plata .client-status { color: #7a8894; }
+        .tier-plata .client-status .dot { background: #8e9aa6; }
+        .tier-oro .client-status { color: #b8860b; }
+        .tier-oro .client-status .dot { background: #d4a017; }
+        .tier-diamante .client-status { color: #2f7fb8; }
+        .tier-diamante .client-status .dot { background: #4aa8e8; }
     </style>
 </head>
 <body>
@@ -483,7 +505,7 @@
 
                 <!-- FRENTE -->
                 <div class="card-front">
-                    <div class="premium-card">
+                    <div class="premium-card tier-{{ client.get_tier_name()|lower }}">
                         <div class="qr-wrapper">
                             <div class="qr-code">
                                 {% if client.qr_code %}
@@ -498,14 +520,15 @@
                             <div>
                                 <div class="client-name">{{ client.name }}</div>
                                 <div class="client-status">
-                                    <span class="dot"></span> MIEMBRO ACTIVO
+                                    <span class="dot"></span> MIEMBRO ACTIVO · {{ client.get_tier_name() }}
                                 </div>
                             </div>
                         </div>
                         <div class="vasos-section">
                             <div class="vasos-grid" id="vasosGrid">
+                                {% set cycle_progress = client.get_cycle_progress() %}
                                 {% for i in range(1, 11) %}
-                                    {% set is_completed = i <= client.visits %}
+                                    {% set is_completed = i <= cycle_progress %}
                                     <div class="vaso 
                                         {% if i == 10 %}
                                             {% if is_completed %}trofeo{% else %}trofeo-bloqueado{% endif %}
@@ -522,7 +545,7 @@
                                 {% endfor %}
                             </div>
                             <div class="progress-text">
-                                Visitas: <span class="count" id="visitsCount">{{ client.visits }}</span> / 10
+                                Visitas: <span class="count" id="visitsCount">{{ cycle_progress }}</span> / 10
                             </div>
                         </div>
                         <div class="info-grid">
