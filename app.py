@@ -339,12 +339,6 @@ def scan_qr():
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
 
-# ===== RUTAS EMPLEADO =====
-
-@app.route('/employee')
-def employee_dashboard():
-    return render_template('employee/dashboard.html')
-
 # ===== ADMIN =====
 
 @app.route('/admin')
