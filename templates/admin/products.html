@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Catálogo de Productos - Club Etla</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #f5efe8; min-height: 100vh; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .header h1 { color: #1a1a1a; font-size: 24px; }
+        .header a { color: #2d7a2d; text-decoration: none; font-weight: 600; }
+        .card { background: rgba(255,255,255,0.9); backdrop-filter: blur(12px); border-radius: 20px; padding: 24px; border: 1px solid rgba(255,255,255,0.5); box-shadow: 0 8px 32px rgba(0,0,0,0.04); margin-bottom: 20px; }
+        .card h2 { font-size: 18px; color: #1a1a1a; margin-bottom: 16px; }
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 12px; font-weight: 600; color: #3a3a3a; margin-bottom: 4px; }
+        .form-group input, .form-group textarea { width: 100%; padding: 10px 14px; border: 1px solid rgba(0,0,0,0.06); border-radius: 12px; font-size: 14px; background: #ffffff; font-family: inherit; }
+        .form-group textarea { resize: vertical; min-height: 60px; }
+        .form-group input:focus, .form-group textarea:focus { border-color: #2d7a2d; outline: none; box-shadow: 0 0 0 3px rgba(45,122,45,0.06); }
+        .btn { padding: 10px 24px; border: none; border-radius: 12px; font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.3s; }
+        .btn-primary { background: linear-gradient(135deg, #2d7a2d, #4a8c2a); color: #fff; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(45,122,45,0.15); }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .btn-danger { background: #e74c3c; color: #fff; }
+        .btn-secondary { background: rgba(0,0,0,0.05); color: #1a1a1a; }
+        .message { padding: 12px 16px; border-radius: 12px; margin-bottom: 16px; display: none; }
+        .message.success { display: block; background: rgba(45,122,45,0.06); border: 1px solid rgba(45,122,45,0.1); color: #2d7a2d; }
+        .message.error { display: block; background: rgba(231,76,60,0.06); border: 1px solid rgba(231,76,60,0.1); color: #e74c3c; }
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
+        .product-item { background: rgba(255,255,255,0.5); border-radius: 16px; overflow: hidden; border: 1px solid rgba(255,255,255,0.3); }
+        .product-item img { width: 100%; height: 110px; object-fit: cover; display: block; background: rgba(0,0,0,0.04); }
+        .product-item .no-image { width: 100%; height: 110px; display: flex; align-items: center; justify-content: center; font-size: 32px; opacity: 0.15; background: rgba(0,0,0,0.03); }
+        .product-item .info { padding: 10px; }
+        .product-item .name { font-size: 13px; font-weight: 700; color: #1a1a1a; }
+        .product-item .price { font-size: 13px; color: #2d7a2d; font-weight: 700; margin-top: 2px; }
+        .product-item .actions { display: flex; gap: 6px; margin-top: 8px; }
+        .product-item .actions button { flex: 1; padding: 6px; font-size: 11px; border-radius: 8px; border: none; cursor: pointer; }
+        .badge-inactive { opacity: 0.5; }
+        .empty-state { text-align: center; color: #8a8a8a; padding: 30px; grid-column: 1 / -1; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛍️ Catálogo de Productos</h1>
+            <a href="/admin">← Volver</a>
+        </div>
+
+        <div class="card">
+            <h2>➕ Agregar Producto</h2>
+            <div id="message" class="message"></div>
+            <form id="productForm" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label>Nombre del producto</label>
+                    <input type="text" id="name" placeholder="Ej: Waffle con fruta" required />
+                </div>
+                <div class="form-group">
+                    <label>Descripción (opcional)</label>
+                    <textarea id="description" placeholder="Breve descripción del producto"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Precio (opcional)</label>
+                    <input type="number" id="price" step="0.01" placeholder="Ej: 65.00" />
+                </div>
+                <div class="form-group">
+                    <label>Imagen</label>
+                    <input type="file" id="image" accept="image/*" />
+                </div>
+                <button type="submit" class="btn btn-primary" id="submitBtn">Agregar al Catálogo</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>📋 Productos en el Catálogo</h2>
+            <div class="products-grid" id="productsGrid">
+                <div class="empty-state">Cargando productos...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function loadProducts() {
+            try {
+                const res = await fetch('/api/admin/products');
+                const data = await res.json();
+                const grid = document.getElementById('productsGrid');
+                if (data.length === 0) {
+                    grid.innerHTML = '<div class="empty-state">Todavía no hay productos en el catálogo</div>';
+                    return;
+                }
+                grid.innerHTML = data.map(p => `
+                    <div class="product-item ${p.is_active ? '' : 'badge-inactive'}">
+                        ${p.image_url ? `<img src="${p.image_url}" alt="${p.name}">` : '<div class="no-image">🖼️</div>'}
+                        <div class="info">
+                            <div class="name">${p.name}</div>
+                            ${p.price ? `<div class="price">$${p.price.toFixed(2)}</div>` : ''}
+                            <div class="actions">
+                                <button class="btn-secondary" onclick="toggleProduct(${p.id})">${p.is_active ? 'Ocultar' : 'Mostrar'}</button>
+                                <button class="btn-danger" onclick="deleteProduct(${p.id})">Eliminar</button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        document.getElementById('productForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const message = document.getElementById('message');
+            const submitBtn = document.getElementById('submitBtn');
+            message.className = 'message';
+
+            const name = document.getElementById('name').value.trim();
+            const description = document.getElementById('description').value.trim();
+            const price = document.getElementById('price').value;
+            const imageFile = document.getElementById('image').files[0];
+
+            if (!name) {
+                message.textContent = '⚠️ El nombre es requerido';
+                message.className = 'message error';
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('name', name);
+            formData.append('description', description);
+            if (price) formData.append('price', price);
+            if (imageFile) formData.append('image', imageFile);
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Subiendo...';
+
+            try {
+                const res = await fetch('/api/admin/products', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+                if (data.success) {
+                    message.textContent = '✅ Producto agregado exitosamente';
+                    message.className = 'message success';
+                    document.getElementById('productForm').reset();
+                    loadProducts();
+                } else {
+                    message.textContent = '❌ ' + (data.error || 'Error al agregar');
+                    message.className = 'message error';
+                }
+            } catch (err) {
+                message.textContent = '❌ Error de conexión';
+                message.className = 'message error';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Agregar al Catálogo';
+            }
+        });
+
+        async function toggleProduct(id) {
+            try {
+                const res = await fetch('/api/admin/products/' + id + '/toggle', { method: 'POST' });
+                const data = await res.json();
+                if (data.success) loadProducts();
+            } catch (err) {
+                alert('Error de conexión');
+            }
+        }
+
+        async function deleteProduct(id) {
+            if (!confirm('¿Eliminar este producto del catálogo?')) return;
+            try {
+                const res = await fetch('/api/admin/products/' + id, { method: 'DELETE' });
+                const data = await res.json();
+                if (data.success) loadProducts();
+                else alert('Error al eliminar');
+            } catch (err) {
+                alert('Error de conexión');
+            }
+        }
+
+        loadProducts();
+    </script>
+</body>
+</html>
