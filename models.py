@@ -101,10 +101,11 @@ class Client(db.Model):
     
     def get_scratch_rewards(self):
         return {
-            'ALOE': {'name': 'Aloe Individual', 'icon': '🌿'},
-            'TEA': {'name': 'Té NRG Individual', 'icon': '🍵'},
-            'PANCAKE': {'name': 'Panquecito Individual', 'icon': '🥞'},
-            'COFFEE': {'name': 'Café Herbalife Individual', 'icon': '☕'}
+            'CUPCAKE': {'name': 'Cupcake Gratis', 'icon': '🧁', 'weight': 50},
+            'COFFEE': {'name': 'Café Herbalife Individual', 'icon': '☕', 'weight': 12.5},
+            'TEA': {'name': 'Té Individual', 'icon': '🍵', 'weight': 12.5},
+            'ALOE': {'name': 'Aloe Individual', 'icon': '🌿', 'weight': 12.5},
+            'PROTEIN': {'name': 'Porción de Proteína Extra', 'icon': '💪', 'weight': 12.5}
         }
     
     def has_welcome_scratch(self):
@@ -112,8 +113,7 @@ class Client(db.Model):
     
     def claim_welcome_scratch(self):
         if not self.welcome_scratch_used:
-            rewards = list(self.get_scratch_rewards().keys())
-            reward = random.choice(rewards)
+            reward = self.select_scratch_reward()
             self.welcome_scratch_used = True
             self.points += 5
             db.session.commit()
@@ -122,9 +122,7 @@ class Client(db.Model):
     
     def claim_scratch(self):
         if self.scratch_available and not self.scratch_used:
-            rewards = list(self.get_scratch_rewards().keys())
-            reward = random.choice(rewards)
-            self.scratch_reward = reward
+            reward = self.scratch_reward
             self.scratch_used = True
             self.scratch_available = False
             self.scratch_visits_used += 5
@@ -149,8 +147,11 @@ class Client(db.Model):
         if self.visits % 10 == 0:
             self.free_breakfast_available = True
         
-        if self.visits % 5 == 0 and not self.scratch_available and not self.scratch_used:
+        cycle_progress = self.get_cycle_progress()
+        if cycle_progress == 5 and not self.scratch_available:
+            self.select_scratch_reward()
             self.scratch_available = True
+            self.scratch_used = False
         
         if self.last_visit_date == today - timedelta(days=1):
             self.current_streak += 1
