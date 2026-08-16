@@ -394,11 +394,14 @@
     // REWARDS
     // ========================================
     const REWARDS = {
+        'CUPCAKE': { name: '🧁 Cupcake Gratis', icon: '🧁' },
+        'COFFEE': { name: '☕ Café Herbalife Individual', icon: '☕' },
+        'TEA': { name: '🍵 Té Individual', icon: '🍵' },
         'ALOE': { name: '🌿 Aloe Individual', icon: '🌿' },
-        'TEA': { name: '🍵 Té NRG Individual', icon: '🍵' },
-        'PANCAKE': { name: '🧁 Panquecito Individual', icon: '🧁' },
-        'COFFEE': { name: '☕ Café Herbalife Individual', icon: '☕' }
+        'PROTEIN': { name: '💪 Porción de Proteína Extra', icon: '💪' }
     };
+    const SERVER_REWARD = "{{ client.scratch_reward or '' }}";
+    const IS_WELCOME = {{ 'true' if is_welcome else 'false' }};
 
     // ========================================
     // CANVAS
@@ -412,7 +415,7 @@
     // ===== DIBUJAR PREMIO (FONDO) =====
     function drawPrize(){
         const keys = Object.keys(REWARDS);
-        const rewardKey = keys[Math.floor(Math.random() * keys.length)];
+        const rewardKey = (SERVER_REWARD && REWARDS[SERVER_REWARD]) ? SERVER_REWARD : keys[0];
         currentReward = rewardKey;
         const reward = REWARDS[rewardKey];
 
@@ -575,7 +578,7 @@
         
         document.getElementById('resultIcon').textContent = reward.icon;
         document.getElementById('resultTitle').textContent = '🎉 ¡Felicidades!';
-        document.getElementById('resultDesc').textContent = '¡Bienvenido al Club de Nutrición Etla!';
+        document.getElementById('resultDesc').textContent = IS_WELCOME ? '¡Bienvenido al Club de Nutrición Etla!' : '¡Gracias por tu visita número 5!';
         document.getElementById('resultPrize').textContent = reward.name;
         document.getElementById('resultModal').classList.add('show');
 
@@ -587,7 +590,7 @@
 
         if(!prizeClaimed){
             prizeClaimed = true;
-            fetch('/api/scratch/welcome/claim', {
+            fetch(IS_WELCOME ? '/api/scratch/welcome/claim' : '/api/scratch/claim', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ reward: currentReward })

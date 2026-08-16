@@ -189,6 +189,9 @@ def scratch():
     has_normal = client.scratch_available and not client.scratch_used
     if not has_welcome and not has_normal:
         return redirect(url_for('card'))
+    if has_welcome and not client.scratch_reward:
+        client.select_scratch_reward()
+        db.session.commit()
     return render_template('client/scratch.html',
                          client=client,
                          is_welcome=has_welcome,
