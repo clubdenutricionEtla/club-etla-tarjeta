@@ -572,6 +572,7 @@
         }
         .story-progress .segment .fill {
             height: 100%; width: 0%; background: #fff;
+            transition: width linear;
         }
         .story-progress .segment.completed .fill { width: 100%; }
         .story-slide {
@@ -857,16 +858,36 @@
         // HISTORIAS DE PRODUCTOS (CATÁLOGO)
         // ============================================================
         let storyIndex = 0;
+        let storyTimer = null;
         const storySlides = document.querySelectorAll('.story-slide');
         const storySegments = document.querySelectorAll('.story-progress .segment');
         const storyCount = storySlides.length;
+        const STORY_DURATION = 4000;
 
         function showStory(i) {
             storySlides.forEach((s, idx) => s.classList.toggle('active', idx === i));
             storySegments.forEach((seg, idx) => {
-                seg.classList.toggle('completed', idx <= i);
+                const fill = seg.querySelector('.fill');
+                fill.style.transition = 'none';
+                if (idx < i) {
+                    fill.style.width = '100%';
+                } else if (idx > i) {
+                    fill.style.width = '0%';
+                } else {
+                    fill.style.width = '0%';
+                }
             });
             storyIndex = i;
+
+            clearTimeout(storyTimer);
+            if (storyCount > 0) {
+                const currentFill = storySegments[i].querySelector('.fill');
+                requestAnimationFrame(() => {
+                    currentFill.style.transition = 'width ' + STORY_DURATION + 'ms linear';
+                    currentFill.style.width = '100%';
+                });
+                storyTimer = setTimeout(nextStory, STORY_DURATION);
+            }
         }
         function nextStory() {
             if (storyCount === 0) return;
