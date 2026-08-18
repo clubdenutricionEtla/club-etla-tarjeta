@@ -23,11 +23,16 @@ SUPABASE_URL = os.environ.get('SUPABASE_URL', 'https://ijxynllcahohcgfoqpzt.supa
 SUPABASE_SERVICE_KEY = os.environ.get('SUPABASE_SERVICE_KEY')
 
 def upload_product_image(file_storage):
-    if not file_storage or not SUPABASE_SERVICE_KEY:
+    if not file_storage:
+        print("⚠️ DEBUG upload: no llegó ningún archivo")
+        return None
+    if not SUPABASE_SERVICE_KEY:
+        print("⚠️ DEBUG upload: SUPABASE_SERVICE_KEY no está configurada")
         return None
     ext = file_storage.filename.rsplit('.', 1)[-1].lower() if '.' in file_storage.filename else 'jpg'
     filename = f"{secrets.token_hex(8)}.{ext}"
     file_bytes = file_storage.read()
+    print(f"🔍 DEBUG upload: subiendo {filename}, {len(file_bytes)} bytes")
     upload_url = f"{SUPABASE_URL}/storage/v1/object/product-images/{filename}"
     resp = http_requests.post(
         upload_url,
@@ -37,6 +42,7 @@ def upload_product_image(file_storage):
         },
         data=file_bytes
     )
+    print(f"🔍 DEBUG upload: respuesta {resp.status_code} - {resp.text[:300]}")
     if resp.status_code in (200, 201):
         return f"{SUPABASE_URL}/storage/v1/object/public/product-images/{filename}"
     return None
