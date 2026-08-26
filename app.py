@@ -223,7 +223,7 @@ def scratch():
     if not has_welcome and not has_normal:
         return redirect(url_for('card'))
     if has_welcome and not client.scratch_reward:
-        client.select_scratch_reward()
+        client.scratch_reward = 'CUPCAKE'
         db.session.commit()
     return render_template('client/scratch.html',
                          client=client,

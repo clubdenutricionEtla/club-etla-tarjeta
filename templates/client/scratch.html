@@ -559,7 +559,7 @@
         }
         const percent = (transparent / (W*H)) * 100;
 
-        if(percent > 15 && !isRevealed){
+        if(percent >= 15 && !isRevealed){
             isRevealed = true;
             revealPrize();
         }
@@ -578,7 +578,7 @@
         
         document.getElementById('resultIcon').textContent = reward.icon;
         document.getElementById('resultTitle').textContent = '🎉 ¡Felicidades!';
-        document.getElementById('resultDesc').textContent = IS_WELCOME ? '¡Bienvenido al Club de Nutrición Etla!' : '¡Gracias por tu visita número 5!';
+        document.getElementById('resultDesc').textContent = IS_WELCOME ? '¡Visita el Club de Nutrición Etla para reclamar tu cupcake! 🧁' : '¡Gracias por tu visita número 5!';
         document.getElementById('resultPrize').textContent = reward.name;
         document.getElementById('resultModal').classList.add('show');
 

@@ -113,7 +113,8 @@ class Client(db.Model):
     
     def claim_welcome_scratch(self):
         if not self.welcome_scratch_used:
-            reward = self.select_scratch_reward()
+            self.scratch_reward = 'CUPCAKE'
+            reward = 'CUPCAKE'
             self.welcome_scratch_used = True
             self.points += 5
             db.session.commit()
