@@ -102,7 +102,7 @@
                 </div>
 
                 <div class="input-group">
-                    <input type="tel" id="whatsapp" name="whatsapp" placeholder="WhatsApp: +5215512345678" value="{{ phone }}" required autocomplete="tel" />
+                    <input type="tel" id="whatsapp" name="whatsapp" placeholder="WhatsApp: +5215512345678" value="{{ phone if phone else '+52' }}" required autocomplete="tel" />
                     <span class="input-icon">📱</span>
                 </div>
 
