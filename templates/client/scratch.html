@@ -317,7 +317,7 @@
         }
     </style>
 </head>
-<body>
+<body data-client-name="{{ client.name }}" data-client-whatsapp="{{ client.whatsapp }}" data-client-id="{{ client.id }}" data-server-reward="{{ client.scratch_reward or '' }}" data-is-welcome="{{ 'true' if is_welcome else 'false' }}">
 
 <div class="bg">
     <div class="orb"></div>
@@ -379,9 +379,9 @@
     // ========================================
     // DATOS DEL CLIENTE
     // ========================================
-    const clientName = "{{ client.name }}";
-    const clientWhatsApp = "{{ client.whatsapp }}";
-    const clientId = "{{ client.id }}";
+    const clientName = document.body.dataset.clientName;
+    const clientWhatsApp = document.body.dataset.clientWhatsapp;
+    const clientId = document.body.dataset.clientId;
     const CLUB_WHATSAPP = "5219512470417";
 
     let isRevealed = false;
@@ -400,8 +400,8 @@
         'ALOE': { name: '🌿 Aloe Individual', icon: '🌿' },
         'PROTEIN': { name: '💪 Porción de Proteína Extra', icon: '💪' }
     };
-    const SERVER_REWARD = "{{ client.scratch_reward or '' }}";
-    const IS_WELCOME = {{ 'true' if is_welcome else 'false' }};
+    const SERVER_REWARD = document.body.dataset.serverReward;
+    const IS_WELCOME = document.body.dataset.isWelcome === 'true';
 
     // ========================================
     // CANVAS
