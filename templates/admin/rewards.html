@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Premios de Rascadita - Club Etla</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #f5efe8; min-height: 100vh; padding: 20px; }
+        .container { max-width: 700px; margin: 0 auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .header h1 { color: #1a1a1a; font-size: 24px; }
+        .header a { color: #2d7a2d; text-decoration: none; font-weight: 600; }
+        .card { background: rgba(255,255,255,0.9); border-radius: 20px; padding: 20px; border: 1px solid rgba(255,255,255,0.5); box-shadow: 0 8px 32px rgba(0,0,0,0.04); margin-bottom: 16px; }
+        .card h2 { font-size: 16px; margin-bottom: 14px; color: #1a1a1a; }
+        .reward-row { display: flex; align-items: center; gap: 10px; padding: 12px 0; border-bottom: 1px solid rgba(0,0,0,0.05); }
+        .reward-row:last-child { border-bottom: none; }
+        .reward-row input[type=text] { width: 100%; border: 1px solid rgba(0,0,0,0.08); border-radius: 8px; padding: 8px 10px; font-family: inherit; font-size: 14px; }
+        .reward-row .icon-input { width: 50px; text-align: center; }
+        .reward-row .weight-input { width: 70px; text-align: center; }
+        .reward-row .pct { font-size: 12px; color: #6a6a6a; width: 44px; text-align: right; }
+        .reward-row button { border: none; border-radius: 8px; padding: 8px 10px; cursor: pointer; font-size: 13px; font-weight: 600; }
+        .btn-save { background: rgba(45,122,45,0.1); color: #2d7a2d; }
+        .btn-del { background: rgba(231,76,60,0.1); color: #e74c3c; }
+        .btn-toggle.active { background: rgba(45,122,45,0.1); color: #2d7a2d; }
+        .btn-toggle.inactive { background: rgba(0,0,0,0.05); color: #999; }
+        .add-form { display: flex; gap: 8px; flex-wrap: wrap; }
+        .add-form input { border: 1px solid rgba(0,0,0,0.08); border-radius: 8px; padding: 10px; font-family: inherit; font-size: 14px; }
+        .add-form input[name=code] { width: 100px; }
+        .add-form input[name=name] { flex: 1; min-width: 140px; }
+        .add-form input[name=icon] { width: 50px; text-align: center; }
+        .add-form input[name=weight] { width: 70px; }
+        .btn-add { background: linear-gradient(135deg, #2d7a2d, #4a8c2a); color: #fff; border: none; border-radius: 8px; padding: 10px 16px; font-weight: 600; cursor: pointer; }
+        .msg { padding: 10px 14px; border-radius: 10px; margin-bottom: 14px; display: none; font-size: 14px; }
+        .msg.ok { display: block; background: rgba(45,122,45,0.08); color: #2d7a2d; }
+        .msg.err { display: block; background: rgba(231,76,60,0.08); color: #e74c3c; }
+        .total { font-size: 13px; color: #6a6a6a; margin-top: 8px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎰 Premios de Rascadita</h1>
+            <a href="/admin">← Panel admin</a>
+        </div>
+        <div id="msg" class="msg"></div>
+        <div class="card">
+            <h2>Premios actuales</h2>
+            <div id="rewardsList"></div>
+            <div class="total" id="totalWeight"></div>
+        </div>
+        <div class="card">
+            <h2>Agregar premio nuevo</h2>
+            <div class="add-form">
+                <input type="text" name="code" placeholder="CODIGO" maxlength="20">
+                <input type="text" name="icon" placeholder="🎁" maxlength="4">
+                <input type="text" name="name" placeholder="Nombre del premio">
+                <input type="number" name="weight" placeholder="Peso" step="0.1" min="0">
+                <button class="btn-add" id="addBtn">+ Agregar</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        const listEl = document.getElementById('rewardsList');
+        const msgEl = document.getElementById('msg');
+        const totalEl = document.getElementById('totalWeight');
+
+        function showMsg(text, ok) {
+            msgEl.textContent = text;
+            msgEl.className = 'msg ' + (ok ? 'ok' : 'err');
+            setTimeout(() => { msgEl.className = 'msg'; }, 3000);
+        }
+
+        async function loadRewards() {
+            const res = await fetch('/api/admin/rewards');
+            const rewards = await res.json();
+            listEl.innerHTML = '';
+            const totalActive = rewards.filter(r => r.active).reduce((s, r) => s + r.weight, 0);
+            rewards.forEach(r => {
+                const pct = r.active && totalActive > 0 ? ((r.weight / totalActive) * 100).toFixed(1) : '0.0';
+                const row = document.createElement('div');
+                row.className = 'reward-row';
+                row.innerHTML = `
+                    <input type="text" class="icon-input" value="${r.icon}" data-field="icon">
+                    <input type="text" value="${r.name}" data-field="name" style="flex:1">
+                    <input type="number" class="weight-input" value="${r.weight}" data-field="weight" step="0.1" min="0">
+                    <span class="pct">${pct}%</span>
+                    <button class="btn-toggle ${r.active ? 'active' : 'inactive'}" data-action="toggle">${r.active ? 'Activo' : 'Inactivo'}</button>
+                    <button class="btn-save" data-action="save">Guardar</button>
+                    <button class="btn-del" data-action="del">Borrar</button>
+                `;
+                row.querySelector('[data-action=save]').addEventListener('click', () => saveReward(r.id, row));
+                row.querySelector('[data-action=toggle]').addEventListener('click', () => toggleReward(r.id, !r.active));
+                row.querySelector('[data-action=del]').addEventListener('click', () => delReward(r.id, r.name));
+                listEl.appendChild(row);
+            });
+            totalEl.textContent = `Peso total activo: ${totalActive} (los % se recalculan automático, no hace falta que sumen 100)`;
+        }
+
+        async function saveReward(id, row) {
+            const name = row.querySelector('[data-field=name]').value.trim();
+            const icon = row.querySelector('[data-field=icon]').value.trim();
+            const weight = parseFloat(row.querySelector('[data-field=weight]').value);
+            const res = await fetch(`/api/admin/rewards/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, icon, weight })
+            });
+            const data = await res.json();
+            if (res.ok) { showMsg('✅ Guardado', true); loadRewards(); }
+            else { showMsg(data.error || 'Error al guardar', false); }
+        }
+
+        async function toggleReward(id, newActive) {
+            const res = await fetch(`/api/admin/rewards/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ active: newActive })
+            });
+            if (res.ok) loadRewards();
+        }
+
+        async function delReward(id, name) {
+            if (!confirm(`¿Borrar el premio "${name}"? Esto no afecta premios ya ganados por clientes.`)) return;
+            const res = await fetch(`/api/admin/rewards/${id}`, { method: 'DELETE' });
+            const data = await res.json();
+            if (res.ok) { showMsg('✅ Premio borrado', true); loadRewards(); }
+            else { showMsg(data.error || 'Error al borrar', false); }
+        }
+
+        document.getElementById('addBtn').addEventListener('click', async () => {
+            const form = document.querySelector('.add-form');
+            const code = form.querySelector('[name=code]').value.trim();
+            const icon = form.querySelector('[name=icon]').value.trim();
+            const name = form.querySelector('[name=name]').value.trim();
+            const weight = parseFloat(form.querySelector('[name=weight]').value);
+            const res = await fetch('/api/admin/rewards', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ code, icon, name, weight })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                showMsg('✅ Premio agregado', true);
+                form.querySelectorAll('input').forEach(i => i.value = '');
+                loadRewards();
+            } else {
+                showMsg(data.error || 'Error al agregar', false);
+            }
+        });
+
+        loadRewards();
+    </script>
+</body>
+</html>

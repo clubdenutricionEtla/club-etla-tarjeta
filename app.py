@@ -10,7 +10,7 @@ from io import BytesIO
 import qrcode
 from config import Config
 from models import db, Client, VisitHistory, Employee, Achievement, ClientAchievement, Promotion, Referral, check_achievements, init_achievements
-from models import Product
+from models import Product, ScratchReward
 import requests as http_requests
 
 app = Flask(__name__)
@@ -515,6 +515,82 @@ def api_delete_product(product_id):
     return jsonify({'success': True})
 
 # ===== PROMOCIONES =====
+
+@app.route('/admin/rewards')
+def admin_rewards():
+    if 'employee_id' not in session:
+        return redirect(url_for('login'))
+    employee = Employee.query.get(session['employee_id'])
+    if not employee or employee.role != 'admin':
+        return redirect(url_for('login'))
+    return render_template('admin/rewards.html')
+
+@app.route('/api/admin/rewards', methods=['GET'])
+def api_get_rewards():
+    if 'employee_id' not in session:
+        return jsonify({'error': 'No autorizado'}), 401
+    admin_emp = Employee.query.get(session['employee_id'])
+    if not admin_emp or admin_emp.role != 'admin':
+        return jsonify({'error': 'No autorizado'}), 401
+    rewards = ScratchReward.query.order_by(ScratchReward.id).all()
+    return jsonify([{'id': r.id, 'code': r.code, 'name': r.name, 'icon': r.icon, 'weight': r.weight, 'active': r.active} for r in rewards])
+
+@app.route('/api/admin/rewards', methods=['POST'])
+def api_create_reward():
+    if 'employee_id' not in session:
+        return jsonify({'error': 'No autorizado'}), 401
+    admin_emp = Employee.query.get(session['employee_id'])
+    if not admin_emp or admin_emp.role != 'admin':
+        return jsonify({'error': 'No autorizado'}), 401
+    data = request.json
+    code = (data.get('code') or '').strip().upper()
+    name = (data.get('name') or '').strip()
+    icon = (data.get('icon') or '').strip()
+    weight = data.get('weight')
+    if not code or not name or not icon or weight is None:
+        return jsonify({'error': 'Todos los campos son requeridos'}), 400
+    if ScratchReward.query.filter_by(code=code).first():
+        return jsonify({'error': 'Ya existe un premio con ese código'}), 400
+    reward = ScratchReward(code=code, name=name, icon=icon, weight=float(weight), active=True)
+    db.session.add(reward)
+    db.session.commit()
+    return jsonify({'success': True, 'id': reward.id})
+
+@app.route('/api/admin/rewards/<int:reward_id>', methods=['PUT'])
+def api_update_reward(reward_id):
+    if 'employee_id' not in session:
+        return jsonify({'error': 'No autorizado'}), 401
+    admin_emp = Employee.query.get(session['employee_id'])
+    if not admin_emp or admin_emp.role != 'admin':
+        return jsonify({'error': 'No autorizado'}), 401
+    reward = ScratchReward.query.get(reward_id)
+    if not reward:
+        return jsonify({'error': 'Premio no encontrado'}), 404
+    data = request.json
+    if 'name' in data:
+        reward.name = data['name'].strip()
+    if 'icon' in data:
+        reward.icon = data['icon'].strip()
+    if 'weight' in data:
+        reward.weight = float(data['weight'])
+    if 'active' in data:
+        reward.active = bool(data['active'])
+    db.session.commit()
+    return jsonify({'success': True})
+
+@app.route('/api/admin/rewards/<int:reward_id>', methods=['DELETE'])
+def api_delete_reward(reward_id):
+    if 'employee_id' not in session:
+        return jsonify({'error': 'No autorizado'}), 401
+    admin_emp = Employee.query.get(session['employee_id'])
+    if not admin_emp or admin_emp.role != 'admin':
+        return jsonify({'error': 'No autorizado'}), 401
+    reward = ScratchReward.query.get(reward_id)
+    if not reward:
+        return jsonify({'error': 'Premio no encontrado'}), 404
+    db.session.delete(reward)
+    db.session.commit()
+    return jsonify({'success': True})
 
 @app.route('/admin/promotions')
 def admin_promotions():
