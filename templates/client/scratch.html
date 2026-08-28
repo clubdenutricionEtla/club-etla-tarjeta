@@ -317,7 +317,7 @@
         }
     </style>
 </head>
-<body data-client-name="{{ client.name }}" data-client-whatsapp="{{ client.whatsapp }}" data-client-id="{{ client.id }}" data-server-reward="{{ client.scratch_reward or '' }}" data-is-welcome="{{ 'true' if is_welcome else 'false' }}">
+<body data-client-name="{{ client.name }}" data-client-whatsapp="{{ client.whatsapp }}" data-client-id="{{ client.id }}" data-server-reward="{{ client.scratch_reward or '' }}" data-is-welcome="{{ 'true' if is_welcome else 'false' }}" data-is-birthday="{{ 'true' if is_birthday else 'false' }}">
 
 <div class="bg">
     <div class="orb"></div>
@@ -402,6 +402,7 @@
     };
     const SERVER_REWARD = document.body.dataset.serverReward;
     const IS_WELCOME = document.body.dataset.isWelcome === 'true';
+    const IS_BIRTHDAY = document.body.dataset.isBirthday === 'true';
 
     // ========================================
     // CANVAS
@@ -590,7 +591,7 @@
 
         if(!prizeClaimed){
             prizeClaimed = true;
-            fetch(IS_WELCOME ? '/api/scratch/welcome/claim' : '/api/scratch/claim', {
+            fetch(IS_WELCOME ? '/api/scratch/welcome/claim' : (IS_BIRTHDAY ? '/api/scratch/birthday/claim' : '/api/scratch/claim'), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ reward: currentReward })

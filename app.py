@@ -219,15 +219,20 @@ def scratch():
     if not client:
         return redirect(url_for('login'))
     has_welcome = client.has_welcome_scratch() and client.visits > 0
+    has_birthday = client.has_birthday_scratch()
     has_normal = client.scratch_available and not client.scratch_used
-    if not has_welcome and not has_normal:
+    if not has_welcome and not has_birthday and not has_normal:
         return redirect(url_for('card'))
     if has_welcome and not client.scratch_reward:
         client.scratch_reward = 'CUPCAKE'
         db.session.commit()
+    elif has_birthday and not has_welcome and not client.scratch_reward:
+        client.scratch_reward = client.select_scratch_reward()
+        db.session.commit()
     return render_template('client/scratch.html',
                          client=client,
                          is_welcome=has_welcome,
+                         is_birthday=has_birthday and not has_welcome,
                          has_normal=has_normal,
                          level_data=client.get_level_data())
 
@@ -333,6 +338,23 @@ def scratch_skip():
         return jsonify({'error': 'No hay rascadita disponible'}), 400
     client.skip_scratch()
     return jsonify({'success': True, 'message': '✅ Seguirás acumulando visitas'})
+
+@app.route('/api/scratch/birthday/claim', methods=['POST'])
+def birthday_scratch_claim():
+    client = get_client_from_session()
+    if not client:
+        return jsonify({'error': 'No autorizado'}), 401
+    reward = client.claim_birthday_scratch()
+    if reward:
+        rewards = client.get_scratch_rewards()
+        return jsonify({
+            'success': True,
+            'reward': reward,
+            'reward_name': rewards[reward]['name'],
+            'reward_icon': rewards[reward]['icon'],
+            'message': f'🎂 ¡Feliz cumpleaños! Ganaste {rewards[reward]["icon"]} {rewards[reward]["name"]}'
+        })
+    return jsonify({'error': 'No hay rascadita de cumpleaños disponible'}), 400
 
 # ===== API EMPLEADO =====
 

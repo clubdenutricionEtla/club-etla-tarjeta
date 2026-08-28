@@ -14,6 +14,7 @@ class Client(db.Model):
     name = db.Column(db.String(100), nullable=False)
     whatsapp = db.Column(db.String(20), unique=True, nullable=False)
     birthday = db.Column(db.Date, nullable=True)
+    birthday_scratch_year = db.Column(db.Integer, nullable=True)
     avatar = db.Column(db.String(200), nullable=True)
     
     visits = db.Column(db.Integer, default=0)
@@ -150,6 +151,24 @@ class Client(db.Model):
             reward = self.scratch_reward
             self.scratch_redeemed = True
             self.scratch_redeemed_at = datetime.utcnow()
+            db.session.commit()
+            return reward
+        return None
+
+    def has_birthday_scratch(self):
+        if not self.birthday:
+            return False
+        today = date.today()
+        if self.birthday.month != today.month or self.birthday.day != today.day:
+            return False
+        return self.birthday_scratch_year != today.year
+
+    def claim_birthday_scratch(self):
+        if self.has_birthday_scratch():
+            reward = self.select_scratch_reward()
+            self.scratch_used = True
+            self.scratch_redeemed = False
+            self.birthday_scratch_year = date.today().year
             db.session.commit()
             return reward
         return None
