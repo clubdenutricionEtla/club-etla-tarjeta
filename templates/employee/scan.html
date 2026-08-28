@@ -90,6 +90,11 @@
         .message { padding: 12px; border-radius: 12px; margin-bottom: 12px; display: none; background: rgba(231,76,60,0.06); border: 1px solid rgba(231,76,60,0.1); color: #e74c3c; }
         .message.visible { display: block; }
         .back-link { display: block; text-align: center; margin-top: 12px; color: #2d7a2d; text-decoration: none; font-weight: 600; font-size: 14px; }
+        .reward-box { margin-top: 12px; padding: 16px; border-radius: 14px; background: rgba(255,193,7,0.08); border: 1px solid rgba(255,193,7,0.25); display: none; }
+        .reward-box.visible { display: block; }
+        .reward-box .label { font-size: 13px; color: #8a6d00; font-weight: 700; }
+        .reward-box .prize { font-size: 18px; font-weight: 800; color: #1a1a1a; margin: 4px 0 12px; }
+        .btn-redeem { background: linear-gradient(135deg, #e0a800, #ffc107); color: #1a1a1a; }
         @keyframes fadeUp {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -119,6 +124,11 @@
                 <div class="status">✅ Visita registrada</div>
                 <div class="name" id="clientName">-</div>
                 <div class="visits">Visita <strong id="visitNumber">0</strong> de 10</div>
+            </div>
+            <div class="reward-box" id="rewardBox">
+                <div class="label">🎁 Premio pendiente de canje</div>
+                <div class="prize" id="rewardName">-</div>
+                <button class="btn btn-redeem" id="redeemBtn">✅  Marcar como canjeado</button>
             </div>
             <a href="/employee" class="back-link">← Volver al panel</a>
         </div>
@@ -214,6 +224,7 @@
                     visitNumberEl.textContent = data.visits;
                     result.classList.add('visible');
                     stopCamera();
+                    checkReward(qrSecret);
                 } else {
                     showMessage(data.error || 'No se pudo registrar la visita');
                     cooldownUntil = Date.now() + 2000;
@@ -227,6 +238,55 @@
                 scanBtn.disabled = false;
             }
         }
+
+        const rewardBox = document.getElementById('rewardBox');
+        const rewardNameEl = document.getElementById('rewardName');
+        const redeemBtn = document.getElementById('redeemBtn');
+        let currentQrSecret = null;
+
+        async function checkReward(qrSecret) {
+            currentQrSecret = qrSecret;
+            try {
+                const response = await fetch('/api/employee/check-reward', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ qr_secret: qrSecret })
+                });
+                const data = await response.json();
+                if (response.ok && data.pending_reward) {
+                    rewardNameEl.textContent = data.reward_name;
+                    rewardBox.classList.add('visible');
+                } else {
+                    rewardBox.classList.remove('visible');
+                }
+            } catch (err) {
+                console.error('Check reward error:', err);
+            }
+        }
+
+        redeemBtn.addEventListener('click', async function() {
+            if (!currentQrSecret) return;
+            redeemBtn.disabled = true;
+            try {
+                const response = await fetch('/api/employee/redeem-scratch', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ qr_secret: currentQrSecret })
+                });
+                const data = await response.json();
+                if (response.ok && data.success) {
+                    showMessage(data.message);
+                    rewardBox.classList.remove('visible');
+                } else {
+                    showMessage(data.error || 'No se pudo canjear el premio');
+                }
+            } catch (err) {
+                showMessage('⚠️ Error de conexión al canjear');
+                console.error('Redeem error:', err);
+            } finally {
+                redeemBtn.disabled = false;
+            }
+        });
 
         scanBtn.addEventListener('click', function() {
             if (scannerActive) {

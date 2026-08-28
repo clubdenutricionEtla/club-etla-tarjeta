@@ -656,6 +656,43 @@ def api_employee_scan():
         'message': f'✅ Visita registrada para {client.name}'
     })
 
+@app.route('/api/employee/check-reward', methods=['POST'])
+def api_employee_check_reward():
+    if 'employee_id' not in session:
+        return jsonify({'error': 'No autorizado'}), 401
+    data = request.json
+    qr_secret = data.get('qr_secret')
+    client = Client.query.filter_by(qr_secret=qr_secret).first()
+    if not client:
+        return jsonify({'error': 'Cliente no encontrado'}), 404
+    pending = client.scratch_used and client.scratch_reward and not client.scratch_redeemed
+    reward_name = None
+    if pending:
+        rewards = client.get_scratch_rewards()
+        reward_name = rewards.get(client.scratch_reward, {}).get('name', client.scratch_reward)
+    return jsonify({
+        'client_name': client.name,
+        'pending_reward': pending,
+        'reward_code': client.scratch_reward if pending else None,
+        'reward_name': reward_name
+    })
+
+@app.route('/api/employee/redeem-scratch', methods=['POST'])
+def api_employee_redeem_scratch():
+    if 'employee_id' not in session:
+        return jsonify({'error': 'No autorizado'}), 401
+    data = request.json
+    qr_secret = data.get('qr_secret')
+    client = Client.query.filter_by(qr_secret=qr_secret).first()
+    if not client:
+        return jsonify({'error': 'Cliente no encontrado'}), 404
+    reward = client.redeem_scratch()
+    if reward:
+        rewards = client.get_scratch_rewards()
+        reward_name = rewards.get(reward, {}).get('name', reward)
+        return jsonify({'success': True, 'reward_name': reward_name, 'message': f'✅  Premio canjeado: {reward_name}'})
+    return jsonify({'error': 'No hay premio pendiente de canje'}), 400
+
 # ===== ADMIN - GESTIÓN DE EMPLEADOS =====
 @app.route('/admin/employees')
 def admin_employees():

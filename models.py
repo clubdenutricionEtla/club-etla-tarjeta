@@ -39,6 +39,8 @@ class Client(db.Model):
     scratch_visits_used = db.Column(db.Integer, default=0)
     
     welcome_scratch_used = db.Column(db.Boolean, default=False)
+    scratch_redeemed = db.Column(db.Boolean, default=True)
+    scratch_redeemed_at = db.Column(db.DateTime, nullable=True)
     
     status = db.Column(db.String(20), default='active')
     is_vip = db.Column(db.Boolean, default=False)
@@ -62,6 +64,8 @@ class Client(db.Model):
             self.scratch_used = False
             self.scratch_reward = None
             self.scratch_visits_used = 0
+            self.scratch_redeemed = True
+            self.scratch_redeemed_at = None
             db.session.commit()
 
     def get_tier_index(self):
@@ -115,6 +119,7 @@ class Client(db.Model):
         if not self.welcome_scratch_used:
             self.scratch_reward = 'CUPCAKE'
             reward = 'CUPCAKE'
+            self.scratch_redeemed = False
             self.welcome_scratch_used = True
             self.points += 5
             db.session.commit()
@@ -126,11 +131,21 @@ class Client(db.Model):
             reward = self.scratch_reward
             self.scratch_used = True
             self.scratch_available = False
+            self.scratch_redeemed = False
             self.scratch_visits_used += 5
             db.session.commit()
             return reward
         return None
     
+    def redeem_scratch(self):
+        if self.scratch_used and self.scratch_reward and not self.scratch_redeemed:
+            reward = self.scratch_reward
+            self.scratch_redeemed = True
+            self.scratch_redeemed_at = datetime.utcnow()
+            db.session.commit()
+            return reward
+        return None
+
     def add_visit(self, product_type='BREAKFAST', employee_id=None):
         from config import Config
         self.check_monthly_reset()
