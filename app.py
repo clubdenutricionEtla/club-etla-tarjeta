@@ -218,7 +218,7 @@ def scratch():
     client = get_client_from_session()
     if not client:
         return redirect(url_for('login'))
-    has_welcome = client.has_welcome_scratch()
+    has_welcome = client.has_welcome_scratch() and client.visits > 0
     has_normal = client.scratch_available and not client.scratch_used
     if not has_welcome and not has_normal:
         return redirect(url_for('card'))
