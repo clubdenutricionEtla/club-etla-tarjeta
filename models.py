@@ -112,6 +112,14 @@ class Client(db.Model):
             'PROTEIN': {'name': 'Porción de Proteína Extra', 'icon': '💪', 'weight': 12.5}
         }
     
+    def select_scratch_reward(self):
+        rewards = self.get_scratch_rewards()
+        codes = list(rewards.keys())
+        weights = [rewards[c]['weight'] for c in codes]
+        chosen = random.choices(codes, weights=weights, k=1)[0]
+        self.scratch_reward = chosen
+        return chosen
+    
     def has_welcome_scratch(self):
         return not self.welcome_scratch_used
     
