@@ -614,9 +614,13 @@
                 <!-- FRENTE -->
                 <div class="card-front">
                     <div class="premium-card tier-{{ client.get_tier_name()|lower }}">
-                        {% if client.has_welcome_scratch() or (client.scratch_available and not client.scratch_used) %}
+                        {% if client.has_welcome_scratch() and client.visits == 0 %}
+                        <div style="display:block; text-align:center; background:linear-gradient(135deg,#d4a017,#f5d060); color:#3a2500; font-weight:800; font-size:13px; padding:10px 14px; border-radius:14px; margin-bottom:12px; position:relative; z-index:2;">
+                            🎁 ¡Visítanos para desbloquear tu Rasca y Gana Club Etla!
+                        </div>
+                        {% elif (client.has_welcome_scratch() and client.visits > 0) or (client.scratch_available and not client.scratch_used) %}
                         <a href="/scratch" style="display:block; text-align:center; background:linear-gradient(135deg,#d4a017,#f5d060); color:#3a2500; font-weight:800; font-size:13px; padding:10px 14px; border-radius:14px; text-decoration:none; margin-bottom:12px; position:relative; z-index:2;">
-                            🎁 ¡Tienes una rascadita disponible! Tócala aquí
+                            🎁 ¡Tu Rasca y Gana Club Etla está listo! Tócalo aquí
                         </a>
                         {% endif %}
                         <div class="qr-wrapper">
