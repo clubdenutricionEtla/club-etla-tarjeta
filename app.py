@@ -48,10 +48,10 @@ def upload_product_image(file_storage):
     return None
 
 def clean_phone(phone):
-    phone = re.sub(r'[^\d+]', '', phone)
-    if not phone.startswith('+'):
-        phone = '+' + phone
-    return phone
+    digits = re.sub(r'\D', '', phone)
+    if len(digits) == 10:
+        digits = '52' + digits
+    return '+' + digits
 
 def generate_qr_secret():
     return secrets.token_hex(16)
