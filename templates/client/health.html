@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Mi Salud - Club Etla</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(ellipse 100% 60% at 50% 0%, rgba(45,122,45,0.05) 0%, transparent 60%),
+                        linear-gradient(180deg, #fbfaf7 0%, #f5efe8 100%);
+            min-height: 100vh;
+            padding: 20px 16px 100px;
+        }
+        .container { max-width: 480px; margin: 0 auto; }
+        .header { text-align: center; margin-bottom: 20px; padding-top: 8px; }
+        .header .badge { display: inline-block; background: linear-gradient(135deg, #1e4d2b, #2d7a2d); color: #fff; font-size: 11px; font-weight: 700; letter-spacing: 0.5px; padding: 5px 14px; border-radius: 20px; margin-bottom: 10px; }
+        .header h1 { font-size: 22px; color: #1a1a1a; font-weight: 800; }
+        .header p { font-size: 13px; color: #6a6a6a; margin-top: 4px; }
+        .back-link { display: inline-block; color: #2d7a2d; text-decoration: none; font-weight: 600; font-size: 13px; margin-bottom: 14px; }
+        .empty-state { background: #fff; border-radius: 20px; padding: 40px 24px; text-align: center; box-shadow: 0 8px 30px rgba(0,0,0,0.04); }
+        .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
+        .empty-state h2 { font-size: 17px; color: #1a1a1a; margin-bottom: 6px; }
+        .empty-state p { font-size: 13px; color: #6a6a6a; line-height: 1.5; }
+        .metric-card { background: #fff; border-radius: 20px; padding: 18px; margin-bottom: 14px; box-shadow: 0 8px 24px rgba(0,0,0,0.04); border: 1px solid rgba(0,0,0,0.03); }
+        .metric-top { display: flex; align-items: center; gap: 12px; }
+        .metric-icon { font-size: 26px; width: 40px; text-align: center; }
+        .metric-info { flex: 1; }
+        .metric-label { font-size: 13px; color: #6a6a6a; font-weight: 600; }
+        .metric-value { font-size: 24px; font-weight: 800; color: #1a1a1a; }
+        .metric-value .unit { font-size: 14px; font-weight: 600; color: #6a6a6a; }
+        .status-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+        .status-dot.normal { background: #2d7a2d; }
+        .status-dot.low { background: #4a90d9; }
+        .status-dot.high { background: #f0ad4e; }
+        .status-dot.very_high { background: #e74c3c; }
+        .status-dot.attention { background: #f0ad4e; }
+        .status-dot.info { background: #cfcfcf; }
+        .status-label { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 10px; display: inline-block; margin-top: 4px; }
+        .status-label.normal { background: rgba(45,122,45,0.1); color: #2d7a2d; }
+        .status-label.low { background: rgba(74,144,217,0.1); color: #4a90d9; }
+        .status-label.high { background: rgba(240,173,78,0.12); color: #b8790a; }
+        .status-label.very_high { background: rgba(231,76,60,0.1); color: #e74c3c; }
+        .status-label.attention { background: rgba(240,173,78,0.12); color: #b8790a; }
+        .status-label.info { background: rgba(0,0,0,0.04); color: #999; }
+        .explain-toggle { font-size: 12px; color: #2d7a2d; font-weight: 600; cursor: pointer; margin-top: 10px; display: inline-block; }
+        .explain-text { font-size: 12px; color: #6a6a6a; line-height: 1.5; margin-top: 8px; display: none; padding-top: 8px; border-top: 1px solid rgba(0,0,0,0.05); }
+        .explain-text.visible { display: block; }
+        .chart-wrap { margin-top: 14px; height: 100px; }
+        .no-history { font-size: 12px; color: #b8b8b8; text-align: center; padding: 10px 0; }
+        .goal-line { font-size: 11px; color: #6a6a6a; margin-top: 6px; }
+        .goal-line strong { color: #2d7a2d; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/card" class="back-link">← Volver a mi tarjeta</a>
+        <div class="header">
+            <span class="badge">🩺 EVALUACIÓN Y SEGUIMIENTO</span>
+            <h1>Mi Salud, {{ client.name.split(' ')[0] }}</h1>
+            <p>{% if age %}{{ age }} años · {% endif %}Datos capturados en tus visitas al club</p>
+        </div>
+
+        {% if not has_data %}
+        <div class="empty-state">
+            <div class="icon">📋</div>
+            <h2>Aún no tienes evaluaciones</h2>
+            <p>Pregunta en el mostrador del Club para hacerte tu primera evaluación corporal y empezar a ver tu progreso aquí.</p>
+        </div>
+        {% else %}
+        {% for m in metrics %}
+        <div class="metric-card">
+            <div class="metric-top">
+                <span class="metric-icon">{{ m.icon }}</span>
+                <div class="metric-info">
+                    <div class="metric-label">{{ m.label }}</div>
+                    <div class="metric-value">
+                        {% if m.value is not none %}{{ m.value }}<span class="unit">{{ m.unit }}</span>{% else %}<span class="unit">Sin dato</span>{% endif %}
+                    </div>
+                </div>
+                <span class="status-dot {{ m.status }}"></span>
+            </div>
+            <span class="status-label {{ m.status }}">
+                {% if m.status == 'normal' %}✅ Normal
+                {% elif m.status == 'low' %}ℹ️ Bajo
+                {% elif m.status == 'high' %}⚠️ Elevado
+                {% elif m.status == 'very_high' %}🔴 Muy elevado
+                {% elif m.status == 'attention' %}⚠️ Fuera de rango
+                {% else %}Informativo{% endif %}
+            </span>
+            {% if m.goal %}
+            <div class="goal-line">🎯 Tu meta: <strong>{{ m.goal }}{{ m.unit }}</strong></div>
+            {% endif %}
+            {% if m.history|length > 1 %}
+            <div class="chart-wrap"><canvas id="chart-{{ m.code }}"></canvas></div>
+            {% else %}
+            <div class="no-history">Necesitas al menos 2 evaluaciones para ver tu progreso en gráfica</div>
+            {% endif %}
+            <span class="explain-toggle" onclick="this.nextElementSibling.classList.toggle('visible')">¿Qué es esto? ▾</span>
+            <div class="explain-text">{{ m.explain }}</div>
+        </div>
+        {% endfor %}
+        {% endif %}
+    </div>
+
+    <script>
+        const metricsData = {{ metrics|tojson }};
+        metricsData.forEach(m => {
+            if (m.history.length > 1) {
+                const ctx = document.getElementById('chart-' + m.code);
+                if (!ctx) return;
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: m.history.map(h => h.date),
+                        datasets: [{
+                            data: m.history.map(h => h.value),
+                            borderColor: '#2d7a2d',
+                            backgroundColor: 'rgba(45,122,45,0.08)',
+                            fill: true,
+                            tension: 0.35,
+                            pointRadius: 3,
+                            pointBackgroundColor: '#2d7a2d'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: { grid: { display: false }, ticks: { font: { size: 10 } } },
+                            y: { grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { font: { size: 10 } } }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

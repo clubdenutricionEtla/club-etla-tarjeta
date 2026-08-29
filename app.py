@@ -236,6 +236,89 @@ def scratch():
                          has_normal=has_normal,
                          level_data=client.get_level_data())
 
+@app.route('/health')
+def health():
+    client = get_client_from_session()
+    if not client:
+        return redirect(url_for('login'))
+
+    evals = Evaluation.query.filter_by(client_id=client.id).order_by(Evaluation.eval_date).all()
+    latest = evals[-1] if evals else None
+    age = None
+    if client.birthday:
+        today = date.today()
+        age = today.year - client.birthday.year - ((today.month, today.day) < (client.birthday.month, client.birthday.day))
+
+    def assess(code, value):
+        if value is None:
+            return 'info'
+        g = client.gender
+        if code == 'imc':
+            if value < 18.5: return 'low'
+            if value < 25: return 'normal'
+            if value < 30: return 'high'
+            return 'very_high'
+        if code == 'body_fat_pct':
+            if g == 'F':
+                if value < 20: return 'low'
+                if value < 30: return 'normal'
+                if value < 35: return 'high'
+                return 'very_high'
+            else:
+                if value < 10: return 'low'
+                if value < 20: return 'normal'
+                if value < 25: return 'high'
+                return 'very_high'
+        if code == 'muscle_pct':
+            if g == 'F':
+                return 'normal' if 24 <= value <= 30 else 'attention'
+            else:
+                return 'normal' if 33 <= value <= 39 else 'attention'
+        if code == 'visceral_fat':
+            if value < 10: return 'normal'
+            if value < 15: return 'high'
+            return 'very_high'
+        if code == 'body_age':
+            if age is None: return 'info'
+            if value <= age: return 'normal'
+            if value <= age + 10: return 'high'
+            return 'very_high'
+        return 'info'
+
+    metrics_meta = [
+        {'code': 'weight', 'label': 'Peso', 'icon': '⚖️', 'unit': 'kg',
+         'explain': 'Tu peso corporal total. Por sí solo no dice mucho — cobra sentido junto con los demás datos.'},
+        {'code': 'imc', 'label': 'IMC', 'icon': '📏', 'unit': '',
+         'explain': 'Relación entre tu peso y tu estatura. Es una guía general, no distingue entre grasa y músculo.'},
+        {'code': 'body_fat_pct', 'label': '% Grasa corporal', 'icon': '🔥', 'unit': '%',
+         'explain': 'Qué porcentaje de tu cuerpo es grasa. El rango saludable es distinto entre hombres y mujeres.'},
+        {'code': 'muscle_pct', 'label': '% Músculo esquelético', 'icon': '💪', 'unit': '%',
+         'explain': 'Qué porcentaje de tu cuerpo es músculo. Más músculo suele ayudar a tu metabolismo.'},
+        {'code': 'basal_metabolism', 'label': 'Metabolismo basal', 'icon': '🔋', 'unit': 'kcal',
+         'explain': 'Las calorías que tu cuerpo quema en reposo, solo para mantenerte con vida.'},
+        {'code': 'body_age', 'label': 'Edad corporal', 'icon': '🎂', 'unit': 'años',
+         'explain': 'Compara tu condición física con la de otras personas. Si es mayor que tu edad real, hay margen de mejora.'},
+        {'code': 'visceral_fat', 'label': 'Grasa visceral', 'icon': '🎯', 'unit': '',
+         'explain': 'Grasa alrededor de tus órganos internos. Es la que más se relaciona con riesgos de salud cuando está elevada.'},
+    ]
+
+    metrics = []
+    for m in metrics_meta:
+        current_value = getattr(latest, m['code']) if latest else None
+        goal_field = 'goal_' + m['code'].replace('_pct', '').replace('body_fat', 'body_fat').replace('visceral_fat', 'visceral')
+        goal_map = {'weight': client.goal_weight, 'imc': client.goal_imc, 'body_fat_pct': client.goal_body_fat,
+                    'muscle_pct': client.goal_muscle, 'visceral_fat': client.goal_visceral}
+        history = [{'date': e.eval_date.strftime('%d/%m'), 'value': getattr(e, m['code'])} for e in evals if getattr(e, m['code']) is not None]
+        metrics.append({
+            **m,
+            'value': current_value,
+            'status': assess(m['code'], current_value),
+            'goal': goal_map.get(m['code']),
+            'history': history
+        })
+
+    return render_template('client/health.html', client=client, age=age, has_data=bool(evals), metrics=metrics)
+
 # ========== API CLIENTE ==========
 
 @app.route('/api/client/<int:client_id>')
