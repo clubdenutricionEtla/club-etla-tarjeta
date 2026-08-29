@@ -314,6 +314,7 @@
             font-size: 32px;
         }
         .vaso.trofeo-bloqueado {
+            opacity: 0.4;
             border-color: rgba(45,122,45,0.06);
             background: rgba(255,255,255,0.04);
             color: rgba(0,0,0,0.04);
@@ -699,7 +700,7 @@
                                         {% endif %}" 
                                         data-visita="{{ i }}">
                                         {% if i == 10 %}
-                                            {% if is_completed %}🏆{% else %}🔒{% endif %}
+                                            {% if is_completed %}🏆{% else %}🏆{% endif %}
                                         {% else %}
                                             {% if is_completed %}🥤{% else %}<span class="cover">🔒</span>{% endif %}
                                         {% endif %}
@@ -995,7 +996,7 @@
                     vaso.classList.add('animar');
                 }
                 if (isLast) {
-                    vaso.textContent = isCompleted ? '🏆' : '🔒';
+                    vaso.textContent = isCompleted ? '🏆' : '🏆';
                 } else {
                     vaso.innerHTML = isCompleted ? '🥤' : '<span class="cover">🔒</span>';
                 }
