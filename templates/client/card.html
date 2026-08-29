@@ -986,7 +986,8 @@
         const cardFlipper = document.getElementById('cardFlipper');
         let isFlipped = false;
 
-        cardWrapper.addEventListener('click', function() {
+        cardWrapper.addEventListener('click', function(e) {
+            if (e.target.closest('a')) return;
             isFlipped = !isFlipped;
             cardFlipper.classList.toggle('flipped', isFlipped);
         });
