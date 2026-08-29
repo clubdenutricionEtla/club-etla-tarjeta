@@ -617,6 +617,24 @@
             width: 7px; height: 7px; border-radius: 50%;
             background: #4a8c2a; box-shadow: 0 0 6px rgba(74,140,42,0.7);
         }
+        .progress-text {
+            background: rgba(45,122,45,0.06);
+            border-radius: 12px;
+            padding: 8px 16px;
+            display: inline-block;
+        }
+        .progress-text .count { font-size: 18px; }
+        .reward-card {
+            background: linear-gradient(160deg, #ffffff 0%, #fdfaf3 100%);
+            box-shadow: 0 6px 20px rgba(212,160,23,0.12);
+            border: 1px solid rgba(212,160,23,0.18);
+        }
+        .reward-card .label { color: #8a6d00; font-weight: 700; }
+        #recompensaText.value.gold {
+            font-size: 15px;
+            font-weight: 700;
+            padding-top: 4px;
+        }
 </style>
 </head>
 <body>
@@ -722,7 +740,7 @@
                             </div>
                         </div>
                         <div class="info-grid" style="margin-top:0;">
-                            <div class="info-card" style="grid-column: span 2;">
+                            <div class="info-card reward-card" style="grid-column: span 2;">
                                 <div class="label">Mis Recompensas</div>
                                 <div class="value gold" id="recompensaText">
                                     {% if client.visits >= 10 %}🏆 10 Visitas - ¡Premio Desbloqueado!{% else %}🎯 Completa 10 visitas para tu premio{% endif %}
