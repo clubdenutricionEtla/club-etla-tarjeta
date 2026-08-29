@@ -51,6 +51,9 @@
         .explain-text.visible { display: block; }
         .chart-wrap { margin-top: 14px; height: 100px; }
         .no-history { font-size: 12px; color: #b8b8b8; text-align: center; padding: 10px 0; }
+        .info-box { text-align: left; background: #f5efe8; border-radius: 16px; padding: 16px; margin-top: 22px; }
+        .info-box-title { font-size: 13px; font-weight: 700; color: #2d7a2d; margin-bottom: 6px; }
+        .info-box p { font-size: 13px; color: #5a5a5a; line-height: 1.55; }
         .goal-line { font-size: 11px; color: #6a6a6a; margin-top: 6px; }
         .goal-line strong { color: #2d7a2d; }
     </style>
@@ -69,6 +72,12 @@
             <div class="icon">📋</div>
             <h2>Aún no tienes evaluaciones</h2>
             <p>Pregunta en el mostrador del Club para hacerte tu primera evaluación corporal y empezar a ver tu progreso aquí.</p>
+            <div class="info-box">
+                <div class="info-box-title">¿Qué es una evaluación corporal?</div>
+                <p>Es una medición rápida y sin dolor (con una báscula especial) que va más allá del peso: te dice cuánta grasa, músculo y agua tiene tu cuerpo, y otros indicadores relacionados con tu salud. Toma menos de un minuto.</p>
+                <div class="info-box-title" style="margin-top:14px;">¿Por qué hacérmela?</div>
+                <p>El peso en la báscula normal no distingue entre grasa y músculo — dos personas pueden pesar lo mismo y estar en condiciones muy distintas. La evaluación corporal te da el panorama real, te ayuda a fijar metas concretas, y te permite ver tu progreso con el tiempo, no solo adivinar.</p>
+            </div>
         </div>
         {% else %}
         {% for m in metrics %}
