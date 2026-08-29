@@ -919,11 +919,18 @@ def api_client_eval_profile(client_id):
     client = Client.query.get(client_id)
     if not client:
         return jsonify({'error': 'Cliente no encontrado'}), 404
+    age = None
+    if client.birthday:
+        today = date.today()
+        age = today.year - client.birthday.year - ((today.month, today.day) < (client.birthday.month, client.birthday.day))
     evals = Evaluation.query.filter_by(client_id=client_id).order_by(Evaluation.eval_date).all()
     return jsonify({
         'id': client.id,
         'name': client.name,
         'gender': client.gender,
+        'height': client.height,
+        'birthday': client.birthday.strftime('%Y-%m-%d') if client.birthday else None,
+        'age': age,
         'goals': {
             'goal_weight': client.goal_weight,
             'goal_imc': client.goal_imc,
@@ -956,6 +963,24 @@ def api_update_client_gender(client_id):
     if gender not in ('M', 'F'):
         return jsonify({'error': 'Sexo invalido'}), 400
     client.gender = gender
+    db.session.commit()
+    return jsonify({'success': True})
+
+@app.route('/api/admin/clients/<int:client_id>/personal-info', methods=['PUT'])
+def api_update_client_personal_info(client_id):
+    if 'employee_id' not in session:
+        return jsonify({'error': 'No autorizado'}), 401
+    client = Client.query.get(client_id)
+    if not client:
+        return jsonify({'error': 'Cliente no encontrado'}), 404
+    data = request.json
+    if 'height' in data and data['height'] not in (None, ''):
+        client.height = float(data['height'])
+    if 'birthday' in data and data['birthday']:
+        try:
+            client.birthday = datetime.strptime(data['birthday'], '%Y-%m-%d').date()
+        except ValueError:
+            return jsonify({'error': 'Fecha invalida'}), 400
     db.session.commit()
     return jsonify({'success': True})
 
