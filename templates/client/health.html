@@ -55,6 +55,12 @@
         .info-box-title { font-size: 13px; font-weight: 700; color: #2d7a2d; margin-bottom: 6px; }
         .info-box p { font-size: 13px; color: #5a5a5a; line-height: 1.55; }
         .whatsapp-btn { display: block; margin-top: 18px; background: linear-gradient(135deg, #25D366, #128C7E); color: #fff; text-decoration: none; font-weight: 700; font-size: 14px; padding: 14px; border-radius: 14px; text-align: center; }
+        .check-list { list-style: none; margin-top: 6px; }
+        .check-list li { font-size: 13px; color: #5a5a5a; padding: 3px 0; }
+        .goals-list { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+        .goals-list label { font-size: 13px; color: #3a3a3a; display: flex; align-items: center; gap: 8px; background: #fff; padding: 9px 12px; border-radius: 10px; border: 1px solid rgba(0,0,0,0.05); }
+        .goals-list input { width: 16px; height: 16px; accent-color: #2d7a2d; }
+        .condition-select { width: 100%; margin-top: 8px; padding: 10px 12px; border-radius: 10px; border: 1px solid rgba(0,0,0,0.08); background: #fff; font-family: inherit; font-size: 13px; color: #3a3a3a; }
         .goal-line { font-size: 11px; color: #6a6a6a; margin-top: 6px; }
         .goal-line strong { color: #2d7a2d; }
     </style>
@@ -74,15 +80,62 @@
             <h2>Aún no tienes evaluaciones</h2>
             <p>Pregunta en el mostrador del Club para hacerte tu primera evaluación corporal y empezar a ver tu progreso aquí.</p>
             <div class="info-box">
-                <div class="info-box-title">¿Qué es una evaluación corporal?</div>
-                <p>Es una medición rápida y sin dolor (con una báscula especial) que va más allá del peso: te dice cuánta grasa, músculo y agua tiene tu cuerpo, y otros indicadores relacionados con tu salud. Toma menos de un minuto.</p>
-                <div class="info-box-title" style="margin-top:14px;">¿Por qué hacérmela?</div>
-                <p>El peso en la báscula normal no distingue entre grasa y músculo — dos personas pueden pesar lo mismo y estar en condiciones muy distintas. La evaluación corporal te da el panorama real, te ayuda a fijar metas concretas, y te permite ver tu progreso con el tiempo, no solo adivinar.</p>
+                <div class="info-box-title">🩺 ¿Qué es una evaluación corporal?</div>
+                <p>Una evaluación corporal es un análisis que permite conocer la composición del cuerpo y algunos indicadores relacionados con el estado físico. No se enfoca únicamente en el peso, sino en cómo está compuesto ese peso.</p>
+                <p style="margin-top:10px;">Con la balanza de composición corporal, se pueden evaluar:</p>
+                <ul class="check-list">
+                    <li>✅ Peso corporal</li>
+                    <li>✅ IMC (Índice de Masa Corporal)</li>
+                    <li>✅ Porcentaje de grasa corporal</li>
+                    <li>✅ Porcentaje de músculo esquelético</li>
+                    <li>✅ Grasa visceral</li>
+                    <li>✅ Metabolismo basal — calorías que el cuerpo utiliza en reposo</li>
+                    <li>✅ Edad corporal</li>
+                </ul>
+                <p style="margin-top:10px;">En pocas palabras: la evaluación corporal te ayuda a saber de qué está compuesto tu peso y cómo va evolucionando tu cuerpo, no solamente si la báscula marca más o menos kilos.</p>
             </div>
-            <a href="https://wa.me/529512470417?text=Hola%2C%20me%20gustar%C3%ADa%20agendar%20mi%20evaluaci%C3%B3n%20corporal%20gratis%20en%20el%20Club%20de%20Nutrici%C3%B3n%20Etla" target="_blank" class="whatsapp-btn">
+            <div class="info-box">
+                <div class="info-box-title">¿Qué te gustaría mejorar?</div>
+                <div class="goals-list">
+                    <label><input type="checkbox" value="Bajar de peso"> Bajar de peso</label>
+                    <label><input type="checkbox" value="Bajar grasa corporal"> Bajar grasa corporal</label>
+                    <label><input type="checkbox" value="Subir masa muscular"> Subir masa muscular</label>
+                    <label><input type="checkbox" value="Mejorar mi alimentación"> Mejorar mi alimentación</label>
+                    <label><input type="checkbox" value="Tener más energía"> Tener más energía</label>
+                    <label><input type="checkbox" value="Solo quiero conocer mis datos"> Solo quiero conocer mis datos</label>
+                </div>
+                <div class="info-box-title" style="margin-top:16px;">¿Tienes alguna condición de salud que debamos saber?</div>
+                <select id="healthCondition" class="condition-select">
+                    <option value="Ninguna">Ninguna</option>
+                    <option value="Diabetes">Diabetes</option>
+                    <option value="Hipertensión">Hipertensión (presión alta)</option>
+                    <option value="Problemas cardíacos">Problemas cardíacos</option>
+                    <option value="Problemas de tiroides">Problemas de tiroides</option>
+                    <option value="Otra">Otra</option>
+                </select>
+            </div>
+            <a href="#" id="whatsappRequestBtn" target="_blank" class="whatsapp-btn">
                 💬 Solicitar mi evaluación corporal GRATIS
             </a>
         </div>
+        <script>
+            const waBtn = document.getElementById('whatsappRequestBtn');
+            if (waBtn) {
+                waBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const goals = Array.from(document.querySelectorAll('.goals-list input:checked')).map(i => i.value);
+                    const condition = document.getElementById('healthCondition').value;
+                    let msg = "Hola, me gustaría agendar mi evaluación corporal gratis en el Club de Nutrición Etla.";
+                    if (goals.length > 0) {
+                        msg += "\n\nMe gustaría mejorar: " + goals.join(", ") + ".";
+                    }
+                    if (condition && condition !== 'Ninguna') {
+                        msg += "\n\nCondición de salud a considerar: " + condition + ".";
+                    }
+                    window.open("https://wa.me/529512470417?text=" + encodeURIComponent(msg), '_blank');
+                });
+            }
+        </script>
         {% else %}
         {% for m in metrics %}
         <div class="metric-card">
