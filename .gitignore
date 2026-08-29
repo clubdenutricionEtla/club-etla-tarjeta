@@ -1,0 +1,6 @@
+patch_*.py
+auditar.py
+regenerar_qr.py
+.env.migration
+__pycache__/
+*.pyc
