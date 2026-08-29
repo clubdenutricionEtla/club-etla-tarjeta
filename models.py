@@ -16,6 +16,12 @@ class Client(db.Model):
     birthday = db.Column(db.Date, nullable=True)
     birthday_scratch_year = db.Column(db.Integer, nullable=True)
     avatar = db.Column(db.String(200), nullable=True)
+    gender = db.Column(db.String(10), nullable=True)
+    goal_weight = db.Column(db.Float, nullable=True)
+    goal_imc = db.Column(db.Float, nullable=True)
+    goal_body_fat = db.Column(db.Float, nullable=True)
+    goal_muscle = db.Column(db.Float, nullable=True)
+    goal_visceral = db.Column(db.Float, nullable=True)
     
     visits = db.Column(db.Integer, default=0)
     points = db.Column(db.Integer, default=0)
@@ -297,6 +303,23 @@ class ConsumptionCategory(db.Model):
     name = db.Column(db.String(100), nullable=False)
     icon = db.Column(db.String(10), nullable=False)
     active = db.Column(db.Boolean, default=True)
+
+
+class Evaluation(db.Model):
+    __tablename__ = 'evaluations'
+    id = db.Column(db.Integer, primary_key=True)
+    client_id = db.Column(db.Integer, db.ForeignKey('clients.id'), nullable=False)
+    eval_date = db.Column(db.Date, nullable=False)
+    weight = db.Column(db.Float, nullable=True)
+    imc = db.Column(db.Float, nullable=True)
+    body_fat_pct = db.Column(db.Float, nullable=True)
+    muscle_pct = db.Column(db.Float, nullable=True)
+    basal_metabolism = db.Column(db.Float, nullable=True)
+    body_age = db.Column(db.Integer, nullable=True)
+    visceral_fat = db.Column(db.Float, nullable=True)
+    created_by = db.Column(db.Integer, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    client = db.relationship('Client', backref='evaluations')
 
 
 class ClientAchievement(db.Model):

@@ -10,7 +10,7 @@ from io import BytesIO
 import qrcode
 from config import Config
 from models import db, Client, VisitHistory, Employee, Achievement, ClientAchievement, Promotion, Referral, check_achievements, init_achievements
-from models import Product, ScratchReward, ConsumptionCategory
+from models import Product, ScratchReward, ConsumptionCategory, Evaluation
 import requests as http_requests
 
 app = Flask(__name__)
@@ -890,6 +890,129 @@ def api_employee_consumption_categories():
         return jsonify({'error': 'No autorizado'}), 401
     cats = ConsumptionCategory.query.filter_by(active=True).order_by(ConsumptionCategory.id).all()
     return jsonify([{'code': c.code, 'name': c.name, 'icon': c.icon} for c in cats])
+
+@app.route('/admin/evaluations')
+def admin_evaluations():
+    if 'employee_id' not in session:
+        return redirect(url_for('login'))
+    employee = Employee.query.get(session['employee_id'])
+    if not employee or employee.role != 'admin':
+        return redirect(url_for('login'))
+    return render_template('admin/evaluations.html')
+
+@app.route('/api/admin/evaluations/search-clients')
+def api_evaluations_search_clients():
+    if 'employee_id' not in session:
+        return jsonify({'error': 'No autorizado'}), 401
+    q = request.args.get('q', '').strip()
+    if not q:
+        return jsonify([])
+    clients = Client.query.filter(
+        db.or_(Client.name.ilike(f'%{q}%'), Client.whatsapp.ilike(f'%{q}%'))
+    ).limit(15).all()
+    return jsonify([{'id': c.id, 'name': c.name, 'whatsapp': c.whatsapp, 'gender': c.gender} for c in clients])
+
+@app.route('/api/admin/clients/<int:client_id>/profile', methods=['GET'])
+def api_client_eval_profile(client_id):
+    if 'employee_id' not in session:
+        return jsonify({'error': 'No autorizado'}), 401
+    client = Client.query.get(client_id)
+    if not client:
+        return jsonify({'error': 'Cliente no encontrado'}), 404
+    evals = Evaluation.query.filter_by(client_id=client_id).order_by(Evaluation.eval_date).all()
+    return jsonify({
+        'id': client.id,
+        'name': client.name,
+        'gender': client.gender,
+        'goals': {
+            'goal_weight': client.goal_weight,
+            'goal_imc': client.goal_imc,
+            'goal_body_fat': client.goal_body_fat,
+            'goal_muscle': client.goal_muscle,
+            'goal_visceral': client.goal_visceral
+        },
+        'evaluations': [{
+            'id': e.id,
+            'eval_date': e.eval_date.strftime('%Y-%m-%d'),
+            'weight': e.weight,
+            'imc': e.imc,
+            'body_fat_pct': e.body_fat_pct,
+            'muscle_pct': e.muscle_pct,
+            'basal_metabolism': e.basal_metabolism,
+            'body_age': e.body_age,
+            'visceral_fat': e.visceral_fat
+        } for e in evals]
+    })
+
+@app.route('/api/admin/clients/<int:client_id>/gender', methods=['PUT'])
+def api_update_client_gender(client_id):
+    if 'employee_id' not in session:
+        return jsonify({'error': 'No autorizado'}), 401
+    client = Client.query.get(client_id)
+    if not client:
+        return jsonify({'error': 'Cliente no encontrado'}), 404
+    data = request.json
+    gender = data.get('gender')
+    if gender not in ('M', 'F'):
+        return jsonify({'error': 'Sexo invalido'}), 400
+    client.gender = gender
+    db.session.commit()
+    return jsonify({'success': True})
+
+@app.route('/api/admin/clients/<int:client_id>/goals', methods=['PUT'])
+def api_update_client_goals(client_id):
+    if 'employee_id' not in session:
+        return jsonify({'error': 'No autorizado'}), 401
+    client = Client.query.get(client_id)
+    if not client:
+        return jsonify({'error': 'Cliente no encontrado'}), 404
+    data = request.json
+    for field in ['goal_weight', 'goal_imc', 'goal_body_fat', 'goal_muscle', 'goal_visceral']:
+        if field in data and data[field] not in (None, ''):
+            setattr(client, field, float(data[field]))
+    db.session.commit()
+    return jsonify({'success': True})
+
+@app.route('/api/admin/evaluations', methods=['POST'])
+def api_create_evaluation():
+    if 'employee_id' not in session:
+        return jsonify({'error': 'No autorizado'}), 401
+    data = request.json
+    client_id = data.get('client_id')
+    client = Client.query.get(client_id)
+    if not client:
+        return jsonify({'error': 'Cliente no encontrado'}), 404
+    eval_date = data.get('eval_date')
+    try:
+        eval_date_obj = datetime.strptime(eval_date, '%Y-%m-%d').date() if eval_date else date.today()
+    except ValueError:
+        return jsonify({'error': 'Fecha invalida'}), 400
+    ev = Evaluation(
+        client_id=client_id,
+        eval_date=eval_date_obj,
+        weight=data.get('weight'),
+        imc=data.get('imc'),
+        body_fat_pct=data.get('body_fat_pct'),
+        muscle_pct=data.get('muscle_pct'),
+        basal_metabolism=data.get('basal_metabolism'),
+        body_age=data.get('body_age'),
+        visceral_fat=data.get('visceral_fat'),
+        created_by=session.get('employee_id')
+    )
+    db.session.add(ev)
+    db.session.commit()
+    return jsonify({'success': True, 'id': ev.id})
+
+@app.route('/api/admin/evaluations/<int:eval_id>', methods=['DELETE'])
+def api_delete_evaluation(eval_id):
+    if 'employee_id' not in session:
+        return jsonify({'error': 'No autorizado'}), 401
+    ev = Evaluation.query.get(eval_id)
+    if not ev:
+        return jsonify({'error': 'Evaluacion no encontrada'}), 404
+    db.session.delete(ev)
+    db.session.commit()
+    return jsonify({'success': True})
 
 # ===== ADMIN - GESTIÓN DE EMPLEADOS =====
 @app.route('/admin/employees')

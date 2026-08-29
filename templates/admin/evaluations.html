@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Evaluaciones - Club Etla</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #f5efe8; min-height: 100vh; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .header h1 { color: #1a1a1a; font-size: 24px; }
+        .header a { color: #2d7a2d; text-decoration: none; font-weight: 600; }
+        .card { background: rgba(255,255,255,0.9); border-radius: 20px; padding: 20px; border: 1px solid rgba(255,255,255,0.5); box-shadow: 0 8px 32px rgba(0,0,0,0.04); margin-bottom: 16px; }
+        .card h2 { font-size: 16px; margin-bottom: 14px; color: #1a1a1a; }
+        .search-box { display: flex; gap: 8px; }
+        .search-box input { flex: 1; border: 1px solid rgba(0,0,0,0.08); border-radius: 10px; padding: 12px; font-family: inherit; font-size: 14px; }
+        .search-results { margin-top: 10px; }
+        .result-item { padding: 10px 12px; border-radius: 10px; cursor: pointer; display: flex; justify-content: space-between; }
+        .result-item:hover { background: rgba(45,122,45,0.06); }
+        .result-item .name { font-weight: 600; color: #1a1a1a; }
+        .result-item .whatsapp { color: #6a6a6a; font-size: 12px; }
+        .selected-client { display: none; }
+        .selected-client.visible { display: block; }
+        .client-name-big { font-size: 20px; font-weight: 800; color: #1a1a1a; margin-bottom: 4px; }
+        .gender-select { display: flex; gap: 8px; margin: 10px 0 16px; }
+        .gender-select button { flex: 1; padding: 10px; border-radius: 10px; border: 2px solid rgba(0,0,0,0.08); background: #fff; cursor: pointer; font-weight: 600; font-family: inherit; }
+        .gender-select button.selected { border-color: #2d7a2d; background: rgba(45,122,45,0.06); color: #2d7a2d; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .form-grid .full { grid-column: 1 / -1; }
+        .form-grid label { font-size: 12px; color: #6a6a6a; font-weight: 600; display: block; margin-bottom: 4px; }
+        .form-grid input { width: 100%; border: 1px solid rgba(0,0,0,0.08); border-radius: 8px; padding: 9px 10px; font-family: inherit; font-size: 14px; }
+        .btn-primary { width: 100%; margin-top: 14px; background: linear-gradient(135deg, #2d7a2d, #4a8c2a); color: #fff; border: none; border-radius: 12px; padding: 13px; font-weight: 700; font-size: 15px; cursor: pointer; }
+        .btn-secondary { width: 100%; margin-top: 8px; background: rgba(0,0,0,0.05); color: #1a1a1a; border: none; border-radius: 12px; padding: 11px; font-weight: 600; cursor: pointer; }
+        table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 10px; }
+        th, td { padding: 8px 6px; text-align: center; border-bottom: 1px solid rgba(0,0,0,0.05); }
+        th { color: #6a6a6a; font-weight: 700; }
+        .btn-del-row { border: none; background: rgba(231,76,60,0.1); color: #e74c3c; border-radius: 6px; padding: 4px 8px; cursor: pointer; font-size: 11px; }
+        .msg { padding: 10px 14px; border-radius: 10px; margin-bottom: 14px; display: none; font-size: 14px; }
+        .msg.ok { display: block; background: rgba(45,122,45,0.08); color: #2d7a2d; }
+        .msg.err { display: block; background: rgba(231,76,60,0.08); color: #e74c3c; }
+        .empty { color: #6a6a6a; font-size: 13px; text-align: center; padding: 12px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📋 Evaluaciones y Seguimiento</h1>
+            <a href="/admin">← Panel admin</a>
+        </div>
+        <div id="msg" class="msg"></div>
+        <div class="card">
+            <h2>Buscar cliente</h2>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Nombre o WhatsApp del cliente...">
+            </div>
+            <div class="search-results" id="searchResults"></div>
+        </div>
+
+        <div class="selected-client" id="selectedClientBox">
+            <div class="card">
+                <div class="client-name-big" id="clientNameBig">-</div>
+                <label style="font-size:12px;color:#6a6a6a;font-weight:600;">Sexo (para calcular rangos correctos)</label>
+                <div class="gender-select">
+                    <button type="button" data-gender="M" id="genderM">Hombre</button>
+                    <button type="button" data-gender="F" id="genderF">Mujer</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Nueva evaluación</h2>
+                <div class="form-grid">
+                    <div class="full">
+                        <label>Fecha</label>
+                        <input type="date" id="evalDate">
+                    </div>
+                    <div><label>Peso (kg)</label><input type="number" step="0.1" id="evalWeight"></div>
+                    <div><label>IMC</label><input type="number" step="0.1" id="evalImc"></div>
+                    <div><label>% Grasa corporal</label><input type="number" step="0.1" id="evalBodyFat"></div>
+                    <div><label>% Músculo esquelético</label><input type="number" step="0.1" id="evalMuscle"></div>
+                    <div><label>Metabolismo basal (kcal)</label><input type="number" step="1" id="evalBasal"></div>
+                    <div><label>Edad corporal</label><input type="number" step="1" id="evalBodyAge"></div>
+                    <div class="full"><label>Grasa visceral</label><input type="number" step="0.1" id="evalVisceral"></div>
+                </div>
+                <button class="btn-primary" id="saveEvalBtn">Guardar evaluación</button>
+            </div>
+
+            <div class="card">
+                <h2>Metas del cliente</h2>
+                <div class="form-grid">
+                    <div><label>Meta peso (kg)</label><input type="number" step="0.1" id="goalWeight"></div>
+                    <div><label>Meta IMC</label><input type="number" step="0.1" id="goalImc"></div>
+                    <div><label>Meta % grasa</label><input type="number" step="0.1" id="goalBodyFat"></div>
+                    <div><label>Meta % músculo</label><input type="number" step="0.1" id="goalMuscle"></div>
+                    <div class="full"><label>Meta grasa visceral</label><input type="number" step="0.1" id="goalVisceral"></div>
+                </div>
+                <button class="btn-secondary" id="saveGoalsBtn">Guardar metas</button>
+            </div>
+
+            <div class="card">
+                <h2>Historial</h2>
+                <div id="historyTable"></div>
+            </div>
+        </div>
+    </div>
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        const searchResults = document.getElementById('searchResults');
+        const selectedClientBox = document.getElementById('selectedClientBox');
+        const clientNameBig = document.getElementById('clientNameBig');
+        const msgEl = document.getElementById('msg');
+        let currentClientId = null;
+        let currentGender = null;
+
+        function showMsg(text, ok) {
+            msgEl.textContent = text;
+            msgEl.className = 'msg ' + (ok ? 'ok' : 'err');
+            setTimeout(() => { msgEl.className = 'msg'; }, 3000);
+        }
+
+        let searchTimeout;
+        searchInput.addEventListener('input', () => {
+            clearTimeout(searchTimeout);
+            const q = searchInput.value.trim();
+            if (q.length < 2) { searchResults.innerHTML = ''; return; }
+            searchTimeout = setTimeout(async () => {
+                const res = await fetch(`/api/admin/evaluations/search-clients?q=${encodeURIComponent(q)}`);
+                const clients = await res.json();
+                searchResults.innerHTML = clients.map(c => `
+                    <div class="result-item" data-id="${c.id}" data-name="${c.name}">
+                        <span class="name">${c.name}</span>
+                        <span class="whatsapp">${c.whatsapp}</span>
+                    </div>
+                `).join('');
+                searchResults.querySelectorAll('.result-item').forEach(item => {
+                    item.addEventListener('click', () => selectClient(item.dataset.id, item.dataset.name));
+                });
+            }, 300);
+        });
+
+        document.getElementById('genderM').addEventListener('click', () => setGender('M'));
+        document.getElementById('genderF').addEventListener('click', () => setGender('F'));
+
+        async function setGender(g) {
+            currentGender = g;
+            document.getElementById('genderM').classList.toggle('selected', g === 'M');
+            document.getElementById('genderF').classList.toggle('selected', g === 'F');
+            await fetch(`/api/admin/clients/${currentClientId}/gender`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ gender: g })
+            });
+        }
+
+        async function selectClient(id, name) {
+            currentClientId = id;
+            clientNameBig.textContent = name;
+            selectedClientBox.classList.add('visible');
+            searchResults.innerHTML = '';
+            searchInput.value = '';
+            document.getElementById('evalDate').value = new Date().toISOString().split('T')[0];
+            await loadProfile();
+        }
+
+        async function loadProfile() {
+            const res = await fetch(`/api/admin/clients/${currentClientId}/profile`);
+            const data = await res.json();
+            currentGender = data.gender;
+            document.getElementById('genderM').classList.toggle('selected', data.gender === 'M');
+            document.getElementById('genderF').classList.toggle('selected', data.gender === 'F');
+            const g = data.goals;
+            document.getElementById('goalWeight').value = g.goal_weight || '';
+            document.getElementById('goalImc').value = g.goal_imc || '';
+            document.getElementById('goalBodyFat').value = g.goal_body_fat || '';
+            document.getElementById('goalMuscle').value = g.goal_muscle || '';
+            document.getElementById('goalVisceral').value = g.goal_visceral || '';
+            renderHistory(data.evaluations);
+        }
+
+        function renderHistory(evals) {
+            const el = document.getElementById('historyTable');
+            if (evals.length === 0) {
+                el.innerHTML = '<div class="empty">Sin evaluaciones registradas aún</div>';
+                return;
+            }
+            let rows = evals.map(e => `
+                <tr>
+                    <td>${e.eval_date}</td>
+                    <td>${e.weight ?? '-'}</td>
+                    <td>${e.imc ?? '-'}</td>
+                    <td>${e.body_fat_pct ?? '-'}</td>
+                    <td>${e.muscle_pct ?? '-'}</td>
+                    <td>${e.basal_metabolism ?? '-'}</td>
+                    <td>${e.body_age ?? '-'}</td>
+                    <td>${e.visceral_fat ?? '-'}</td>
+                    <td><button class="btn-del-row" data-id="${e.id}">Borrar</button></td>
+                </tr>
+            `).join('');
+            el.innerHTML = `<table>
+                <thead><tr><th>Fecha</th><th>Peso</th><th>IMC</th><th>%Grasa</th><th>%Músculo</th><th>Metab.</th><th>Edad Corp.</th><th>Visceral</th><th></th></tr></thead>
+                <tbody>${rows}</tbody>
+            </table>`;
+            el.querySelectorAll('.btn-del-row').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    if (!confirm('¿Borrar esta evaluación?')) return;
+                    await fetch(`/api/admin/evaluations/${btn.dataset.id}`, { method: 'DELETE' });
+                    loadProfile();
+                });
+            });
+        }
+
+        document.getElementById('saveEvalBtn').addEventListener('click', async () => {
+            const payload = {
+                client_id: currentClientId,
+                eval_date: document.getElementById('evalDate').value,
+                weight: document.getElementById('evalWeight').value || null,
+                imc: document.getElementById('evalImc').value || null,
+                body_fat_pct: document.getElementById('evalBodyFat').value || null,
+                muscle_pct: document.getElementById('evalMuscle').value || null,
+                basal_metabolism: document.getElementById('evalBasal').value || null,
+                body_age: document.getElementById('evalBodyAge').value || null,
+                visceral_fat: document.getElementById('evalVisceral').value || null
+            };
+            const res = await fetch('/api/admin/evaluations', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            if (res.ok) {
+                showMsg('✅ Evaluación guardada', true);
+                ['evalWeight','evalImc','evalBodyFat','evalMuscle','evalBasal','evalBodyAge','evalVisceral'].forEach(id => document.getElementById(id).value = '');
+                loadProfile();
+            } else {
+                showMsg(data.error || 'Error al guardar', false);
+            }
+        });
+
+        document.getElementById('saveGoalsBtn').addEventListener('click', async () => {
+            const payload = {
+                goal_weight: document.getElementById('goalWeight').value || null,
+                goal_imc: document.getElementById('goalImc').value || null,
+                goal_body_fat: document.getElementById('goalBodyFat').value || null,
+                goal_muscle: document.getElementById('goalMuscle').value || null,
+                goal_visceral: document.getElementById('goalVisceral').value || null
+            };
+            const res = await fetch(`/api/admin/clients/${currentClientId}/goals`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (res.ok) showMsg('✅ Metas guardadas', true);
+            else showMsg('Error al guardar metas', false);
+        });
+    </script>
+</body>
+</html>
