@@ -10,7 +10,7 @@ from io import BytesIO
 import qrcode
 from config import Config
 from models import db, Client, VisitHistory, Employee, Achievement, ClientAchievement, Promotion, Referral, check_achievements, init_achievements
-from models import Product, ScratchReward
+from models import Product, ScratchReward, ConsumptionCategory
 import requests as http_requests
 
 app = Flask(__name__)
@@ -790,6 +790,106 @@ def api_employee_redeem_scratch():
         reward_name = rewards.get(reward, {}).get('name', reward)
         return jsonify({'success': True, 'reward_name': reward_name, 'message': f'✅  Premio canjeado: {reward_name}'})
     return jsonify({'error': 'No hay premio pendiente de canje'}), 400
+
+@app.route('/admin/consumption')
+def admin_consumption():
+    if 'employee_id' not in session:
+        return redirect(url_for('login'))
+    employee = Employee.query.get(session['employee_id'])
+    if not employee or employee.role != 'admin':
+        return redirect(url_for('login'))
+    return render_template('admin/consumption.html')
+
+@app.route('/api/admin/consumption-categories', methods=['GET'])
+def api_get_consumption_categories():
+    if 'employee_id' not in session:
+        return jsonify({'error': 'No autorizado'}), 401
+    admin_emp = Employee.query.get(session['employee_id'])
+    if not admin_emp or admin_emp.role != 'admin':
+        return jsonify({'error': 'No autorizado'}), 401
+    cats = ConsumptionCategory.query.order_by(ConsumptionCategory.id).all()
+    return jsonify([{'id': c.id, 'code': c.code, 'name': c.name, 'icon': c.icon, 'active': c.active} for c in cats])
+
+@app.route('/api/admin/consumption-categories', methods=['POST'])
+def api_create_consumption_category():
+    if 'employee_id' not in session:
+        return jsonify({'error': 'No autorizado'}), 401
+    admin_emp = Employee.query.get(session['employee_id'])
+    if not admin_emp or admin_emp.role != 'admin':
+        return jsonify({'error': 'No autorizado'}), 401
+    data = request.json
+    code = (data.get('code') or '').strip().upper()
+    name = (data.get('name') or '').strip()
+    icon = (data.get('icon') or '').strip()
+    if not code or not name or not icon:
+        return jsonify({'error': 'Todos los campos son requeridos'}), 400
+    if ConsumptionCategory.query.filter_by(code=code).first():
+        return jsonify({'error': 'Ya existe una categoria con ese codigo'}), 400
+    cat = ConsumptionCategory(code=code, name=name, icon=icon, active=True)
+    db.session.add(cat)
+    db.session.commit()
+    return jsonify({'success': True, 'id': cat.id})
+
+@app.route('/api/admin/consumption-categories/<int:cat_id>', methods=['PUT'])
+def api_update_consumption_category(cat_id):
+    if 'employee_id' not in session:
+        return jsonify({'error': 'No autorizado'}), 401
+    admin_emp = Employee.query.get(session['employee_id'])
+    if not admin_emp or admin_emp.role != 'admin':
+        return jsonify({'error': 'No autorizado'}), 401
+    cat = ConsumptionCategory.query.get(cat_id)
+    if not cat:
+        return jsonify({'error': 'Categoria no encontrada'}), 404
+    data = request.json
+    if 'name' in data:
+        cat.name = data['name'].strip()
+    if 'icon' in data:
+        cat.icon = data['icon'].strip()
+    if 'active' in data:
+        cat.active = bool(data['active'])
+    db.session.commit()
+    return jsonify({'success': True})
+
+@app.route('/api/admin/consumption-categories/<int:cat_id>', methods=['DELETE'])
+def api_delete_consumption_category(cat_id):
+    if 'employee_id' not in session:
+        return jsonify({'error': 'No autorizado'}), 401
+    admin_emp = Employee.query.get(session['employee_id'])
+    if not admin_emp or admin_emp.role != 'admin':
+        return jsonify({'error': 'No autorizado'}), 401
+    cat = ConsumptionCategory.query.get(cat_id)
+    if not cat:
+        return jsonify({'error': 'Categoria no encontrada'}), 404
+    db.session.delete(cat)
+    db.session.commit()
+    return jsonify({'success': True})
+
+@app.route('/api/admin/consumption-stats', methods=['GET'])
+def api_consumption_stats():
+    if 'employee_id' not in session:
+        return jsonify({'error': 'No autorizado'}), 401
+    admin_emp = Employee.query.get(session['employee_id'])
+    if not admin_emp or admin_emp.role != 'admin':
+        return jsonify({'error': 'No autorizado'}), 401
+    totals = {}
+    for client in Client.query.all():
+        col = client.get_collection()
+        for code, qty in col.items():
+            totals[code] = totals.get(code, 0) + qty
+    cats = {c.code: {'name': c.name, 'icon': c.icon} for c in ConsumptionCategory.query.all()}
+    result = []
+    for code, total in totals.items():
+        info = cats.get(code, {'name': code, 'icon': '❓'})
+        result.append({'code': code, 'name': info['name'], 'icon': info['icon'], 'total': total})
+    result.sort(key=lambda x: x['total'], reverse=True)
+    return jsonify(result)
+
+@app.route('/api/employee/consumption-categories', methods=['GET'])
+def api_employee_consumption_categories():
+    if 'employee_id' not in session:
+        return jsonify({'error': 'No autorizado'}), 401
+    cats = ConsumptionCategory.query.filter_by(active=True).order_by(ConsumptionCategory.id).all()
+    return jsonify([{'code': c.code, 'name': c.name, 'icon': c.icon} for c in cats])
 
 # ===== ADMIN - GESTIÓN DE EMPLEADOS =====
 @app.route('/admin/employees')

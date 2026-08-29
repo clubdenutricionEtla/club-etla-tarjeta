@@ -95,6 +95,12 @@
         .reward-box .label { font-size: 13px; color: #8a6d00; font-weight: 700; }
         .reward-box .prize { font-size: 18px; font-weight: 800; color: #1a1a1a; margin: 4px 0 12px; }
         .btn-redeem { background: linear-gradient(135deg, #e0a800, #ffc107); color: #1a1a1a; }
+        .categories { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+        .cat-btn { flex: 1; min-width: 70px; padding: 10px 6px; border-radius: 12px; border: 2px solid rgba(0,0,0,0.06); background: #fff; cursor: pointer; text-align: center; font-family: inherit; }
+        .cat-btn .cat-icon { font-size: 20px; display: block; }
+        .cat-btn .cat-name { font-size: 11px; color: #6a6a6a; font-weight: 600; }
+        .cat-btn.selected { border-color: #2d7a2d; background: rgba(45,122,45,0.06); }
+        .cat-btn.selected .cat-name { color: #2d7a2d; }
         @keyframes fadeUp {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -119,6 +125,7 @@
                 <video id="video" playsinline></video>
                 <canvas id="canvas" style="display:none;"></canvas>
             </div>
+            <div class="categories" id="categories"></div>
             <button class="btn btn-primary" id="scanBtn">📸 Iniciar escáner</button>
             <div class="result" id="result">
                 <div class="status">✅ Visita registrada</div>
@@ -215,7 +222,7 @@
                 const response = await fetch('/api/employee/scan', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ qr_secret: qrSecret, product_type: 'BREAKFAST' })
+                    body: JSON.stringify({ qr_secret: qrSecret, product_type: selectedCategory })
                 });
                 const data = await response.json();
 
@@ -287,6 +294,33 @@
                 redeemBtn.disabled = false;
             }
         });
+
+        let selectedCategory = 'BREAKFAST';
+        const categoriesEl = document.getElementById('categories');
+
+        async function loadCategories() {
+            try {
+                const res = await fetch('/api/employee/consumption-categories');
+                const cats = await res.json();
+                categoriesEl.innerHTML = '';
+                cats.forEach((c, idx) => {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'cat-btn' + (idx === 0 ? ' selected' : '');
+                    btn.innerHTML = `<span class="cat-icon">${c.icon}</span><span class="cat-name">${c.name}</span>`;
+                    btn.addEventListener('click', () => {
+                        selectedCategory = c.code;
+                        document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('selected'));
+                        btn.classList.add('selected');
+                    });
+                    categoriesEl.appendChild(btn);
+                    if (idx === 0) selectedCategory = c.code;
+                });
+            } catch (err) {
+                console.error('Load categories error:', err);
+            }
+        }
+        loadCategories();
 
         scanBtn.addEventListener('click', function() {
             if (scannerActive) {

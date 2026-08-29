@@ -290,6 +290,15 @@ class ScratchReward(db.Model):
     active = db.Column(db.Boolean, default=True)
 
 
+class ConsumptionCategory(db.Model):
+    __tablename__ = 'consumption_categories'
+    id = db.Column(db.Integer, primary_key=True)
+    code = db.Column(db.String(50), unique=True, nullable=False)
+    name = db.Column(db.String(100), nullable=False)
+    icon = db.Column(db.String(10), nullable=False)
+    active = db.Column(db.Boolean, default=True)
+
+
 class ClientAchievement(db.Model):
     __tablename__ = 'client_achievements'
     

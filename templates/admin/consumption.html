@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Análisis de Consumo - Club Etla</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #f5efe8; min-height: 100vh; padding: 20px; }
+        .container { max-width: 700px; margin: 0 auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .header h1 { color: #1a1a1a; font-size: 24px; }
+        .header a { color: #2d7a2d; text-decoration: none; font-weight: 600; }
+        .card { background: rgba(255,255,255,0.9); border-radius: 20px; padding: 20px; border: 1px solid rgba(255,255,255,0.5); box-shadow: 0 8px 32px rgba(0,0,0,0.04); margin-bottom: 16px; }
+        .card h2 { font-size: 16px; margin-bottom: 14px; color: #1a1a1a; }
+        .stat-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid rgba(0,0,0,0.05); }
+        .stat-row:last-child { border-bottom: none; }
+        .stat-row .icon { font-size: 22px; width: 30px; text-align: center; }
+        .stat-row .name { flex: 1; font-size: 14px; color: #1a1a1a; font-weight: 600; }
+        .stat-row .bar-wrap { flex: 2; background: rgba(0,0,0,0.04); border-radius: 8px; overflow: hidden; height: 10px; }
+        .stat-row .bar { background: linear-gradient(135deg, #2d7a2d, #4a8c2a); height: 100%; }
+        .stat-row .total { font-size: 13px; color: #2d7a2d; font-weight: 700; width: 40px; text-align: right; }
+        .cat-row { display: flex; align-items: center; gap: 10px; padding: 12px 0; border-bottom: 1px solid rgba(0,0,0,0.05); }
+        .cat-row:last-child { border-bottom: none; }
+        .cat-row input[type=text] { border: 1px solid rgba(0,0,0,0.08); border-radius: 8px; padding: 8px 10px; font-family: inherit; font-size: 14px; }
+        .cat-row .icon-input { width: 50px; text-align: center; }
+        .cat-row .name-input { flex: 1; }
+        .cat-row button { border: none; border-radius: 8px; padding: 8px 10px; cursor: pointer; font-size: 13px; font-weight: 600; }
+        .btn-save { background: rgba(45,122,45,0.1); color: #2d7a2d; }
+        .btn-del { background: rgba(231,76,60,0.1); color: #e74c3c; }
+        .btn-toggle.active { background: rgba(45,122,45,0.1); color: #2d7a2d; }
+        .btn-toggle.inactive { background: rgba(0,0,0,0.05); color: #999; }
+        .add-form { display: flex; gap: 8px; flex-wrap: wrap; }
+        .add-form input { border: 1px solid rgba(0,0,0,0.08); border-radius: 8px; padding: 10px; font-family: inherit; font-size: 14px; }
+        .add-form input[name=code] { width: 100px; }
+        .add-form input[name=name] { flex: 1; min-width: 140px; }
+        .add-form input[name=icon] { width: 50px; text-align: center; }
+        .btn-add { background: linear-gradient(135deg, #2d7a2d, #4a8c2a); color: #fff; border: none; border-radius: 8px; padding: 10px 16px; font-weight: 600; cursor: pointer; }
+        .msg { padding: 10px 14px; border-radius: 10px; margin-bottom: 14px; display: none; font-size: 14px; }
+        .msg.ok { display: block; background: rgba(45,122,45,0.08); color: #2d7a2d; }
+        .msg.err { display: block; background: rgba(231,76,60,0.08); color: #e74c3c; }
+        .empty { color: #6a6a6a; font-size: 14px; text-align: center; padding: 12px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Análisis de Consumo</h1>
+            <a href="/admin">← Panel admin</a>
+        </div>
+        <div id="msg" class="msg"></div>
+        <div class="card">
+            <h2>Lo más consumido en el club</h2>
+            <div id="statsList"></div>
+        </div>
+        <div class="card">
+            <h2>Categorías de consumo</h2>
+            <div id="categoriesList"></div>
+        </div>
+        <div class="card">
+            <h2>Agregar categoría nueva</h2>
+            <div class="add-form">
+                <input type="text" name="code" placeholder="CODIGO" maxlength="20">
+                <input type="text" name="icon" placeholder="🍹" maxlength="4">
+                <input type="text" name="name" placeholder="Nombre de la categoría">
+                <button class="btn-add" id="addBtn">+ Agregar</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        const statsListEl = document.getElementById('statsList');
+        const catListEl = document.getElementById('categoriesList');
+        const msgEl = document.getElementById('msg');
+
+        function showMsg(text, ok) {
+            msgEl.textContent = text;
+            msgEl.className = 'msg ' + (ok ? 'ok' : 'err');
+            setTimeout(() => { msgEl.className = 'msg'; }, 3000);
+        }
+
+        async function loadStats() {
+            const res = await fetch('/api/admin/consumption-stats');
+            const stats = await res.json();
+            statsListEl.innerHTML = '';
+            if (stats.length === 0) {
+                statsListEl.innerHTML = '<div class="empty">Aún no hay datos de consumo registrados</div>';
+                return;
+            }
+            const max = Math.max(...stats.map(s => s.total));
+            stats.forEach(s => {
+                const row = document.createElement('div');
+                row.className = 'stat-row';
+                const pct = max > 0 ? (s.total / max) * 100 : 0;
+                row.innerHTML = `
+                    <span class="icon">${s.icon}</span>
+                    <span class="name">${s.name}</span>
+                    <div class="bar-wrap"><div class="bar" style="width:${pct}%"></div></div>
+                    <span class="total">${s.total}</span>
+                `;
+                statsListEl.appendChild(row);
+            });
+        }
+
+        async function loadCategories() {
+            const res = await fetch('/api/admin/consumption-categories');
+            const cats = await res.json();
+            catListEl.innerHTML = '';
+            cats.forEach(c => {
+                const row = document.createElement('div');
+                row.className = 'cat-row';
+                row.innerHTML = `
+                    <input type="text" class="icon-input" value="${c.icon}" data-field="icon">
+                    <input type="text" class="name-input" value="${c.name}" data-field="name">
+                    <button class="btn-toggle ${c.active ? 'active' : 'inactive'}" data-action="toggle">${c.active ? 'Activa' : 'Inactiva'}</button>
+                    <button class="btn-save" data-action="save">Guardar</button>
+                    <button class="btn-del" data-action="del">Borrar</button>
+                `;
+                row.querySelector('[data-action=save]').addEventListener('click', () => saveCategory(c.id, row));
+                row.querySelector('[data-action=toggle]').addEventListener('click', () => toggleCategory(c.id, !c.active));
+                row.querySelector('[data-action=del]').addEventListener('click', () => delCategory(c.id, c.name));
+                catListEl.appendChild(row);
+            });
+        }
+
+        async function saveCategory(id, row) {
+            const name = row.querySelector('[data-field=name]').value.trim();
+            const icon = row.querySelector('[data-field=icon]').value.trim();
+            const res = await fetch(`/api/admin/consumption-categories/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, icon })
+            });
+            const data = await res.json();
+            if (res.ok) { showMsg('✅ Guardado', true); loadCategories(); loadStats(); }
+            else { showMsg(data.error || 'Error al guardar', false); }
+        }
+
+        async function toggleCategory(id, newActive) {
+            const res = await fetch(`/api/admin/consumption-categories/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ active: newActive })
+            });
+            if (res.ok) loadCategories();
+        }
+
+        async function delCategory(id, name) {
+            if (!confirm(`¿Borrar la categoría "${name}"?`)) return;
+            const res = await fetch(`/api/admin/consumption-categories/${id}`, { method: 'DELETE' });
+            const data = await res.json();
+            if (res.ok) { showMsg('✅ Categoría borrada', true); loadCategories(); }
+            else { showMsg(data.error || 'Error al borrar', false); }
+        }
+
+        document.getElementById('addBtn').addEventListener('click', async () => {
+            const form = document.querySelector('.add-form');
+            const code = form.querySelector('[name=code]').value.trim();
+            const icon = form.querySelector('[name=icon]').value.trim();
+            const name = form.querySelector('[name=name]').value.trim();
+            const res = await fetch('/api/admin/consumption-categories', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ code, icon, name })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                showMsg('✅ Categoría agregada', true);
+                form.querySelectorAll('input').forEach(i => i.value = '');
+                loadCategories();
+            } else {
+                showMsg(data.error || 'Error al agregar', false);
+            }
+        });
+
+        loadStats();
+        loadCategories();
+    </script>
+</body>
+</html>
