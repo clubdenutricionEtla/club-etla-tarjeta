@@ -301,6 +301,13 @@ def health():
         {'code': 'visceral_fat', 'label': 'Grasa visceral', 'icon': '🎯', 'unit': '',
          'explain': 'Grasa alrededor de tus órganos internos. Es la que más se relaciona con riesgos de salud cuando está elevada.'},
     ]
+    ideal_map = {
+        'imc': '18.5 - 24.9',
+        'body_fat_pct': ('20% - 30%' if client.gender == 'F' else '10% - 20%'),
+        'muscle_pct': ('24% - 30%' if client.gender == 'F' else '33% - 39%'),
+        'visceral_fat': '1 - 9',
+        'body_age': (f'{age} años o menos' if age else None),
+    }
 
     metrics = []
     for m in metrics_meta:
@@ -314,10 +321,26 @@ def health():
             'value': current_value,
             'status': assess(m['code'], current_value),
             'goal': goal_map.get(m['code']),
+            'ideal': ideal_map.get(m['code']),
             'history': history
         })
 
-    return render_template('client/health.html', client=client, age=age, has_data=bool(evals), metrics=metrics)
+    classified = {'low','normal','high','very_high','attention'}
+    diagnosis_parts = []
+    any_classified = False
+    for m in metrics:
+        if m['status'] in classified:
+            any_classified = True
+            if m['status'] in ('high', 'very_high', 'attention'):
+                nivel = 'muy elevado' if m['status'] == 'very_high' else ('elevado' if m['status'] == 'high' else 'fuera de rango')
+                diagnosis_parts.append(f"{m['label']}: {nivel}")
+    if diagnosis_parts:
+        diagnosis_summary = 'Según tu última evaluación, esto requiere atención: ' + '; '.join(diagnosis_parts) + '.'
+    elif any_classified:
+        diagnosis_summary = 'Según tu última evaluación, tus valores están dentro de rango normal. ¡Vas muy bien!'
+    else:
+        diagnosis_summary = None
+    return render_template('client/health.html', client=client, age=age, has_data=bool(evals), metrics=metrics, diagnosis_summary=diagnosis_summary)
 
 # ========== API CLIENTE ==========
 

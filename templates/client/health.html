@@ -63,7 +63,13 @@
         .condition-select { width: 100%; margin-top: 8px; padding: 10px 12px; border-radius: 10px; border: 1px solid rgba(0,0,0,0.08); background: #fff; font-family: inherit; font-size: 13px; color: #3a3a3a; }
         .goal-line { font-size: 11px; color: #6a6a6a; margin-top: 6px; }
         .goal-line strong { color: #2d7a2d; }
-    </style>
+            .diagnosis-banner { background: linear-gradient(135deg, #fff8e6, #fffaf0); border: 1px solid rgba(212,160,23,0.25); border-radius: 16px; padding: 16px; margin-bottom: 16px; font-size: 13px; color: #5a4600; line-height: 1.5; }
+        .diagnosis-banner strong { color: #1a1a1a; }
+        .ideal-line { font-size: 11px; color: #2d7a2d; margin-top: 6px; font-weight: 600; }
+        .challenge-cta { display: block; margin-top: 18px; background: linear-gradient(135deg, #2d7a2d, #4a8c2a); color: #fff; text-decoration: none; font-weight: 700; font-size: 14px; padding: 14px; border-radius: 14px; text-align: center; }
+        .header-facts { display: flex; justify-content: center; gap: 14px; font-size: 12px; color: #5a5a5a; margin-top: 4px; flex-wrap: wrap; }
+        .header-facts strong { color: #1a1a1a; }
+</style>
 </head>
 <body>
     <div class="container">
@@ -71,7 +77,11 @@
         <div class="header">
             <span class="badge">🩺 EVALUACIÓN Y SEGUIMIENTO</span>
             <h1>Mi Salud, {{ client.name.split(' ')[0] }}</h1>
-            <p>{% if age %}{{ age }} años · {% endif %}Datos capturados en tus visitas al club</p>
+            <div class="header-facts">
+                <span>Edad: <strong>{% if age %}{{ age }} años{% else %}No registrada{% endif %}</strong></span>
+                <span>Estatura: <strong>{% if client.height %}{{ client.height }} cm{% else %}No registrada{% endif %}</strong></span>
+            </div>
+            <p>Datos capturados en tus visitas al club</p>
         </div>
 
         {% if not has_data %}
@@ -137,6 +147,11 @@
             }
         </script>
         {% else %}
+        {% if diagnosis_summary %}
+        <div class="diagnosis-banner">
+            🩺 <strong>Diagnóstico breve:</strong> {{ diagnosis_summary }}
+        </div>
+        {% endif %}
         {% for m in metrics %}
         <div class="metric-card">
             <div class="metric-top">
@@ -157,6 +172,9 @@
                 {% elif m.status == 'attention' %}⚠️ Fuera de rango
                 {% else %}Informativo{% endif %}
             </span>
+            {% if m.ideal %}
+            <div class="ideal-line">Lo ideal es: {{ m.ideal }}</div>
+            {% endif %}
             {% if m.goal %}
             <div class="goal-line">🎯 Tu meta: <strong>{{ m.goal }}{{ m.unit }}</strong></div>
             {% endif %}
@@ -169,6 +187,9 @@
             <div class="explain-text">{{ m.explain }}</div>
         </div>
         {% endfor %}
+        <a href="https://wa.me/529512470417?text={{ ('Hola, ya tengo mi evaluación corporal en el Club de Nutrición Etla. Quiero entrar al Reto de 10 días para mejorar mi composición corporal, mi nombre es ' + client.name) | urlencode }}" target="_blank" class="challenge-cta">
+            🎯 Entrar al Reto de 10 días
+        </a>
         {% endif %}
     </div>
 
