@@ -61,11 +61,11 @@
             msg.classList.add('visible');
         }
         btn.addEventListener('click', async () => {
-            const pin = document.getElementById('pin').value.trim();
-            if (!/^\\d{4}$/.test(pin)) { showMsg('El PIN debe ser de 4 dígitos'); return; }
+            const pin = document.getElementById('pin').value.replace(/[^0-9]/g, '');
+            if (pin.length !== 4) { showMsg('El PIN debe ser de 4 digitos (se detectaron ' + pin.length + ')'); return; }
             const body = new URLSearchParams({ pin });
             if (creating) {
-                const pin2 = document.getElementById('pin2').value.trim();
+                const pin2 = document.getElementById('pin2').value.replace(/[^0-9]/g, '');
                 body.append('pin2', pin2);
             }
             btn.disabled = true;
