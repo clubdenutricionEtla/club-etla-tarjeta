@@ -659,38 +659,8 @@
         body[data-month="11"] { --theme-a:#d97706; --theme-b:#d4a017; --theme-c:#2d7a2d; --theme-d:#ffffff; }
         body[data-month="12"] { --theme-a:#d4a017; --theme-b:#2d7a2d; --theme-c:#ffffff; --theme-d:#d4a017; }
 
-        /* Holograma general sobre la tarjeta, siempre detras del contenido (z-index bajo) */
-        .card-flipper { position: relative; }
-        .card-flipper::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            z-index: 0;
-            pointer-events: none;
-            border-radius: inherit;
-            background: linear-gradient(115deg,
-                transparent 20%,
-                color-mix(in srgb, var(--theme-c) 18%, transparent) 40%,
-                color-mix(in srgb, var(--theme-b) 22%, transparent) 50%,
-                color-mix(in srgb, var(--theme-a) 16%, transparent) 60%,
-                transparent 80%);
-            background-size: 250% 250%;
-            animation: holoSweep 9s ease-in-out infinite;
-            mix-blend-mode: overlay;
-            opacity: 0.55;
-        }
-        @keyframes holoSweep {
-            0%   { background-position: 0% 50%; }
-            50%  { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* Asegurar que el QR SIEMPRE quede por encima del holograma, nitido y blanco */
-        .qr-wrapper, .qr-code { position: relative; z-index: 5; isolation: isolate; }
+        /* Asegurar que el QR se vea nitido sobre fondo blanco */
         .qr-code img { background: #ffffff; }
-
-        /* El resto del contenido de la tarjeta por encima del holograma */
-        .card-front > * { position: relative; z-index: 2; }
 
         /* Holograma sutil en el banner MI SALUD */
         .health-banner { overflow: hidden; }
