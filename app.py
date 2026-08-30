@@ -267,8 +267,8 @@ def health():
     client = get_client_from_session()
     if not client:
         return redirect(url_for('login'))
-        if session.get('health_ok') != client.id:
-            return redirect(url_for('health_pin'))
+    if session.get('health_ok') != client.id:
+        return redirect(url_for('health_pin'))
 
     evals = Evaluation.query.filter_by(client_id=client.id).order_by(Evaluation.eval_date).all()
     latest = evals[-1] if evals else None
