@@ -635,6 +635,127 @@
             font-weight: 700;
             padding-top: 4px;
         }
+        /* ============================================================
+           MI CLUB ETLA — HOLOGRAMA PREMIUM + TEMAS MENSUALES
+           Capa 100% decorativa, aditiva, pointer-events:none.
+           No toca ninguna clase/ID funcional existente.
+        ============================================================ */
+        :root {
+            --theme-a: #2d7a2d;
+            --theme-b: #ffffff;
+            --theme-c: #d4a017;
+            --theme-d: #c62828;
+        }
+        body[data-month="1"]  { --theme-a:#ffffff; --theme-b:#d4a017; --theme-c:#2d7a2d; --theme-d:#2d7a2d; }
+        body[data-month="2"]  { --theme-a:#2d7a2d; --theme-b:#f06292; --theme-c:#d4a017; --theme-d:#f06292; }
+        body[data-month="3"]  { --theme-a:#2d7a2d; --theme-b:#ffffff; --theme-c:#d4a017; --theme-d:#a8e063; }
+        body[data-month="4"]  { --theme-a:#4a8c2a; --theme-b:#a8e063; --theme-c:#ffffff; --theme-d:#f8bbd0; }
+        body[data-month="5"]  { --theme-a:#2d7a2d; --theme-b:#f8bbd0; --theme-c:#d4a017; --theme-d:#f06292; }
+        body[data-month="6"]  { --theme-a:#2d7a2d; --theme-b:#d4a017; --theme-c:#4a90d9; --theme-d:#4a90d9; }
+        body[data-month="7"]  { --theme-a:#2d7a2d; --theme-b:#ffca28; --theme-c:#4fc3f7; --theme-d:#ffca28; }
+        body[data-month="8"]  { --theme-a:#2d7a2d; --theme-b:#1e4d2b; --theme-c:#a8e063; --theme-d:#a8e063; }
+        body[data-month="9"]  { --theme-a:#2d7a2d; --theme-b:#ffffff; --theme-c:#c62828; --theme-d:#d4a017; }
+        body[data-month="10"] { --theme-a:#d97706; --theme-b:#d4a017; --theme-c:#2d7a2d; --theme-d:#d97706; }
+        body[data-month="11"] { --theme-a:#d97706; --theme-b:#d4a017; --theme-c:#2d7a2d; --theme-d:#ffffff; }
+        body[data-month="12"] { --theme-a:#d4a017; --theme-b:#2d7a2d; --theme-c:#ffffff; --theme-d:#d4a017; }
+
+        /* Holograma general sobre la tarjeta, siempre detras del contenido (z-index bajo) */
+        .card-flipper { position: relative; }
+        .card-flipper::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            border-radius: inherit;
+            background: linear-gradient(115deg,
+                transparent 20%,
+                color-mix(in srgb, var(--theme-c) 18%, transparent) 40%,
+                color-mix(in srgb, var(--theme-b) 22%, transparent) 50%,
+                color-mix(in srgb, var(--theme-a) 16%, transparent) 60%,
+                transparent 80%);
+            background-size: 250% 250%;
+            animation: holoSweep 9s ease-in-out infinite;
+            mix-blend-mode: overlay;
+            opacity: 0.55;
+        }
+        @keyframes holoSweep {
+            0%   { background-position: 0% 50%; }
+            50%  { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Asegurar que el QR SIEMPRE quede por encima del holograma, nitido y blanco */
+        .qr-wrapper, .qr-code { position: relative; z-index: 5; isolation: isolate; }
+        .qr-code img { background: #ffffff; }
+
+        /* El resto del contenido de la tarjeta por encima del holograma */
+        .card-front > * { position: relative; z-index: 2; }
+
+        /* Holograma sutil en el banner MI SALUD */
+        .health-banner { overflow: hidden; }
+        .health-banner::after {
+            content: '';
+            position: absolute; inset: 0;
+            pointer-events: none;
+            background: linear-gradient(100deg, transparent 30%, rgba(255,255,255,0.35) 48%, transparent 66%);
+            background-size: 220% 100%;
+            animation: holoShine 5s ease-in-out infinite;
+        }
+        @keyframes holoShine {
+            0%, 100% { background-position: 140% 0; }
+            50% { background-position: -40% 0; }
+        }
+
+        /* Holograma dorado sutil en la tarjeta de recompensa */
+        .reward-card { position: relative; overflow: hidden; }
+        .reward-card::after {
+            content: '';
+            position: absolute; inset: 0;
+            pointer-events: none;
+            background: linear-gradient(100deg, transparent 35%, color-mix(in srgb, var(--theme-c) 40%, transparent) 50%, transparent 65%);
+            background-size: 220% 100%;
+            animation: holoShine 7s ease-in-out infinite;
+        }
+
+        /* Contorno fino neon en casillas vacias (mas especifico, gana por cascada) */
+        .vasos-grid .vaso.cubierto {
+            border: 1px solid rgba(160,255,160,0.4);
+            box-shadow: 0 0 5px rgba(160,255,160,0.3), inset 0 0 4px rgba(160,255,160,0.08);
+        }
+
+        /* Pequeno brillo holografico estatico en casillas completadas */
+        .vaso.destapado { position: relative; overflow: hidden; }
+        .vaso.destapado::after {
+            content: '';
+            position: absolute; inset: 0;
+            pointer-events: none;
+            background: linear-gradient(120deg, transparent 40%, rgba(255,255,255,0.45) 50%, transparent 60%);
+        }
+        .vaso.trofeo { position: relative; overflow: hidden; }
+        .vaso.trofeo::after {
+            content: '';
+            position: absolute; inset: 0;
+            pointer-events: none;
+            background: linear-gradient(120deg, transparent 35%, rgba(255,255,255,0.5) 50%, transparent 65%);
+            background-size: 220% 100%;
+            animation: holoShine 4s ease-in-out infinite;
+        }
+
+        /* Brillo muy tenue en el nombre ETLA del encabezado, si existe esa clase */
+        .etla {
+            text-shadow: 0 0 12px color-mix(in srgb, var(--theme-c) 45%, transparent);
+        }
+
+        /* Accesibilidad: respetar "reducir movimiento" */
+        @media (prefers-reduced-motion: reduce) {
+            .card-flipper::before,
+            .health-banner::after,
+            .reward-card::after,
+            .vaso.trofeo::after {
+                animation: none !important;
+            }
+        }
 </style>
 </head>
 <body>
@@ -1133,5 +1254,9 @@
         });
     </script>
 
+    <script>
+        // Tema mensual automatico (solo visual, no toca logica de negocio)
+        document.body.setAttribute('data-month', new Date().getMonth() + 1);
+    </script>
 </body>
 </html>
