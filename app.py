@@ -8,6 +8,7 @@ import secrets
 import base64
 from io import BytesIO
 import qrcode
+from werkzeug.security import generate_password_hash, check_password_hash
 from config import Config
 from models import db, Client, VisitHistory, Employee, Achievement, ClientAchievement, Promotion, Referral, check_achievements, init_achievements
 from models import Product, ScratchReward, ConsumptionCategory, Evaluation
@@ -236,11 +237,38 @@ def scratch():
                          has_normal=has_normal,
                          level_data=client.get_level_data())
 
+@app.route('/health/pin', methods=['GET', 'POST'])
+def health_pin():
+    client = get_client_from_session()
+    if not client:
+        return redirect(url_for('login'))
+    creating = client.pin_hash is None
+    if request.method == 'POST':
+        pin = (request.form.get('pin') or '').strip()
+        if not pin.isdigit() or len(pin) != 4:
+            return jsonify({'error': 'El PIN debe ser de 4 dígitos numéricos'}), 400
+        if creating:
+            pin2 = (request.form.get('pin2') or '').strip()
+            if pin != pin2:
+                return jsonify({'error': 'Los PIN no coinciden'}), 400
+            client.pin_hash = generate_password_hash(pin)
+            db.session.commit()
+            session['health_ok'] = client.id
+            return jsonify({'success': True, 'redirect': url_for('health')})
+        else:
+            if check_password_hash(client.pin_hash, pin):
+                session['health_ok'] = client.id
+                return jsonify({'success': True, 'redirect': url_for('health')})
+            return jsonify({'error': 'PIN incorrecto'}), 401
+    return render_template('client/health_pin.html', client=client, creating=creating)
+
 @app.route('/health')
 def health():
     client = get_client_from_session()
     if not client:
         return redirect(url_for('login'))
+        if session.get('health_ok') != client.id:
+            return redirect(url_for('health_pin'))
 
     evals = Evaluation.query.filter_by(client_id=client.id).order_by(Evaluation.eval_date).all()
     latest = evals[-1] if evals else None
@@ -1144,6 +1172,20 @@ def api_delete_evaluation(eval_id):
     db.session.delete(ev)
     db.session.commit()
     return jsonify({'success': True})
+
+@app.route('/api/admin/clients/<int:client_id>/reset-pin', methods=['POST'])
+def api_reset_client_pin(client_id):
+    if 'employee_id' not in session:
+        return jsonify({'error': 'No autorizado'}), 401
+    admin_emp = Employee.query.get(session['employee_id'])
+    if not admin_emp or admin_emp.role != 'admin':
+        return jsonify({'error': 'No autorizado'}), 401
+    client = Client.query.get(client_id)
+    if not client:
+        return jsonify({'error': 'Cliente no encontrado'}), 404
+    client.pin_hash = None
+    db.session.commit()
+    return jsonify({'success': True, 'message': 'PIN reiniciado, el cliente creara uno nuevo en su siguiente visita a Mi Salud'})
 
 # ===== ADMIN - GESTIÓN DE EMPLEADOS =====
 @app.route('/admin/employees')

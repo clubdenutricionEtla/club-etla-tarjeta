@@ -72,6 +72,7 @@
                     <div class="full" style="font-size:12px;color:#6a6a6a;">Edad actual: <strong id="clientAge">-</strong></div>
                 </div>
                 <button class="btn-secondary" id="savePersonalBtn">Guardar edad y estatura</button>
+                <button class="btn-secondary" id="resetPinBtn" style="margin-top:6px;">🔓 Reiniciar PIN de Mi Salud</button>
             </div>
 
             <div class="card">
@@ -244,6 +245,14 @@
             } else {
                 showMsg(data.error || 'Error al guardar', false);
             }
+        });
+
+        document.getElementById('resetPinBtn').addEventListener('click', async () => {
+            if (!confirm('¿Reiniciar el PIN de Mi Salud de este cliente? Tendra que crear uno nuevo en su siguiente visita.')) return;
+            const res = await fetch(`/api/admin/clients/${currentClientId}/reset-pin`, { method: 'POST' });
+            const data = await res.json();
+            if (res.ok) showMsg(data.message, true);
+            else showMsg(data.error || 'Error al reiniciar PIN', false);
         });
 
         document.getElementById('savePersonalBtn').addEventListener('click', async () => {

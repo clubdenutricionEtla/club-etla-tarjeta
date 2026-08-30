@@ -18,6 +18,7 @@ class Client(db.Model):
     avatar = db.Column(db.String(200), nullable=True)
     gender = db.Column(db.String(10), nullable=True)
     height = db.Column(db.Float, nullable=True)
+    pin_hash = db.Column(db.String(255), nullable=True)
     goal_weight = db.Column(db.Float, nullable=True)
     goal_imc = db.Column(db.Float, nullable=True)
     goal_body_fat = db.Column(db.Float, nullable=True)

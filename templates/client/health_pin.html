@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Mi Salud - Verificación</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(180deg, #fbfaf7 0%, #f5efe8 100%);
+            min-height: 100vh; display: flex; align-items: center; justify-content: center;
+            padding: 20px;
+        }
+        .container { max-width: 380px; width: 100%; text-align: center; }
+        .icon { font-size: 44px; margin-bottom: 10px; }
+        h1 { font-size: 20px; color: #1a1a1a; margin-bottom: 6px; }
+        p { font-size: 13px; color: #6a6a6a; margin-bottom: 24px; line-height: 1.5; }
+        .pin-input {
+            width: 100%; font-size: 28px; letter-spacing: 12px; text-align: center;
+            padding: 14px; border-radius: 14px; border: 2px solid rgba(0,0,0,0.08);
+            font-family: inherit; margin-bottom: 14px;
+        }
+        .pin-input:focus { outline: none; border-color: #2d7a2d; }
+        .btn { width: 100%; padding: 14px; border: none; border-radius: 14px; font-weight: 700; font-size: 15px; cursor: pointer; background: linear-gradient(135deg, #2d7a2d, #4a8c2a); color: #fff; margin-top: 4px; }
+        .btn:disabled { opacity: 0.5; }
+        .msg { padding: 10px 14px; border-radius: 10px; margin-bottom: 14px; display: none; font-size: 13px; background: rgba(231,76,60,0.08); color: #e74c3c; }
+        .msg.visible { display: block; }
+        .back-link { display: block; margin-top: 16px; color: #2d7a2d; text-decoration: none; font-weight: 600; font-size: 13px; }
+        .label { font-size: 12px; color: #6a6a6a; font-weight: 600; margin: 12px 0 6px; text-align: left; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        {% if creating %}
+        <div class="icon">🔐</div>
+        <h1>Crea tu PIN de Mi Salud</h1>
+        <p>Con este PIN de 4 dígitos vas a proteger tu evaluación corporal. Solo tú lo vas a saber — úsalo cada vez que quieras ver tus resultados desde un dispositivo nuevo.</p>
+        {% else %}
+        <div class="icon">🔒</div>
+        <h1>Ingresa tu PIN</h1>
+        <p>Tu evaluación corporal está protegida. Ingresa tu PIN de 4 dígitos para verla.</p>
+        {% endif %}
+        <div id="msg" class="msg"></div>
+        <div class="label">PIN</div>
+        <input type="password" inputmode="numeric" maxlength="4" class="pin-input" id="pin" placeholder="••••">
+        {% if creating %}
+        <div class="label">Confirma tu PIN</div>
+        <input type="password" inputmode="numeric" maxlength="4" class="pin-input" id="pin2" placeholder="••••">
+        {% endif %}
+        <button class="btn" id="submitBtn">{% if creating %}Crear PIN y continuar{% else %}Verificar{% endif %}</button>
+        <a href="/card" class="back-link">← Volver a mi tarjeta</a>
+    </div>
+    <script>
+        const creating = {{ 'true' if creating else 'false' }};
+        const msg = document.getElementById('msg');
+        const btn = document.getElementById('submitBtn');
+        function showMsg(text) {
+            msg.textContent = text;
+            msg.classList.add('visible');
+        }
+        btn.addEventListener('click', async () => {
+            const pin = document.getElementById('pin').value.trim();
+            if (!/^\\d{4}$/.test(pin)) { showMsg('El PIN debe ser de 4 dígitos'); return; }
+            const body = new URLSearchParams({ pin });
+            if (creating) {
+                const pin2 = document.getElementById('pin2').value.trim();
+                body.append('pin2', pin2);
+            }
+            btn.disabled = true;
+            btn.textContent = 'Verificando...';
+            try {
+                const res = await fetch('/health/pin', { method: 'POST', body });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    window.location.href = data.redirect;
+                } else {
+                    showMsg(data.error || 'Ocurrió un error');
+                    btn.disabled = false;
+                    btn.textContent = creating ? 'Crear PIN y continuar' : 'Verificar';
+                }
+            } catch (err) {
+                showMsg('Error de conexión');
+                btn.disabled = false;
+                btn.textContent = creating ? 'Crear PIN y continuar' : 'Verificar';
+            }
+        });
+    </script>
+</body>
+</html>
