@@ -670,13 +670,13 @@
             border-radius: 24px;
             background: linear-gradient(115deg,
                 transparent 25%,
-                color-mix(in srgb, var(--theme-c) 14%, transparent) 42%,
-                color-mix(in srgb, var(--theme-b) 16%, transparent) 50%,
-                color-mix(in srgb, var(--theme-a) 12%, transparent) 58%,
+                rgba(212,160,23,0.16) 42%,
+                rgba(255,255,255,0.22) 50%,
+                rgba(45,122,45,0.14) 58%,
                 transparent 75%);
             background-size: 250% 250%;
             animation: holoSweep 9s ease-in-out infinite;
-            opacity: 0.5;
+            opacity: 0.65;
         }
         @keyframes holoSweep {
             0%   { background-position: 0% 50%; }
@@ -708,7 +708,7 @@
             content: '';
             position: absolute; inset: 0;
             pointer-events: none;
-            background: linear-gradient(100deg, transparent 35%, color-mix(in srgb, var(--theme-c) 40%, transparent) 50%, transparent 65%);
+            background: linear-gradient(100deg, transparent 35%, rgba(212,160,23,0.35) 50%, transparent 65%);
             background-size: 220% 100%;
             animation: holoShine 7s ease-in-out infinite;
         }
@@ -739,7 +739,7 @@
 
         /* Brillo muy tenue en el nombre ETLA del encabezado, si existe esa clase */
         .etla {
-            text-shadow: 0 0 12px color-mix(in srgb, var(--theme-c) 45%, transparent);
+            text-shadow: 0 0 12px rgba(212,160,23,0.4);
         }
 
         /* Accesibilidad: respetar "reducir movimiento" */
