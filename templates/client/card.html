@@ -669,14 +669,51 @@
             pointer-events: none;
             border-radius: 24px;
             background: linear-gradient(115deg,
-                transparent 25%,
-                rgba(212,160,23,0.16) 42%,
-                rgba(255,255,255,0.22) 50%,
-                rgba(45,122,45,0.14) 58%,
-                transparent 75%);
+                transparent 20%,
+                rgba(212,160,23,0.26) 40%,
+                rgba(255,255,255,0.34) 50%,
+                rgba(45,122,45,0.24) 60%,
+                transparent 80%);
             background-size: 250% 250%;
             animation: holoSweep 9s ease-in-out infinite;
-            opacity: 0.65;
+            opacity: 0.8;
+        }
+        /* Colores del holograma segun el mes (mismo tema definido en :root, en rgba fijo por compatibilidad) */
+        body[data-month="1"] .card-wrapper::before {
+            background: linear-gradient(115deg, transparent 20%, rgba(255,255,255,0.32) 40%, rgba(212,160,23,0.32) 50%, rgba(45,122,45,0.22) 60%, transparent 80%);
+        }
+        body[data-month="2"] .card-wrapper::before {
+            background: linear-gradient(115deg, transparent 20%, rgba(45,122,45,0.22) 40%, rgba(240,98,146,0.32) 50%, rgba(212,160,23,0.24) 60%, transparent 80%);
+        }
+        body[data-month="3"] .card-wrapper::before {
+            background: linear-gradient(115deg, transparent 20%, rgba(45,122,45,0.24) 40%, rgba(255,255,255,0.30) 50%, rgba(168,224,99,0.30) 60%, transparent 80%);
+        }
+        body[data-month="4"] .card-wrapper::before {
+            background: linear-gradient(115deg, transparent 20%, rgba(168,224,99,0.28) 40%, rgba(255,255,255,0.28) 50%, rgba(248,187,208,0.28) 60%, transparent 80%);
+        }
+        body[data-month="5"] .card-wrapper::before {
+            background: linear-gradient(115deg, transparent 20%, rgba(45,122,45,0.22) 40%, rgba(248,187,208,0.32) 50%, rgba(212,160,23,0.24) 60%, transparent 80%);
+        }
+        body[data-month="6"] .card-wrapper::before {
+            background: linear-gradient(115deg, transparent 20%, rgba(45,122,45,0.22) 40%, rgba(212,160,23,0.28) 50%, rgba(74,144,217,0.26) 60%, transparent 80%);
+        }
+        body[data-month="7"] .card-wrapper::before {
+            background: linear-gradient(115deg, transparent 20%, rgba(45,122,45,0.22) 40%, rgba(255,202,40,0.30) 50%, rgba(79,195,247,0.28) 60%, transparent 80%);
+        }
+        body[data-month="8"] .card-wrapper::before {
+            background: linear-gradient(115deg, transparent 20%, rgba(45,122,45,0.26) 40%, rgba(30,77,43,0.26) 50%, rgba(168,224,99,0.28) 60%, transparent 80%);
+        }
+        body[data-month="9"] .card-wrapper::before {
+            background: linear-gradient(115deg, transparent 20%, rgba(45,122,45,0.28) 40%, rgba(255,255,255,0.32) 50%, rgba(198,40,40,0.28) 60%, transparent 80%);
+        }
+        body[data-month="10"] .card-wrapper::before {
+            background: linear-gradient(115deg, transparent 20%, rgba(217,119,6,0.30) 40%, rgba(212,160,23,0.30) 50%, rgba(45,122,45,0.24) 60%, transparent 80%);
+        }
+        body[data-month="11"] .card-wrapper::before {
+            background: linear-gradient(115deg, transparent 20%, rgba(217,119,6,0.28) 40%, rgba(212,160,23,0.30) 50%, rgba(255,255,255,0.26) 60%, transparent 80%);
+        }
+        body[data-month="12"] .card-wrapper::before {
+            background: linear-gradient(115deg, transparent 20%, rgba(212,160,23,0.32) 40%, rgba(45,122,45,0.24) 50%, rgba(255,255,255,0.30) 60%, transparent 80%);
         }
         @keyframes holoSweep {
             0%   { background-position: 0% 50%; }
