@@ -69,6 +69,50 @@
         .challenge-cta { display: block; margin-top: 18px; background: linear-gradient(135deg, #2d7a2d, #4a8c2a); color: #fff; text-decoration: none; font-weight: 700; font-size: 14px; padding: 14px; border-radius: 14px; text-align: center; }
         .header-facts { display: flex; justify-content: center; gap: 14px; font-size: 12px; color: #5a5a5a; margin-top: 4px; flex-wrap: wrap; }
         .header-facts strong { color: #1a1a1a; }
+        .challenge-fab {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 200;
+            background: linear-gradient(135deg, #2d7a2d, #4a8c2a);
+            color: #fff;
+            border: none;
+            font-weight: 700;
+            font-size: 14px;
+            padding: 14px 26px;
+            border-radius: 30px;
+            box-shadow: 0 8px 24px rgba(45,122,45,0.35);
+            cursor: pointer;
+        }
+        .challenge-modal-overlay {
+            display: none;
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.45);
+            z-index: 300;
+            align-items: flex-end;
+            justify-content: center;
+        }
+        .challenge-modal-overlay.visible { display: flex; }
+        .challenge-modal {
+            background: #fff;
+            border-radius: 24px 24px 0 0;
+            padding: 28px 24px;
+            max-width: 480px;
+            width: 100%;
+            text-align: center;
+        }
+        .challenge-modal-icon { font-size: 40px; margin-bottom: 8px; }
+        .challenge-modal h2 { font-size: 19px; color: #1a1a1a; margin-bottom: 10px; }
+        .challenge-modal p { font-size: 13px; color: #6a6a6a; line-height: 1.55; margin-bottom: 18px; }
+        .challenge-modal-btn {
+            display: block;
+            background: linear-gradient(135deg, #25D366, #128C7E);
+            color: #fff; text-decoration: none; font-weight: 700; padding: 14px; border-radius: 14px; margin-bottom: 10px;
+        }
+        .challenge-modal-close {
+            background: none; border: none; color: #6a6a6a; font-size: 13px; font-weight: 600; padding: 8px; cursor: pointer;
+        }
 </style>
 </head>
 <body>
@@ -187,9 +231,18 @@
             <div class="explain-text">{{ m.explain }}</div>
         </div>
         {% endfor %}
-        <a href="https://wa.me/529512470417?text={{ ('Hola, ya tengo mi evaluación corporal en el Club de Nutrición Etla. Quiero entrar al Reto de 10 días para mejorar mi composición corporal, mi nombre es ' + client.name) | urlencode }}" target="_blank" class="challenge-cta">
-            🎯 Entrar al Reto de 10 días
-        </a>
+        <button type="button" class="challenge-fab" onclick="openChallengeModal()">🎯 Reto de 10 días</button>
+        <div class="challenge-modal-overlay" id="challengeModalOverlay" onclick="closeChallengeModal(event)">
+            <div class="challenge-modal">
+                <div class="challenge-modal-icon">🎯</div>
+                <h2>Reto de 10 días</h2>
+                <p>Es un acompañamiento de 10 días con el club para ayudarte a mejorar tu composición corporal, con seguimiento de tus visitas y tu progreso. Un asesor del club se pondrá en contacto por WhatsApp para armar tu plan.</p>
+                <a href="https://wa.me/529512470417?text={{ ('Hola, ya tengo mi evaluación corporal en el Club de Nutrición Etla. Quiero entrar al Reto de 10 días para mejorar mi composición corporal, mi nombre es ' + client.name) | urlencode }}" target="_blank" class="challenge-modal-btn">
+                    💬 Continuar a WhatsApp
+                </a>
+                <button type="button" class="challenge-modal-close" onclick="closeChallengeModal(event)">Cerrar</button>
+            </div>
+        </div>
         {% endif %}
     </div>
 
@@ -225,6 +278,16 @@
                 });
             }
         });
+    </script>
+    <script>
+        function openChallengeModal() {
+            document.getElementById('challengeModalOverlay').classList.add('visible');
+        }
+        function closeChallengeModal(e) {
+            if (e.target.id === 'challengeModalOverlay' || e.target.classList.contains('challenge-modal-close')) {
+                document.getElementById('challengeModalOverlay').classList.remove('visible');
+            }
+        }
     </script>
 </body>
 </html>
