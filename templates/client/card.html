@@ -788,6 +788,41 @@
                 animation: none !important;
             }
         }
+        .premium-card { position: relative; }
+        .holo-overlay {
+            position: absolute; inset: 0;
+            border-radius: inherit;
+            pointer-events: none;
+            z-index: 6;
+            overflow: hidden;
+            background: linear-gradient(115deg,
+                transparent 12%,
+                rgba(45,122,45,0.28) 26%,
+                rgba(212,160,23,0.32) 38%,
+                rgba(255,255,255,0.4) 48%,
+                rgba(240,98,146,0.30) 58%,
+                rgba(74,144,217,0.28) 70%,
+                transparent 85%);
+            background-size: 300% 300%;
+            animation: holoSweepCard 6s ease-in-out infinite;
+        }
+        @keyframes holoSweepCard {
+            0%   { background-position: 0% 30%; }
+            50%  { background-position: 100% 70%; }
+            100% { background-position: 0% 30%; }
+        }
+        body[data-month="1"]  .holo-overlay { background: linear-gradient(115deg, transparent 12%, rgba(255,255,255,0.38) 30%, rgba(212,160,23,0.38) 50%, rgba(45,122,45,0.28) 68%, transparent 85%); }
+        body[data-month="2"]  .holo-overlay { background: linear-gradient(115deg, transparent 12%, rgba(45,122,45,0.26) 30%, rgba(240,98,146,0.38) 50%, rgba(212,160,23,0.28) 68%, transparent 85%); }
+        body[data-month="3"]  .holo-overlay { background: linear-gradient(115deg, transparent 12%, rgba(45,122,45,0.28) 30%, rgba(255,255,255,0.36) 50%, rgba(168,224,99,0.34) 68%, transparent 85%); }
+        body[data-month="4"]  .holo-overlay { background: linear-gradient(115deg, transparent 12%, rgba(168,224,99,0.32) 30%, rgba(255,255,255,0.34) 50%, rgba(248,187,208,0.32) 68%, transparent 85%); }
+        body[data-month="5"]  .holo-overlay { background: linear-gradient(115deg, transparent 12%, rgba(45,122,45,0.26) 30%, rgba(248,187,208,0.36) 50%, rgba(212,160,23,0.28) 68%, transparent 85%); }
+        body[data-month="6"]  .holo-overlay { background: linear-gradient(115deg, transparent 12%, rgba(45,122,45,0.26) 30%, rgba(212,160,23,0.32) 50%, rgba(74,144,217,0.30) 68%, transparent 85%); }
+        body[data-month="7"]  .holo-overlay { background: linear-gradient(115deg, transparent 12%, rgba(45,122,45,0.26) 30%, rgba(255,202,40,0.34) 50%, rgba(79,195,247,0.32) 68%, transparent 85%); }
+        body[data-month="8"]  .holo-overlay { background: linear-gradient(115deg, transparent 12%, rgba(45,122,45,0.30) 30%, rgba(30,77,43,0.30) 50%, rgba(168,224,99,0.32) 68%, transparent 85%); }
+        body[data-month="9"]  .holo-overlay { background: linear-gradient(115deg, transparent 12%, rgba(45,122,45,0.32) 30%, rgba(255,255,255,0.38) 50%, rgba(198,40,40,0.32) 68%, transparent 85%); }
+        body[data-month="10"] .holo-overlay { background: linear-gradient(115deg, transparent 12%, rgba(217,119,6,0.34) 30%, rgba(212,160,23,0.34) 50%, rgba(45,122,45,0.28) 68%, transparent 85%); }
+        body[data-month="11"] .holo-overlay { background: linear-gradient(115deg, transparent 12%, rgba(217,119,6,0.32) 30%, rgba(212,160,23,0.34) 50%, rgba(255,255,255,0.30) 68%, transparent 85%); }
+        body[data-month="12"] .holo-overlay { background: linear-gradient(115deg, transparent 12%, rgba(212,160,23,0.36) 30%, rgba(45,122,45,0.28) 50%, rgba(255,255,255,0.34) 68%, transparent 85%); }
 </style>
 </head>
 <body>
@@ -901,6 +936,7 @@
                             </div>
                         </div>
                         <div class="flip-hint">👆 Toca la tarjeta para ver el reverso</div>
+                        <div class="holo-overlay"></div>
                     </div>
                 </div>
 
@@ -945,6 +981,7 @@
                                 <span class="heart">♡</span>
                             </div>
                             <div class="back-flip-hint">☝️ Toca para volver</div>
+                            <div class="holo-overlay"></div>
                         </div>
                     </div>
                 </div>
