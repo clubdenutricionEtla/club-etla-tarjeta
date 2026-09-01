@@ -229,7 +229,7 @@
         }
         .card-front > *, .card-back > * { position: relative; z-index: 1; }
 
-        .qr-wrapper { display: flex; justify-content: center; margin: 4px 0 10px; }
+        .qr-wrapper { display: flex; justify-content: center; margin: 4px 0 10px; position: relative; z-index: 9; isolation: isolate; }
         .qr-code {
             width: 200px; height: 200px; background: rgba(255,255,255,0.9);
             border-radius: 16px; padding: 8px;
@@ -742,34 +742,33 @@
             pointer-events: none;
             z-index: 6;
             overflow: hidden;
-            background: linear-gradient(115deg,
-                transparent 12%,
-                rgba(45,122,45,0.28) 26%,
-                rgba(212,160,23,0.32) 38%,
-                rgba(255,255,255,0.4) 48%,
-                rgba(240,98,146,0.30) 58%,
-                rgba(74,144,217,0.28) 70%,
-                transparent 85%);
-            background-size: 300% 300%;
-            animation: holoSweepCard 6s ease-in-out infinite;
+            background-image: linear-gradient(115deg,
+                transparent 8%,
+                rgba(45,122,45,0.18) 30%,
+                rgba(212,160,23,0.20) 50%,
+                rgba(255,255,255,0.16) 70%,
+                transparent 92%);
+            background-size: 220% 220%;
+            background-repeat: no-repeat;
+            animation: holoSweepCard 7s ease-in-out infinite;
         }
         @keyframes holoSweepCard {
             0%   { background-position: 0% 30%; }
             50%  { background-position: 100% 70%; }
             100% { background-position: 0% 30%; }
         }
-        body[data-month="1"]  .holo-overlay { background: linear-gradient(115deg, transparent 12%, rgba(255,255,255,0.38) 30%, rgba(212,160,23,0.38) 50%, rgba(45,122,45,0.28) 68%, transparent 85%); }
-        body[data-month="2"]  .holo-overlay { background: linear-gradient(115deg, transparent 12%, rgba(45,122,45,0.26) 30%, rgba(240,98,146,0.38) 50%, rgba(212,160,23,0.28) 68%, transparent 85%); }
-        body[data-month="3"]  .holo-overlay { background: linear-gradient(115deg, transparent 12%, rgba(45,122,45,0.28) 30%, rgba(255,255,255,0.36) 50%, rgba(168,224,99,0.34) 68%, transparent 85%); }
-        body[data-month="4"]  .holo-overlay { background: linear-gradient(115deg, transparent 12%, rgba(168,224,99,0.32) 30%, rgba(255,255,255,0.34) 50%, rgba(248,187,208,0.32) 68%, transparent 85%); }
-        body[data-month="5"]  .holo-overlay { background: linear-gradient(115deg, transparent 12%, rgba(45,122,45,0.26) 30%, rgba(248,187,208,0.36) 50%, rgba(212,160,23,0.28) 68%, transparent 85%); }
-        body[data-month="6"]  .holo-overlay { background: linear-gradient(115deg, transparent 12%, rgba(45,122,45,0.26) 30%, rgba(212,160,23,0.32) 50%, rgba(74,144,217,0.30) 68%, transparent 85%); }
-        body[data-month="7"]  .holo-overlay { background: linear-gradient(115deg, transparent 12%, rgba(45,122,45,0.26) 30%, rgba(255,202,40,0.34) 50%, rgba(79,195,247,0.32) 68%, transparent 85%); }
-        body[data-month="8"]  .holo-overlay { background: linear-gradient(115deg, transparent 12%, rgba(45,122,45,0.30) 30%, rgba(30,77,43,0.30) 50%, rgba(168,224,99,0.32) 68%, transparent 85%); }
-        body[data-month="9"]  .holo-overlay { background: linear-gradient(115deg, transparent 12%, rgba(45,122,45,0.32) 30%, rgba(255,255,255,0.38) 50%, rgba(198,40,40,0.32) 68%, transparent 85%); }
-        body[data-month="10"] .holo-overlay { background: linear-gradient(115deg, transparent 12%, rgba(217,119,6,0.34) 30%, rgba(212,160,23,0.34) 50%, rgba(45,122,45,0.28) 68%, transparent 85%); }
-        body[data-month="11"] .holo-overlay { background: linear-gradient(115deg, transparent 12%, rgba(217,119,6,0.32) 30%, rgba(212,160,23,0.34) 50%, rgba(255,255,255,0.30) 68%, transparent 85%); }
-        body[data-month="12"] .holo-overlay { background: linear-gradient(115deg, transparent 12%, rgba(212,160,23,0.36) 30%, rgba(45,122,45,0.28) 50%, rgba(255,255,255,0.34) 68%, transparent 85%); }
+        body[data-month="1"] .holo-overlay { background-image: linear-gradient(115deg, transparent 8%, rgba(255,255,255,0.22) 30%, rgba(212,160,23,0.22) 50%, rgba(45,122,45,0.16) 70%, transparent 92%); }
+        body[data-month="2"] .holo-overlay { background-image: linear-gradient(115deg, transparent 8%, rgba(45,122,45,0.16) 30%, rgba(240,98,146,0.22) 50%, rgba(212,160,23,0.18) 70%, transparent 92%); }
+        body[data-month="3"] .holo-overlay { background-image: linear-gradient(115deg, transparent 8%, rgba(45,122,45,0.18) 30%, rgba(255,255,255,0.20) 50%, rgba(168,224,99,0.20) 70%, transparent 92%); }
+        body[data-month="4"] .holo-overlay { background-image: linear-gradient(115deg, transparent 8%, rgba(168,224,99,0.20) 30%, rgba(255,255,255,0.20) 50%, rgba(248,187,208,0.20) 70%, transparent 92%); }
+        body[data-month="5"] .holo-overlay { background-image: linear-gradient(115deg, transparent 8%, rgba(45,122,45,0.16) 30%, rgba(248,187,208,0.22) 50%, rgba(212,160,23,0.18) 70%, transparent 92%); }
+        body[data-month="6"] .holo-overlay { background-image: linear-gradient(115deg, transparent 8%, rgba(45,122,45,0.16) 30%, rgba(212,160,23,0.20) 50%, rgba(74,144,217,0.18) 70%, transparent 92%); }
+        body[data-month="7"] .holo-overlay { background-image: linear-gradient(115deg, transparent 8%, rgba(45,122,45,0.16) 30%, rgba(255,202,40,0.20) 50%, rgba(79,195,247,0.20) 70%, transparent 92%); }
+        body[data-month="8"] .holo-overlay { background-image: linear-gradient(115deg, transparent 8%, rgba(45,122,45,0.20) 30%, rgba(30,77,43,0.18) 50%, rgba(168,224,99,0.20) 70%, transparent 92%); }
+        body[data-month="9"] .holo-overlay { background-image: linear-gradient(115deg, transparent 8%, rgba(45,122,45,0.20) 30%, rgba(255,255,255,0.22) 50%, rgba(198,40,40,0.20) 70%, transparent 92%); }
+        body[data-month="10"] .holo-overlay { background-image: linear-gradient(115deg, transparent 8%, rgba(217,119,6,0.22) 30%, rgba(212,160,23,0.22) 50%, rgba(45,122,45,0.18) 70%, transparent 92%); }
+        body[data-month="11"] .holo-overlay { background-image: linear-gradient(115deg, transparent 8%, rgba(217,119,6,0.20) 30%, rgba(212,160,23,0.22) 50%, rgba(255,255,255,0.18) 70%, transparent 92%); }
+        body[data-month="12"] .holo-overlay { background-image: linear-gradient(115deg, transparent 8%, rgba(212,160,23,0.22) 30%, rgba(45,122,45,0.18) 50%, rgba(255,255,255,0.20) 70%, transparent 92%); }
 </style>
 </head>
 <body>
