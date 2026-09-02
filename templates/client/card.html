@@ -742,33 +742,35 @@
             pointer-events: none;
             z-index: 6;
             overflow: hidden;
-            background-image: linear-gradient(115deg,
-                transparent 8%,
-                rgba(45,122,45,0.18) 30%,
-                rgba(212,160,23,0.20) 50%,
-                rgba(255,255,255,0.16) 70%,
-                transparent 92%);
-            background-size: 220% 220%;
+            background-image:
+                radial-gradient(circle at 30% 20%, rgba(255,255,255,0.30) 0%, transparent 35%),
+                radial-gradient(circle at 70% 60%, rgba(212,160,23,0.22) 0%, transparent 40%),
+                radial-gradient(circle at 40% 80%, rgba(45,122,45,0.18) 0%, transparent 40%);
             background-repeat: no-repeat;
-            animation: holoSweepCard 7s ease-in-out infinite;
+            animation: holoGlow 8s ease-in-out infinite;
+        }
+        @keyframes holoGlow {
+            0%   { background-position: 0% 0%, 0% 0%, 0% 0%; }
+            50%  { background-position: 20% 15%, -15% -10%, 10% -15%; }
+            100% { background-position: 0% 0%, 0% 0%, 0% 0%; }
         }
         @keyframes holoSweepCard {
             0%   { background-position: 0% 30%; }
             50%  { background-position: 100% 70%; }
             100% { background-position: 0% 30%; }
         }
-        body[data-month="1"] .holo-overlay { background-image: linear-gradient(115deg, transparent 8%, rgba(255,255,255,0.22) 30%, rgba(212,160,23,0.22) 50%, rgba(45,122,45,0.16) 70%, transparent 92%); }
-        body[data-month="2"] .holo-overlay { background-image: linear-gradient(115deg, transparent 8%, rgba(45,122,45,0.16) 30%, rgba(240,98,146,0.22) 50%, rgba(212,160,23,0.18) 70%, transparent 92%); }
-        body[data-month="3"] .holo-overlay { background-image: linear-gradient(115deg, transparent 8%, rgba(45,122,45,0.18) 30%, rgba(255,255,255,0.20) 50%, rgba(168,224,99,0.20) 70%, transparent 92%); }
-        body[data-month="4"] .holo-overlay { background-image: linear-gradient(115deg, transparent 8%, rgba(168,224,99,0.20) 30%, rgba(255,255,255,0.20) 50%, rgba(248,187,208,0.20) 70%, transparent 92%); }
-        body[data-month="5"] .holo-overlay { background-image: linear-gradient(115deg, transparent 8%, rgba(45,122,45,0.16) 30%, rgba(248,187,208,0.22) 50%, rgba(212,160,23,0.18) 70%, transparent 92%); }
-        body[data-month="6"] .holo-overlay { background-image: linear-gradient(115deg, transparent 8%, rgba(45,122,45,0.16) 30%, rgba(212,160,23,0.20) 50%, rgba(74,144,217,0.18) 70%, transparent 92%); }
-        body[data-month="7"] .holo-overlay { background-image: linear-gradient(115deg, transparent 8%, rgba(45,122,45,0.16) 30%, rgba(255,202,40,0.20) 50%, rgba(79,195,247,0.20) 70%, transparent 92%); }
-        body[data-month="8"] .holo-overlay { background-image: linear-gradient(115deg, transparent 8%, rgba(45,122,45,0.20) 30%, rgba(30,77,43,0.18) 50%, rgba(168,224,99,0.20) 70%, transparent 92%); }
-        body[data-month="9"] .holo-overlay { background-image: linear-gradient(115deg, transparent 8%, rgba(45,122,45,0.20) 30%, rgba(255,255,255,0.22) 50%, rgba(198,40,40,0.20) 70%, transparent 92%); }
-        body[data-month="10"] .holo-overlay { background-image: linear-gradient(115deg, transparent 8%, rgba(217,119,6,0.22) 30%, rgba(212,160,23,0.22) 50%, rgba(45,122,45,0.18) 70%, transparent 92%); }
-        body[data-month="11"] .holo-overlay { background-image: linear-gradient(115deg, transparent 8%, rgba(217,119,6,0.20) 30%, rgba(212,160,23,0.22) 50%, rgba(255,255,255,0.18) 70%, transparent 92%); }
-        body[data-month="12"] .holo-overlay { background-image: linear-gradient(115deg, transparent 8%, rgba(212,160,23,0.22) 30%, rgba(45,122,45,0.18) 50%, rgba(255,255,255,0.20) 70%, transparent 92%); }
+        body[data-month="1"] .holo-overlay { background-image: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.32) 0%, transparent 35%), radial-gradient(circle at 70% 60%, rgba(212,160,23,0.24) 0%, transparent 40%), radial-gradient(circle at 40% 80%, rgba(45,122,45,0.16) 0%, transparent 40%); }
+        body[data-month="2"] .holo-overlay { background-image: radial-gradient(circle at 30% 20%, rgba(240,98,146,0.26) 0%, transparent 35%), radial-gradient(circle at 70% 60%, rgba(45,122,45,0.16) 0%, transparent 40%), radial-gradient(circle at 40% 80%, rgba(212,160,23,0.18) 0%, transparent 40%); }
+        body[data-month="3"] .holo-overlay { background-image: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.26) 0%, transparent 35%), radial-gradient(circle at 70% 60%, rgba(45,122,45,0.20) 0%, transparent 40%), radial-gradient(circle at 40% 80%, rgba(168,224,99,0.20) 0%, transparent 40%); }
+        body[data-month="4"] .holo-overlay { background-image: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.24) 0%, transparent 35%), radial-gradient(circle at 70% 60%, rgba(168,224,99,0.22) 0%, transparent 40%), radial-gradient(circle at 40% 80%, rgba(248,187,208,0.20) 0%, transparent 40%); }
+        body[data-month="5"] .holo-overlay { background-image: radial-gradient(circle at 30% 20%, rgba(248,187,208,0.26) 0%, transparent 35%), radial-gradient(circle at 70% 60%, rgba(45,122,45,0.16) 0%, transparent 40%), radial-gradient(circle at 40% 80%, rgba(212,160,23,0.18) 0%, transparent 40%); }
+        body[data-month="6"] .holo-overlay { background-image: radial-gradient(circle at 30% 20%, rgba(212,160,23,0.22) 0%, transparent 35%), radial-gradient(circle at 70% 60%, rgba(45,122,45,0.16) 0%, transparent 40%), radial-gradient(circle at 40% 80%, rgba(74,144,217,0.18) 0%, transparent 40%); }
+        body[data-month="7"] .holo-overlay { background-image: radial-gradient(circle at 30% 20%, rgba(255,202,40,0.24) 0%, transparent 35%), radial-gradient(circle at 70% 60%, rgba(45,122,45,0.16) 0%, transparent 40%), radial-gradient(circle at 40% 80%, rgba(79,195,247,0.20) 0%, transparent 40%); }
+        body[data-month="8"] .holo-overlay { background-image: radial-gradient(circle at 30% 20%, rgba(168,224,99,0.22) 0%, transparent 35%), radial-gradient(circle at 70% 60%, rgba(45,122,45,0.20) 0%, transparent 40%), radial-gradient(circle at 40% 80%, rgba(30,77,43,0.18) 0%, transparent 40%); }
+        body[data-month="9"] .holo-overlay { background-image: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.28) 0%, transparent 35%), radial-gradient(circle at 70% 60%, rgba(45,122,45,0.22) 0%, transparent 40%), radial-gradient(circle at 40% 80%, rgba(198,40,40,0.20) 0%, transparent 40%); }
+        body[data-month="10"] .holo-overlay { background-image: radial-gradient(circle at 30% 20%, rgba(212,160,23,0.24) 0%, transparent 35%), radial-gradient(circle at 70% 60%, rgba(217,119,6,0.24) 0%, transparent 40%), radial-gradient(circle at 40% 80%, rgba(45,122,45,0.18) 0%, transparent 40%); }
+        body[data-month="11"] .holo-overlay { background-image: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.22) 0%, transparent 35%), radial-gradient(circle at 70% 60%, rgba(217,119,6,0.22) 0%, transparent 40%), radial-gradient(circle at 40% 80%, rgba(212,160,23,0.20) 0%, transparent 40%); }
+        body[data-month="12"] .holo-overlay { background-image: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.24) 0%, transparent 35%), radial-gradient(circle at 70% 60%, rgba(212,160,23,0.24) 0%, transparent 40%), radial-gradient(circle at 40% 80%, rgba(45,122,45,0.18) 0%, transparent 40%); }
 </style>
 </head>
 <body>
