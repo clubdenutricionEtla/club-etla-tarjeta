@@ -788,6 +788,79 @@
             background-position: 0 0, 14px 0;
             background-repeat: repeat-x;
         }
+        .rewards-modal-overlay {
+            display: none;
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 400;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .rewards-modal-overlay.visible { display: flex; }
+        .rewards-modal {
+            background: linear-gradient(160deg, #0a0a0a, #111);
+            border: 2px solid rgba(168,224,99,0.3);
+            border-radius: 20px;
+            padding: 28px 22px;
+            max-width: 380px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 0 40px rgba(168,224,99,0.15);
+        }
+        .rewards-modal h2 {
+            font-size: 26px;
+            font-weight: 900;
+            color: #fff;
+            line-height: 1.15;
+            text-transform: uppercase;
+        }
+        .rewards-modal h2 .accent { color: #a8e063; display: block; }
+        .rewards-modal .sub {
+            color: #a8e063;
+            font-size: 12px;
+            font-weight: 700;
+            margin: 10px 0 20px;
+            letter-spacing: 0.5px;
+        }
+        .rewards-box {
+            border: 2px solid rgba(168,224,99,0.4);
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 12px;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .rewards-box .num {
+            font-size: 34px;
+            font-weight: 900;
+            color: #fff;
+            line-height: 1;
+        }
+        .rewards-box .txt { color: #fff; font-size: 13px; font-weight: 700; }
+        .rewards-box .prize { color: #a8e063; font-size: 17px; font-weight: 900; }
+        .rewards-modal-footer {
+            margin-top: 18px;
+            padding-top: 14px;
+            border-top: 1px solid rgba(168,224,99,0.2);
+            color: #a8e063;
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+        .rewards-modal-close {
+            margin-top: 16px;
+            background: none;
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #fff;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
 </style>
 </head>
 <body>
@@ -893,7 +966,7 @@
                             </div>
                         </div>
                         <div class="info-grid" style="margin-top:0;">
-                            <div class="info-card reward-card" style="grid-column: span 2;">
+                            <div class="info-card reward-card" style="grid-column: span 2; cursor: pointer;" onclick="event.stopPropagation(); openRewardsModal();">
                                 <div class="label">Mis Recompensas</div>
                                 <div class="value gold" id="recompensaText">
                                     {% if client.visits >= 10 %}🏆 10 Visitas - ¡Premio Desbloqueado!{% else %}🎯 Completa 10 visitas para tu premio{% endif %}
@@ -1291,6 +1364,32 @@
     <script>
         // Tema mensual automatico (solo visual, no toca logica de negocio)
         document.body.setAttribute('data-month', new Date().getMonth() + 1);
+    </script>
+    <div class="rewards-modal-overlay" id="rewardsModalOverlay" onclick="closeRewardsModal(event)">
+        <div class="rewards-modal">
+            <h2>TUS VISITAS<span class="accent">VALEN PREMIO!</span></h2>
+            <div class="sub">VISÍTANOS, ACUMULA Y GANA PREMIOS</div>
+            <div class="rewards-box">
+                <div class="num">5</div>
+                <div class="txt">VISITAS =<br>BEBIDA ENERGÉTICA<br><span class="prize">GRATIS 🔋</span></div>
+            </div>
+            <div class="rewards-box">
+                <div class="num">10</div>
+                <div class="txt">VISITAS =<br>WAFFLE<br><span class="prize">GRATIS 🧇</span></div>
+            </div>
+            <div class="rewards-modal-footer">Solo en Club de Nutrición Etla</div>
+            <button type="button" class="rewards-modal-close" onclick="closeRewardsModal(event)">Cerrar</button>
+        </div>
+    </div>
+    <script>
+        function openRewardsModal() {
+            document.getElementById('rewardsModalOverlay').classList.add('visible');
+        }
+        function closeRewardsModal(e) {
+            if (e.target.id === 'rewardsModalOverlay' || e.target.classList.contains('rewards-modal-close')) {
+                document.getElementById('rewardsModalOverlay').classList.remove('visible');
+            }
+        }
     </script>
 </body>
 </html>
