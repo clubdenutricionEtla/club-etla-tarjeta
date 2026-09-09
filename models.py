@@ -19,6 +19,7 @@ class Client(db.Model):
     gender = db.Column(db.String(10), nullable=True)
     height = db.Column(db.Float, nullable=True)
     pin_hash = db.Column(db.String(255), nullable=True)
+    client_type = db.Column(db.String(20), default='CLIENTE')
     goal_weight = db.Column(db.Float, nullable=True)
     goal_imc = db.Column(db.Float, nullable=True)
     goal_body_fat = db.Column(db.Float, nullable=True)
@@ -322,6 +323,19 @@ class Evaluation(db.Model):
     created_by = db.Column(db.Integer, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     client = db.relationship('Client', backref='evaluations')
+
+
+class Order(db.Model):
+    __tablename__ = 'orders'
+    id = db.Column(db.Integer, primary_key=True)
+    client_id = db.Column(db.Integer, db.ForeignKey('clients.id'), nullable=False)
+    order_number = db.Column(db.String(50), nullable=True)
+    points_volume = db.Column(db.Float, nullable=True)
+    total_amount = db.Column(db.Float, nullable=True)
+    pickup_reference = db.Column(db.String(100), nullable=True)
+    order_date = db.Column(db.Date, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    client = db.relationship('Client', backref='orders')
 
 
 class ClientAchievement(db.Model):

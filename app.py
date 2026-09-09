@@ -11,7 +11,7 @@ import qrcode
 from werkzeug.security import generate_password_hash, check_password_hash
 from config import Config
 from models import db, Client, VisitHistory, Employee, Achievement, ClientAchievement, Promotion, Referral, check_achievements, init_achievements
-from models import Product, ScratchReward, ConsumptionCategory, Evaluation
+from models import Product, ScratchReward, ConsumptionCategory, Evaluation, Order
 import requests as http_requests
 
 app = Flask(__name__)
@@ -261,6 +261,56 @@ def health_pin():
                 return jsonify({'success': True, 'redirect': url_for('health')})
             return jsonify({'error': 'PIN incorrecto'}), 401
     return render_template('client/health_pin.html', client=client, creating=creating)
+
+@app.route('/pedido', methods=['GET', 'POST'])
+def pedido():
+    client = get_client_from_session()
+    if not client:
+        return redirect(url_for('login'))
+    if client.client_type != 'DISTRIBUIDOR':
+        return redirect(url_for('card'))
+
+    if request.method == 'POST':
+        order_number = (request.form.get('order_number') or '').strip()
+        points_volume = request.form.get('points_volume')
+        total_amount = request.form.get('total_amount')
+        pickup_reference = (request.form.get('pickup_reference') or '').strip()
+        if not order_number or not points_volume or not total_amount:
+            return jsonify({'error': 'Faltan datos del pedido'}), 400
+        try:
+            points_volume = float(points_volume)
+            total_amount = float(total_amount)
+        except ValueError:
+            return jsonify({'error': 'Puntos o total invalidos'}), 400
+        order = Order(
+            client_id=client.id,
+            order_number=order_number,
+            points_volume=points_volume,
+            total_amount=total_amount,
+            pickup_reference=pickup_reference,
+            order_date=date.today()
+        )
+        db.session.add(order)
+        db.session.commit()
+        return jsonify({'success': True, 'message': '✅ Pedido registrado'})
+
+    orders = Order.query.filter_by(client_id=client.id).order_by(Order.order_date.desc()).all()
+    return render_template('client/pedido.html', client=client, orders=orders)
+
+@app.route('/api/admin/clients/<int:client_id>/set-type', methods=['PUT'])
+def api_set_client_type(client_id):
+    if 'employee_id' not in session:
+        return jsonify({'error': 'No autorizado'}), 401
+    client = Client.query.get(client_id)
+    if not client:
+        return jsonify({'error': 'Cliente no encontrado'}), 404
+    data = request.json
+    client_type = data.get('client_type')
+    if client_type not in ('CLIENTE', 'DISTRIBUIDOR'):
+        return jsonify({'error': 'Tipo invalido'}), 400
+    client.client_type = client_type
+    db.session.commit()
+    return jsonify({'success': True})
 
 @app.route('/health')
 def health():
@@ -1065,6 +1115,7 @@ def api_client_eval_profile(client_id):
         'height': client.height,
         'birthday': client.birthday.strftime('%Y-%m-%d') if client.birthday else None,
         'age': age,
+        'client_type': client.client_type,
         'goals': {
             'goal_weight': client.goal_weight,
             'goal_imc': client.goal_imc,

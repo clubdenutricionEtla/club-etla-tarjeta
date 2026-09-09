@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Mi Pedido - Club Etla</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(180deg, #fbfaf7 0%, #f5efe8 100%);
+            min-height: 100vh;
+            padding: 20px 16px 60px;
+        }
+        .container { max-width: 480px; margin: 0 auto; }
+        .back-link { display: inline-block; color: #2d7a2d; text-decoration: none; font-weight: 600; font-size: 13px; margin-bottom: 14px; }
+        .header { text-align: center; margin-bottom: 20px; }
+        .header .badge { display: inline-block; background: linear-gradient(135deg, #1e4d2b, #2d7a2d); color: #fff; font-size: 11px; font-weight: 700; letter-spacing: 0.5px; padding: 5px 14px; border-radius: 20px; margin-bottom: 10px; }
+        .header h1 { font-size: 22px; color: #1a1a1a; font-weight: 800; }
+        .header p { font-size: 13px; color: #6a6a6a; margin-top: 4px; }
+        .card { background: #fff; border-radius: 20px; padding: 20px; margin-bottom: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.04); }
+        .card h2 { font-size: 15px; margin-bottom: 14px; color: #1a1a1a; }
+        .form-grid label { font-size: 12px; color: #6a6a6a; font-weight: 600; display: block; margin: 10px 0 4px; }
+        .form-grid label:first-child { margin-top: 0; }
+        .form-grid input { width: 100%; border: 1px solid rgba(0,0,0,0.1); border-radius: 10px; padding: 11px 12px; font-family: inherit; font-size: 14px; }
+        .hint { font-size: 11px; color: #999; margin-top: 3px; }
+        .btn-primary { width: 100%; margin-top: 16px; background: linear-gradient(135deg, #2d7a2d, #4a8c2a); color: #fff; border: none; border-radius: 12px; padding: 13px; font-weight: 700; font-size: 15px; cursor: pointer; }
+        .msg { padding: 10px 14px; border-radius: 10px; margin-bottom: 14px; display: none; font-size: 13px; }
+        .msg.ok { display: block; background: rgba(45,122,45,0.08); color: #2d7a2d; }
+        .msg.err { display: block; background: rgba(231,76,60,0.08); color: #e74c3c; }
+        table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        th, td { padding: 8px 6px; text-align: center; border-bottom: 1px solid rgba(0,0,0,0.05); }
+        th { color: #6a6a6a; font-weight: 700; }
+        .empty { color: #999; font-size: 13px; text-align: center; padding: 12px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/card" class="back-link">← Volver a mi tarjeta</a>
+        <div class="header">
+            <span class="badge">📦 DISTRIBUIDOR</span>
+            <h1>Mi Pedido</h1>
+            <p>Registra tu pedido para desbloquear tu siguiente evaluación</p>
+        </div>
+        <div id="msg" class="msg"></div>
+        <div class="card">
+            <h2>Nuevo pedido</h2>
+            <div class="form-grid">
+                <label>Número de orden</label>
+                <input type="text" id="orderNumber" placeholder="Ej. 2ZL123456">
+                <div class="hint">Empieza con 2ZL, 2T o similar</div>
+                <label>Puntos de volumen</label>
+                <input type="number" step="0.1" id="pointsVolume" placeholder="Mínimo 15">
+                <label>Total a pagar</label>
+                <input type="number" step="0.01" id="totalAmount" placeholder="$">
+                <label>Referencia para recoger</label>
+                <input type="text" id="pickupReference" placeholder="Referencia de recolección">
+            </div>
+            <button class="btn-primary" id="submitBtn">Registrar pedido</button>
+        </div>
+        <div class="card">
+            <h2>Mis pedidos anteriores</h2>
+            {% if orders %}
+            <table>
+                <thead><tr><th>Fecha</th><th>Orden</th><th>Puntos</th><th>Total</th></tr></thead>
+                <tbody>
+                    {% for o in orders %}
+                    <tr>
+                        <td>{{ o.order_date.strftime('%d/%m/%Y') }}</td>
+                        <td>{{ o.order_number }}</td>
+                        <td>{{ o.points_volume }}</td>
+                        <td>${{ o.total_amount }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty">Aún no tienes pedidos registrados</div>
+            {% endif %}
+        </div>
+    </div>
+    <script>
+        document.getElementById('submitBtn').addEventListener('click', async () => {
+            const msg = document.getElementById('msg');
+            const body = new URLSearchParams({
+                order_number: document.getElementById('orderNumber').value.trim(),
+                points_volume: document.getElementById('pointsVolume').value,
+                total_amount: document.getElementById('totalAmount').value,
+                pickup_reference: document.getElementById('pickupReference').value.trim()
+            });
+            try {
+                const res = await fetch('/pedido', { method: 'POST', body });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    msg.textContent = data.message;
+                    msg.className = 'msg ok';
+                    setTimeout(() => window.location.reload(), 1200);
+                } else {
+                    msg.textContent = data.error || 'Error al registrar';
+                    msg.className = 'msg err';
+                }
+            } catch (err) {
+                msg.textContent = 'Error de conexión';
+                msg.className = 'msg err';
+            }
+        });
+    </script>
+</body>
+</html>
