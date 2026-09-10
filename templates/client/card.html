@@ -913,6 +913,11 @@
                             </span>
                         </a>
                         {% endif %}
+                        {% if client.client_type in ['DISTRIBUIDOR', 'CLIENTE_DISTRIBUIDOR'] %}
+                        <a href="/pedido" style="display:block; text-align:center; background:linear-gradient(135deg,#2e7d32,#66bb6a); color:#fff; font-weight:800; font-size:13px; padding:10px 14px; border-radius:14px; text-decoration:none; margin-bottom:12px; position:relative; z-index:2;">
+                            📦 Registra tu pedido para tu siguiente evaluación
+                        </a>
+                        {% endif %}
                         <div class="qr-wrapper">
                             <div class="qr-code">
                                 {% if client.qr_code %}

@@ -75,6 +75,7 @@
                 <div class="gender-select" style="margin-top:14px;">
                     <button type="button" data-type="CLIENTE" id="typeCliente">Cliente</button>
                     <button type="button" data-type="DISTRIBUIDOR" id="typeDistribuidor">Distribuidor</button>
+                    <button type="button" data-type="CLIENTE_DISTRIBUIDOR" id="typeAmbos">Cliente + Distribuidor</button>
                 </div>
                 <button class="btn-secondary" id="resetPinBtn" style="margin-top:6px;">🔓 Reiniciar PIN de Mi Salud</button>
             </div>
@@ -153,9 +154,11 @@
         document.getElementById('genderM').addEventListener('click', () => setGender('M'));
         document.getElementById('typeCliente').addEventListener('click', () => setClientType('CLIENTE'));
         document.getElementById('typeDistribuidor').addEventListener('click', () => setClientType('DISTRIBUIDOR'));
+        document.getElementById('typeAmbos').addEventListener('click', () => setClientType('CLIENTE_DISTRIBUIDOR'));
         async function setClientType(t) {
             document.getElementById('typeCliente').classList.toggle('selected', t === 'CLIENTE');
             document.getElementById('typeDistribuidor').classList.toggle('selected', t === 'DISTRIBUIDOR');
+            document.getElementById('typeAmbos').classList.toggle('selected', t === 'CLIENTE_DISTRIBUIDOR');
             await fetch(`/api/admin/clients/${currentClientId}/set-type`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
@@ -191,6 +194,7 @@
             currentGender = data.gender;
             document.getElementById('typeCliente').classList.toggle('selected', (data.client_type || 'CLIENTE') === 'CLIENTE');
             document.getElementById('typeDistribuidor').classList.toggle('selected', data.client_type === 'DISTRIBUIDOR');
+            document.getElementById('typeAmbos').classList.toggle('selected', data.client_type === 'CLIENTE_DISTRIBUIDOR');
             document.getElementById('genderM').classList.toggle('selected', data.gender === 'M');
             document.getElementById('genderF').classList.toggle('selected', data.gender === 'F');
             document.getElementById('clientBirthday').value = data.birthday || '';

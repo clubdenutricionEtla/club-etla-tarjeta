@@ -267,7 +267,7 @@ def pedido():
     client = get_client_from_session()
     if not client:
         return redirect(url_for('login'))
-    if client.client_type != 'DISTRIBUIDOR':
+    if client.client_type not in ('DISTRIBUIDOR', 'CLIENTE_DISTRIBUIDOR'):
         return redirect(url_for('card'))
 
     if request.method == 'POST':
@@ -306,7 +306,7 @@ def api_set_client_type(client_id):
         return jsonify({'error': 'Cliente no encontrado'}), 404
     data = request.json
     client_type = data.get('client_type')
-    if client_type not in ('CLIENTE', 'DISTRIBUIDOR'):
+    if client_type not in ('CLIENTE', 'DISTRIBUIDOR', 'CLIENTE_DISTRIBUIDOR'):
         return jsonify({'error': 'Tipo invalido'}), 400
     client.client_type = client_type
     db.session.commit()
@@ -1188,7 +1188,7 @@ def client_meets_order_requirement(client):
     volumen desde su ultima evaluacion para poder registrar la siguiente.
     Clientes normales y la primera evaluacion (sin evaluacion previa) no
     tienen candado."""
-    if client.client_type != 'DISTRIBUIDOR':
+    if client.client_type not in ('DISTRIBUIDOR', 'CLIENTE_DISTRIBUIDOR'):
         return True, None
     last_eval = Evaluation.query.filter_by(client_id=client.id).order_by(Evaluation.eval_date.desc()).first()
     if not last_eval:
