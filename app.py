@@ -1183,6 +1183,26 @@ def api_update_client_goals(client_id):
     db.session.commit()
     return jsonify({'success': True})
 
+def client_meets_order_requirement(client):
+    """Para distribuidores: debe tener al menos 1 pedido con >=10 puntos de
+    volumen desde su ultima evaluacion para poder registrar la siguiente.
+    Clientes normales y la primera evaluacion (sin evaluacion previa) no
+    tienen candado."""
+    if client.client_type != 'DISTRIBUIDOR':
+        return True, None
+    last_eval = Evaluation.query.filter_by(client_id=client.id).order_by(Evaluation.eval_date.desc()).first()
+    if not last_eval:
+        return True, None
+    valid_order = Order.query.filter(
+        Order.client_id == client.id,
+        Order.order_date > last_eval.eval_date,
+        Order.points_volume >= 10
+    ).first()
+    if not valid_order:
+        return False, 'El distribuidor necesita al menos 1 pedido con 10 puntos de volumen o mas desde su ultima evaluacion para poder registrar la siguiente.'
+    return True, None
+
+
 @app.route('/api/admin/evaluations', methods=['POST'])
 def api_create_evaluation():
     if 'employee_id' not in session:
@@ -1193,6 +1213,9 @@ def api_create_evaluation():
     if not client:
         return jsonify({'error': 'Cliente no encontrado'}), 404
     eval_date = data.get('eval_date')
+    ok, msg = client_meets_order_requirement(client)
+    if not ok:
+        return jsonify({'error': msg}), 400
     try:
         eval_date_obj = datetime.strptime(eval_date, '%Y-%m-%d').date() if eval_date else date.today()
     except ValueError:
