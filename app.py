@@ -326,6 +326,23 @@ def health():
     evals = Evaluation.query.filter_by(client_id=client.id).order_by(Evaluation.eval_date).all()
     latest = evals[-1] if evals else None
     age = None
+    diagnostic_blocked = False
+    next_eval_days_left = None
+    if client.client_type in ('DISTRIBUIDOR', 'CLIENTE_DISTRIBUIDOR') and latest:
+        from datetime import timedelta
+        if client.health_views_allowed is None:
+            client.health_views_allowed = 2
+        if client.health_views_used is None:
+            client.health_views_used = 0
+        if client.health_views_used < client.health_views_allowed:
+            client.health_views_used += 1
+            db.session.commit()
+        else:
+            diagnostic_blocked = True
+        next_eval_date = latest.eval_date + timedelta(days=5)
+        days_left = (next_eval_date - date.today()).days
+        if days_left > 0:
+            next_eval_days_left = days_left
     if client.birthday:
         today = date.today()
         age = today.year - client.birthday.year - ((today.month, today.day) < (client.birthday.month, client.birthday.day))
@@ -372,15 +389,15 @@ def health():
         {'code': 'imc', 'label': 'IMC', 'icon': '📏', 'unit': '',
          'explain': 'Relación entre tu peso y tu estatura. Es una guía general, no distingue entre grasa y músculo.'},
         {'code': 'body_fat_pct', 'label': '% Grasa corporal', 'icon': '🔥', 'unit': '%',
-         'explain': 'Qué porcentaje de tu cuerpo es grasa. El rango saludable es distinto entre hombres y mujeres.'},
+         'explain': 'Es el porcentaje de tu peso que es grasa. Mientras más cerca esté del rango ideal, mejor equilibrio hay entre grasa y músculo.'},
         {'code': 'muscle_pct', 'label': '% Músculo esquelético', 'icon': '💪', 'unit': '%',
          'explain': 'Qué porcentaje de tu cuerpo es músculo. Más músculo suele ayudar a tu metabolismo.'},
         {'code': 'basal_metabolism', 'label': 'Metabolismo basal', 'icon': '🔋', 'unit': 'kcal',
-         'explain': 'Las calorías que tu cuerpo quema en reposo, solo para mantenerte con vida.'},
+         'explain': 'Son las calorías que tu cuerpo quema en reposo, solo por mantenerte vivo. Entre más músculo tengas, más alto suele ser.'},
         {'code': 'body_age', 'label': 'Edad corporal', 'icon': '🎂', 'unit': 'años',
-         'explain': 'Compara tu condición física con la de otras personas. Si es mayor que tu edad real, hay margen de mejora.'},
+         'explain': 'Es la edad que tendrías, en promedio, si tu condición física fuera la de otra persona típica. Si es menor que tu edad real, tu cuerpo está mejor de lo esperado; si es mayor, hay oportunidad de mejorar.'},
         {'code': 'visceral_fat', 'label': 'Grasa visceral', 'icon': '🎯', 'unit': '',
-         'explain': 'Grasa alrededor de tus órganos internos. Es la que más se relaciona con riesgos de salud cuando está elevada.'},
+         'explain': 'Es la grasa que rodea tus órganos internos, no la que se ve por fuera. Niveles altos aumentan el riesgo cardiovascular aunque el peso se vea normal.'},
     ]
     ideal_map = {
         'imc': '18.5 - 24.9',
@@ -421,7 +438,7 @@ def health():
         diagnosis_summary = 'Según tu última evaluación, tus valores están dentro de rango normal. ¡Vas muy bien!'
     else:
         diagnosis_summary = None
-    return render_template('client/health.html', client=client, age=age, has_data=bool(evals), metrics=metrics, diagnosis_summary=diagnosis_summary)
+    return render_template('client/health.html', client=client, age=age, has_data=bool(evals), metrics=metrics, diagnosis_summary=diagnosis_summary, diagnostic_blocked=diagnostic_blocked, next_eval_days_left=next_eval_days_left)
 
 # ========== API CLIENTE ==========
 
@@ -1196,14 +1213,16 @@ def client_meets_order_requirement(client):
     last_eval = Evaluation.query.filter_by(client_id=client.id).order_by(Evaluation.eval_date.desc()).first()
     if not last_eval:
         return True, None
+    from datetime import timedelta
+    seven_days_ago = date.today() - timedelta(days=7)
     valid_order = Order.query.filter(
         Order.client_id == client.id,
-        Order.order_date > last_eval.eval_date,
+        Order.order_date >= seven_days_ago,
         Order.points_volume >= 10,
         Order.status == 'validado'
     ).first()
     if not valid_order:
-        return False, 'El distribuidor necesita al menos 1 pedido con 10 puntos de volumen o mas desde su ultima evaluacion, validado por el administrador, para poder registrar la siguiente.'
+        return False, 'El distribuidor necesita al menos 1 pedido con 10 puntos de volumen o mas, validado por el administrador, registrado en los ultimos 7 dias, para poder registrar la siguiente evaluacion.'
     return True, None
 
 
@@ -1236,6 +1255,8 @@ def api_create_evaluation():
         visceral_fat=data.get('visceral_fat'),
         created_by=session.get('employee_id')
     )
+    client.health_views_used = 0
+    client.health_views_allowed = 2
     db.session.add(ev)
     db.session.commit()
     return jsonify({'success': True, 'id': ev.id})
@@ -1258,6 +1279,8 @@ def api_validate_order(order_id):
     if not order:
         return jsonify({'error': 'Pedido no encontrado'}), 404
     order.status = 'validado'
+    if order.points_volume and order.points_volume >= 10 and order.client:
+        order.client.health_views_allowed = (order.client.health_views_allowed or 2) + 2
     db.session.commit()
     return jsonify({'success': True})
 

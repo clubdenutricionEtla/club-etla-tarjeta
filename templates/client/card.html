@@ -883,6 +883,7 @@
                 <!-- FRENTE -->
                 <div class="card-front">
                     <div class="premium-card tier-{{ client.get_tier_name()|lower }}">
+                        {% if client.client_type not in ['DISTRIBUIDOR', 'CLIENTE_DISTRIBUIDOR'] %}
                         {% if client.has_welcome_scratch() and client.visits == 0 %}
                         <div style="display:block; text-align:center; background:linear-gradient(135deg,#d4a017,#f5d060); color:#3a2500; font-weight:800; font-size:13px; padding:10px 14px; border-radius:14px; margin-bottom:12px; position:relative; z-index:2;">
                             🎁 ¡Visítanos para desbloquear tu Rasca y Gana Club Etla!
@@ -895,6 +896,7 @@
                         <a href="/scratch" style="display:block; text-align:center; background:linear-gradient(135deg,#d4a017,#f5d060); color:#3a2500; font-weight:800; font-size:13px; padding:10px 14px; border-radius:14px; text-decoration:none; margin-bottom:12px; position:relative; z-index:2;">
                             🎁 ¡Tu Rasca y Gana Club Etla está listo! Tócalo aquí
                         </a>
+                        {% endif %}
                         {% endif %}
                         {% if not client.evaluations %}
                         <a href="/health" class="health-banner">

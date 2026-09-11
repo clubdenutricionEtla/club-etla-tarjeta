@@ -191,6 +191,19 @@
             }
         </script>
         {% else %}
+        {% if diagnostic_blocked %}
+        <div class="empty-state">
+            <div class="icon">🔒</div>
+            <h2>Diagnóstico bloqueado</h2>
+            <p>Ya usaste tus vistas disponibles. Registra un pedido con tu comprobante y espera a que sea validado para volver a ver tu diagnóstico y poder realizarte tu siguiente evaluación.</p>
+            <a href="/pedido" class="whatsapp-btn" style="margin-top:16px;">📦 Registrar mi pedido</a>
+        </div>
+        {% else %}
+        {% if next_eval_days_left %}
+        <div class="diagnosis-banner">
+            ⏳ Tu próxima evaluación estará disponible en {{ next_eval_days_left }} día{{ 's' if next_eval_days_left != 1 else '' }}.
+        </div>
+        {% endif %}
         {% if diagnosis_summary %}
         <div class="diagnosis-banner">
             🩺 <strong>Diagnóstico breve:</strong> {{ diagnosis_summary }}
@@ -243,6 +256,7 @@
                 <button type="button" class="challenge-modal-close" onclick="closeChallengeModal(event)">Cerrar</button>
             </div>
         </div>
+        {% endif %}
         {% endif %}
     </div>
 
