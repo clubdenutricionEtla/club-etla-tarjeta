@@ -1126,6 +1126,18 @@
         </div>
     </div>
 
+    <div style="max-width:480px;margin:0 auto;padding:0 4px;">
+        <div onclick="this.nextElementSibling.classList.toggle('info-visible')" style="font-size:12px;color:#2d7a2d;font-weight:600;cursor:pointer;text-align:center;margin-top:4px;">ℹ️ ¿Qué es esto y cómo me ayuda? ▾</div>
+        <div class="info-toggle-text" style="display:none;font-size:12px;color:#6a6a6a;line-height:1.5;text-align:center;padding:8px 12px 4px;">
+            {% if client.client_type in ['DISTRIBUIDOR', 'CLIENTE_DISTRIBUIDOR'] %}
+            ¿Qué es tu Tarjeta Club Etla? Aquí llevas el control de tus visitas, tus pedidos y tu progreso de salud. Registra tus pedidos para desbloquear tus siguientes evaluaciones, y usa la sección "Mi Salud" para dar seguimiento a tu composición corporal a lo largo del tiempo.
+            {% else %}
+            ¿Qué es tu Tarjeta Club Etla? Aquí llevas el registro de tus visitas, tu progreso de salud y tus recompensas en un solo lugar. Cada vez que vienes ganas puntos y visitas hacia tu próximo Rasca y Gana, y en la sección "Mi Salud" puedes ver cómo va cambiando tu cuerpo con el tiempo.
+            {% endif %}
+        </div>
+        <div style="font-size:10px;color:#b8b8b8;text-align:center;margin-top:6px;">Beneficio exclusivo del Club de Nutrición Etla</div>
+    </div>
+    <style>.info-toggle-text.info-visible{display:block !important;}</style>
     <!-- ===== BARRA DE NAVEGACIÓN INFERIOR ===== -->
     <nav class="bottom-nav">
         <button class="nav-btn active" data-view="inicio" onclick="switchView('inicio')">

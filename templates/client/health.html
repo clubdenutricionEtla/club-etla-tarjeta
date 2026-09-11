@@ -244,6 +244,16 @@
             <div class="explain-text">{{ m.explain }}</div>
         </div>
         {% endfor %}
+        <div class="metric-card" style="text-align:center;">
+            <span class="explain-toggle" onclick="this.nextElementSibling.classList.toggle('visible')">ℹ️ ¿Para qué te sirve esta información? ▾</span>
+            <div class="explain-text">
+                {% if client.client_type in ['DISTRIBUIDOR', 'CLIENTE_DISTRIBUIDOR'] %}
+                Te ayuda a dar seguimiento a tu composición corporal y a tomar mejores decisiones sobre tu alimentación y tus hábitos, además de ser parte de tu seguimiento como distribuidor dentro del club.
+                {% else %}
+                Te ayuda a entender cómo va tu cuerpo y a tomar mejores decisiones sobre tu alimentación y tus hábitos. Ir viendo estos números a lo largo del tiempo te ayuda a notar tu progreso real, más allá de lo que marca la báscula.
+                {% endif %}
+            </div>
+        </div>
         <button type="button" class="challenge-fab" onclick="openChallengeModal()">🎯 Reto de 10 días</button>
         <div class="challenge-modal-overlay" id="challengeModalOverlay" onclick="closeChallengeModal(event)">
             <div class="challenge-modal">
