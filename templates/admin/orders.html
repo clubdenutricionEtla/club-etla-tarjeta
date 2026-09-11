@@ -35,6 +35,7 @@
                     <div class="order-info">
                         <div class="name">{{ o.client.name }}</div>
                         <div class="detail">Orden {{ o.order_number }} · {{ o.points_volume }} PV · ${{ o.total_amount }} · {{ o.order_date.strftime('%d/%m/%Y') }}</div>
+                        {% if o.receipt_photo %}<a href="{{ o.receipt_photo }}" target="_blank" style="font-size:12px;color:#2d7a2d;font-weight:600;">📎 Ver comprobante</a>{% else %}<span style="font-size:12px;color:#999;">Sin comprobante</span>{% endif %}
                     </div>
                     <div class="order-actions">
                         <button class="btn-validate" onclick="validar({{ o.id }})">✓ Validar</button>

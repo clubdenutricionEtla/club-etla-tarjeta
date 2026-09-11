@@ -334,6 +334,7 @@ class Order(db.Model):
     total_amount = db.Column(db.Float, nullable=True)
     pickup_reference = db.Column(db.String(100), nullable=True)
     status = db.Column(db.String(20), nullable=False, default='pendiente')
+    receipt_photo = db.Column(db.Text, nullable=True)
     order_date = db.Column(db.Date, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     client = db.relationship('Client', backref='orders')

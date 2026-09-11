@@ -275,6 +275,7 @@ def pedido():
         points_volume = request.form.get('points_volume')
         total_amount = request.form.get('total_amount')
         pickup_reference = (request.form.get('pickup_reference') or '').strip()
+        receipt_photo = request.form.get('receipt_photo')
         if not order_number or not points_volume or not total_amount:
             return jsonify({'error': 'Faltan datos del pedido'}), 400
         try:
@@ -288,6 +289,7 @@ def pedido():
             points_volume=points_volume,
             total_amount=total_amount,
             pickup_reference=pickup_reference,
+            receipt_photo=receipt_photo,
             order_date=date.today(),
             status='pendiente'
         )
