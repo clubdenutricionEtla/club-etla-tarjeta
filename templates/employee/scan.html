@@ -94,6 +94,8 @@
         .reward-box.visible { display: block; }
         .reward-box .label { font-size: 13px; color: #8a6d00; font-weight: 700; }
         .reward-box .prize { font-size: 18px; font-weight: 800; color: #1a1a1a; margin: 4px 0 12px; }
+        .alert-box { margin-top: 10px; padding: 10px 12px; border-radius: 12px; background: rgba(45,122,45,0.06); border: 1px solid rgba(45,122,45,0.12); font-size: 13px; color: #3a3a3a; display: flex; align-items: flex-start; gap: 8px; }
+        .alert-box .alert-icon { font-size: 16px; flex-shrink: 0; }
         .btn-redeem { background: linear-gradient(135deg, #e0a800, #ffc107); color: #1a1a1a; }
         .categories { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
         .cat-btn { flex: 1; min-width: 70px; padding: 10px 6px; border-radius: 12px; border: 2px solid rgba(0,0,0,0.06); background: #fff; cursor: pointer; text-align: center; font-family: inherit; }
@@ -132,6 +134,7 @@
                 <div class="name" id="clientName">-</div>
                 <div class="visits">Visita <strong id="visitNumber">0</strong> de 10</div>
             </div>
+            <div id="alertsContainer"></div>
             <div class="reward-box" id="rewardBox">
                 <div class="label">🎁 Premio pendiente de canje</div>
                 <div class="prize" id="rewardName">-</div>
@@ -230,6 +233,14 @@
                     clientNameEl.textContent = data.client_name;
                     visitNumberEl.textContent = data.visits;
                     result.classList.add('visible');
+                    const alertsContainer = document.getElementById('alertsContainer');
+                    alertsContainer.innerHTML = '';
+                    (data.alerts || []).forEach(a => {
+                        const box = document.createElement('div');
+                        box.className = 'alert-box';
+                        box.innerHTML = `<span class="alert-icon">${a.icon}</span><span>${a.text}</span>`;
+                        alertsContainer.appendChild(box);
+                    });
                     stopCamera();
                     checkReward(qrSecret);
                 } else {

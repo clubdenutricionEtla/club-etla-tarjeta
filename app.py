@@ -315,6 +315,18 @@ def api_set_client_type(client_id):
     db.session.commit()
     return jsonify({'success': True})
 
+@app.route('/api/admin/clients/<int:client_id>/note', methods=['PUT'])
+def api_set_client_note(client_id):
+    if 'employee_id' not in session:
+        return jsonify({'error': 'No autorizado'}), 401
+    client = Client.query.get(client_id)
+    if not client:
+        return jsonify({'error': 'Cliente no encontrado'}), 404
+    data = request.json
+    client.admin_note = (data.get('note') or '').strip() or None
+    db.session.commit()
+    return jsonify({'success': True})
+
 @app.route('/health')
 def health():
     client = get_client_from_session()
@@ -933,6 +945,41 @@ def employee_scan():
         return redirect(url_for('login'))
     return render_template('employee/scan.html')
 
+def get_client_scan_alerts(client):
+    alerts = []
+    today = date.today()
+    if client.birthday and client.birthday.month == today.month and client.birthday.day == today.day:
+        alerts.append({'icon': '🎂', 'text': 'Hoy es su cumpleaños'})
+    pending_orders = Order.query.filter_by(client_id=client.id, status='pendiente').count()
+    if pending_orders > 0:
+        alerts.append({'icon': '📦', 'text': f'Tiene {pending_orders} pedido(s) pendiente(s) de validar'})
+    if client.client_type in ('DISTRIBUIDOR', 'CLIENTE_DISTRIBUIDOR'):
+        last_eval = Evaluation.query.filter_by(client_id=client.id).order_by(Evaluation.eval_date.desc()).first()
+        if not last_eval:
+            alerts.append({'icon': '🩺', 'text': 'Puede realizarse su primera evaluación'})
+        else:
+            days_since = (today - last_eval.eval_date).days
+            if days_since >= 5:
+                ok, _ = client_meets_order_requirement(client)
+                if ok:
+                    alerts.append({'icon': '🩺', 'text': 'Ya puede realizarse su siguiente evaluación'})
+    if client.last_visit_date:
+        days_inactive = (today - client.last_visit_date).days
+        if days_inactive >= 7:
+            alerts.append({'icon': '⏰', 'text': f'No visitaba desde hace {days_inactive} días'})
+    progress = client.get_cycle_progress()
+    remaining = 10 - progress
+    if remaining <= 2:
+        if remaining <= 0:
+            alerts.append({'icon': '🎁', 'text': '¡Esta visita completa su ciclo de Rasca y Gana!'})
+        else:
+            plural = 's' if remaining != 1 else ''
+            alerts.append({'icon': '🎁', 'text': f'Le falta{plural} {remaining} visita{plural} para su próximo Rasca y Gana'})
+    if client.admin_note:
+        alerts.append({'icon': '📝', 'text': client.admin_note})
+    return alerts
+
+
 @app.route('/api/employee/scan', methods=['POST'])
 def api_employee_scan():
     if 'employee_id' not in session:
@@ -949,13 +996,15 @@ def api_employee_scan():
     # Registrar visita
     result = client.add_visit(product_type, session['employee_id'])
     
+    alerts = get_client_scan_alerts(client)
     return jsonify({
         'success': True,
         'client_name': client.name,
         'visits': client.visits,
         'points': client.points,
         'level': client.get_level(),
-        'message': f'✅ Visita registrada para {client.name}'
+        'message': f'✅ Visita registrada para {client.name}',
+        'alerts': alerts
     })
 
 @app.route('/api/employee/check-reward', methods=['POST'])
@@ -1136,6 +1185,7 @@ def api_client_eval_profile(client_id):
         'birthday': client.birthday.strftime('%Y-%m-%d') if client.birthday else None,
         'age': age,
         'client_type': client.client_type,
+        'admin_note': client.admin_note,
         'goals': {
             'goal_weight': client.goal_weight,
             'goal_imc': client.goal_imc,

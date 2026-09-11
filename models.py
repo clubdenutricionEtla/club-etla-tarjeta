@@ -39,6 +39,7 @@ class Client(db.Model):
     collection = db.Column(db.Text, default='{}')
     health_views_used = db.Column(db.Integer, nullable=False, default=0)
     health_views_allowed = db.Column(db.Integer, nullable=False, default=2)
+    admin_note = db.Column(db.Text, nullable=True)
     
     referral_code = db.Column(db.String(20), unique=True)
     referred_by = db.Column(db.Integer, db.ForeignKey('clients.id'), nullable=True)
