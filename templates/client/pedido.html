@@ -63,7 +63,7 @@
             <h2>Mis pedidos anteriores</h2>
             {% if orders %}
             <table>
-                <thead><tr><th>Fecha</th><th>Orden</th><th>Puntos</th><th>Total</th></tr></thead>
+                <thead><tr><th>Fecha</th><th>Orden</th><th>Puntos</th><th>Total</th><th>Estado</th></tr></thead>
                 <tbody>
                     {% for o in orders %}
                     <tr>
@@ -71,6 +71,7 @@
                         <td>{{ o.order_number }}</td>
                         <td>{{ o.points_volume }}</td>
                         <td>${{ o.total_amount }}</td>
+                        <td>{% if o.status == 'validado' %}✓ Validado{% elif o.status == 'rechazado' %}✕ Rechazado{% else %}⏳ Pendiente{% endif %}</td>
                     </tr>
                     {% endfor %}
                 </tbody>

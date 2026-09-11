@@ -288,7 +288,8 @@ def pedido():
             points_volume=points_volume,
             total_amount=total_amount,
             pickup_reference=pickup_reference,
-            order_date=date.today()
+            order_date=date.today(),
+            status='pendiente'
         )
         db.session.add(order)
         db.session.commit()
@@ -1196,10 +1197,11 @@ def client_meets_order_requirement(client):
     valid_order = Order.query.filter(
         Order.client_id == client.id,
         Order.order_date > last_eval.eval_date,
-        Order.points_volume >= 10
+        Order.points_volume >= 10,
+        Order.status == 'validado'
     ).first()
     if not valid_order:
-        return False, 'El distribuidor necesita al menos 1 pedido con 10 puntos de volumen o mas desde su ultima evaluacion para poder registrar la siguiente.'
+        return False, 'El distribuidor necesita al menos 1 pedido con 10 puntos de volumen o mas desde su ultima evaluacion, validado por el administrador, para poder registrar la siguiente.'
     return True, None
 
 
@@ -1235,6 +1237,38 @@ def api_create_evaluation():
     db.session.add(ev)
     db.session.commit()
     return jsonify({'success': True, 'id': ev.id})
+
+@app.route('/admin/orders')
+def admin_orders():
+    if 'employee_id' not in session:
+        return render_template('admin/login.html')
+    employee = Employee.query.get(session['employee_id'])
+    if not employee or employee.role != 'admin':
+        return render_template('admin/login.html')
+    pending_orders = Order.query.filter_by(status='pendiente').order_by(Order.order_date.desc()).all()
+    return render_template('admin/orders.html', orders=pending_orders)
+
+@app.route('/api/admin/orders/<int:order_id>/validate', methods=['PUT'])
+def api_validate_order(order_id):
+    if 'employee_id' not in session:
+        return jsonify({'error': 'No autorizado'}), 401
+    order = Order.query.get(order_id)
+    if not order:
+        return jsonify({'error': 'Pedido no encontrado'}), 404
+    order.status = 'validado'
+    db.session.commit()
+    return jsonify({'success': True})
+
+@app.route('/api/admin/orders/<int:order_id>/reject', methods=['PUT'])
+def api_reject_order(order_id):
+    if 'employee_id' not in session:
+        return jsonify({'error': 'No autorizado'}), 401
+    order = Order.query.get(order_id)
+    if not order:
+        return jsonify({'error': 'Pedido no encontrado'}), 404
+    order.status = 'rechazado'
+    db.session.commit()
+    return jsonify({'success': True})
 
 @app.route('/api/admin/evaluations/<int:eval_id>', methods=['DELETE'])
 def api_delete_evaluation(eval_id):
