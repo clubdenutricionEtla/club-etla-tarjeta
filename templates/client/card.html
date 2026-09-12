@@ -1126,18 +1126,26 @@
         </div>
     </div>
 
-    <div style="max-width:480px;margin:0 auto;padding:0 4px;">
-        <div onclick="this.nextElementSibling.classList.toggle('info-visible')" style="font-size:12px;color:#2d7a2d;font-weight:600;cursor:pointer;text-align:center;margin-top:4px;">ℹ️ ¿Qué es esto y cómo me ayuda? ▾</div>
-        <div class="info-toggle-text" style="display:none;font-size:12px;color:#6a6a6a;line-height:1.5;text-align:center;padding:8px 12px 4px;">
-            {% if client.client_type in ['DISTRIBUIDOR', 'CLIENTE_DISTRIBUIDOR'] %}
-            ¿Qué es tu Tarjeta Club Etla? Aquí llevas el control de tus visitas, tus pedidos y tu progreso de salud. Registra tus pedidos para desbloquear tus siguientes evaluaciones, y usa la sección "Mi Salud" para dar seguimiento a tu composición corporal a lo largo del tiempo.
-            {% else %}
-            ¿Qué es tu Tarjeta Club Etla? Aquí llevas el registro de tus visitas, tu progreso de salud y tus recompensas en un solo lugar. Cada vez que vienes ganas puntos y visitas hacia tu próximo Rasca y Gana, y en la sección "Mi Salud" puedes ver cómo va cambiando tu cuerpo con el tiempo.
-            {% endif %}
+    <button type="button" onclick="document.getElementById('cardInfoModal').classList.add('visible')" style="position:fixed;top:14px;right:14px;z-index:250;background:rgba(45,122,45,0.12);color:#2d7a2d;border:none;border-radius:50%;width:34px;height:34px;font-size:16px;cursor:pointer;">ℹ️</button>
+    <div id="cardInfoModal" class="card-info-modal-overlay" onclick="if(event.target===this) this.classList.remove('visible')">
+        <div class="card-info-modal">
+            <h2 style="font-size:17px;margin-bottom:10px;color:#1a1a1a;">¿Qué es tu Tarjeta Club Etla?</h2>
+            <p style="font-size:13px;color:#5a5a5a;line-height:1.55;">
+                {% if client.client_type in ['DISTRIBUIDOR', 'CLIENTE_DISTRIBUIDOR'] %}
+                Aquí llevas el control de tus visitas, tus pedidos y tu progreso de salud. Registra tus pedidos para desbloquear tus siguientes evaluaciones, y usa la sección "Mi Salud" para dar seguimiento a tu composición corporal a lo largo del tiempo.
+                {% else %}
+                Aquí llevas el registro de tus visitas, tu progreso de salud y tus recompensas en un solo lugar. Cada vez que vienes ganas puntos y visitas hacia tu próximo Rasca y Gana, y en la sección "Mi Salud" puedes ver cómo va cambiando tu cuerpo con el tiempo.
+                {% endif %}
+            </p>
+            <p style="font-size:10px;color:#b8b8b8;text-align:center;margin-top:14px;">Beneficio exclusivo del Club de Nutrición Etla</p>
+            <button type="button" onclick="document.getElementById('cardInfoModal').classList.remove('visible')" style="margin-top:14px;width:100%;background:none;border:none;color:#6a6a6a;font-size:13px;font-weight:600;padding:8px;cursor:pointer;">Cerrar</button>
         </div>
-        <div style="font-size:10px;color:#b8b8b8;text-align:center;margin-top:6px;">Beneficio exclusivo del Club de Nutrición Etla</div>
     </div>
-    <style>.info-toggle-text.info-visible{display:block !important;}</style>
+    <style>
+        .card-info-modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:260;align-items:flex-end;justify-content:center;}
+        .card-info-modal-overlay.visible{display:flex;}
+        .card-info-modal{background:#fff;border-radius:24px 24px 0 0;padding:24px 20px;max-width:480px;width:100%;}
+    </style>
     <!-- ===== BARRA DE NAVEGACIÓN INFERIOR ===== -->
     <nav class="bottom-nav">
         <button class="nav-btn active" data-view="inicio" onclick="switchView('inicio')">
