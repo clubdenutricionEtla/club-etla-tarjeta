@@ -110,6 +110,10 @@
                     <input type="date" id="birthday" name="birthday" placeholder="Fecha de nacimiento" />
                     <span class="input-icon">🎂</span>
                 </div>
+                <div class="input-group">
+                    <input type="text" id="referral" name="referral" placeholder="Código de referido (opcional)" value="{{ ref_code or '' }}" autocapitalize="characters" />
+                    <span class="input-icon">🔗</span>
+                </div>
 
                 <button type="submit" class="btn btn-primary" id="registerBtn">
                     Registrarme

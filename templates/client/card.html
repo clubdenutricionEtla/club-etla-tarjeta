@@ -962,16 +962,6 @@
                                 Visitas: <span class="count" id="visitsCount">{{ cycle_progress }}</span> / 10
                             </div>
                         </div>
-                        <div class="info-grid">
-                            <div class="info-card">
-                                <div class="label">Código de Referido</div>
-                                <div class="value">{{ client.referral_code or '---' }}</div>
-                            </div>
-                            <div class="info-card">
-                                <div class="label">Referidos Válidos</div>
-                                <div class="value green">{{ client.referrals_valid or 0 }}</div>
-                            </div>
-                        </div>
                         <div class="info-grid" style="margin-top:0;">
                             <div class="info-card reward-card" style="grid-column: span 2; cursor: pointer;" onclick="event.stopPropagation(); openRewardsModal();">
                                 <div class="label">Mis Recompensas</div>
