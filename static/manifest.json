@@ -1,0 +1,12 @@
+{
+  "name": "Club Etla Rewards",
+  "short_name": "Club Etla",
+  "start_url": "/card",
+  "display": "standalone",
+  "background_color": "#f5efe8",
+  "theme_color": "#2d7a2d",
+  "icons": [
+    {"src": "/static/icon-192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "/static/icon-512.png", "sizes": "512x512", "type": "image/png"}
+  ]
+}
