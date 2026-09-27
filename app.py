@@ -662,13 +662,23 @@ def admin_get_clients():
 
 @app.route('/api/admin/clients/<int:client_id>', methods=['DELETE'])
 def admin_delete_client(client_id):
+    if 'employee_id' not in session:
+        return jsonify({'error': 'No autorizado'}), 401
     client = Client.query.get(client_id)
     if not client:
         return jsonify({'error': 'Cliente no encontrado'}), 404
-    VisitHistory.query.filter_by(client_id=client_id).delete()
-    db.session.delete(client)
-    db.session.commit()
-    return jsonify({'success': True})
+    try:
+        VisitHistory.query.filter_by(client_id=client_id).delete()
+        Evaluation.query.filter_by(client_id=client_id).delete()
+        Order.query.filter_by(client_id=client_id).delete()
+        ClientAchievement.query.filter_by(client_id=client_id).delete()
+        Referral.query.filter(db.or_(Referral.referrer_id == client_id, Referral.referred_id == client_id)).delete()
+        db.session.delete(client)
+        db.session.commit()
+        return jsonify({'success': True})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': f'No se pudo eliminar: {str(e)}'}), 500
 
 # ===== PRODUCTOS (CATÁLOGO) =====
 
@@ -1344,6 +1354,31 @@ def api_reject_order(order_id):
     order.status = 'rechazado'
     db.session.commit()
     return jsonify({'success': True})
+
+@app.route('/api/admin/evaluations/<int:eval_id>', methods=['PUT'])
+def api_update_evaluation(eval_id):
+    if 'employee_id' not in session:
+        return jsonify({'error': 'No autorizado'}), 401
+    ev = Evaluation.query.get(eval_id)
+    if not ev:
+        return jsonify({'error': 'Evaluacion no encontrada'}), 404
+    data = request.json
+    eval_date = data.get('eval_date')
+    if eval_date:
+        try:
+            ev.eval_date = datetime.strptime(eval_date, '%Y-%m-%d').date()
+        except ValueError:
+            return jsonify({'error': 'Fecha invalida'}), 400
+    ev.weight = data.get('weight')
+    ev.imc = data.get('imc')
+    ev.body_fat_pct = data.get('body_fat_pct')
+    ev.muscle_pct = data.get('muscle_pct')
+    ev.basal_metabolism = data.get('basal_metabolism')
+    ev.body_age = data.get('body_age')
+    ev.visceral_fat = data.get('visceral_fat')
+    db.session.commit()
+    return jsonify({'success': True, 'id': ev.id})
+
 
 @app.route('/api/admin/evaluations/<int:eval_id>', methods=['DELETE'])
 def api_delete_evaluation(eval_id):

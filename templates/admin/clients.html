@@ -177,14 +177,20 @@
         function confirmDelete(){
             if(!deleteId) return;
             fetch('/api/admin/clients/' + deleteId, {method: 'DELETE'})
-                .then(res => res.json())
-                .then(data => {
+                .then(res => res.json().then(data => ({ok: res.ok, data})))
+                .then(({ok, data}) => {
                     closeModal();
                     if(data.success){
                         loadClients();
+                    } else {
+                        alert(data.error || 'No se pudo eliminar el cliente');
                     }
                 })
-                .catch(console.error);
+                .catch(err => {
+                    closeModal();
+                    alert('Error de conexion al eliminar');
+                    console.error(err);
+                });
         }
         
         loadClients();
