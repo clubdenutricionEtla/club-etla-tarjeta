@@ -6,7 +6,7 @@ load_dotenv()
 
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'rewards-secret-key-2024'
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'sqlite:///rewards.db'
+    SQLALCHEMY_DATABASE_URI = (os.environ.get('DATABASE_URL') or 'sqlite:///rewards.db').replace('postgresql+psycopg://','postgresql+psycopg2://').replace('postgres://','postgresql://')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
     APP_NAME = 'Club Etla Rewards'
