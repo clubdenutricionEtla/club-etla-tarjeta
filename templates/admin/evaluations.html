@@ -89,6 +89,7 @@
                     <div class="full">
                         <label>Fecha</label>
                         <input type="date" id="evalDate">
+                        <div id="editEvalHint" style="display:none;font-size:11px;color:#b8790a;margin-top:4px;">Ya existe una evaluacion este dia, se actualizara en vez de crear una nueva</div>
                     </div>
                     <div><label>Peso (kg)</label><input type="number" step="0.1" id="evalWeight"></div>
                     <div><label>IMC</label><input type="number" step="0.1" id="evalImc"></div>
@@ -218,6 +219,8 @@
             document.getElementById('goalBodyFat').value = g.goal_body_fat || '';
             document.getElementById('goalMuscle').value = g.goal_muscle || '';
             document.getElementById('goalVisceral').value = g.goal_visceral || '';
+            currentEvaluations = data.evaluations;
+            checkExistingEval();
             renderHistory(data.evaluations);
         }
 
@@ -253,6 +256,30 @@
             });
         }
 
+        let currentEvaluations = [];
+        let editingEvalId = null;
+        function checkExistingEval() {
+            const dateVal = document.getElementById('evalDate').value;
+            const match = currentEvaluations.find(e => e.eval_date === dateVal);
+            const btn = document.getElementById('saveEvalBtn');
+            const hint = document.getElementById('editEvalHint');
+            if (match) {
+                editingEvalId = match.id;
+                document.getElementById('evalWeight').value = match.weight ?? '';
+                document.getElementById('evalImc').value = match.imc ?? '';
+                document.getElementById('evalBodyFat').value = match.body_fat_pct ?? '';
+                document.getElementById('evalMuscle').value = match.muscle_pct ?? '';
+                document.getElementById('evalBasal').value = match.basal_metabolism ?? '';
+                document.getElementById('evalBodyAge').value = match.body_age ?? '';
+                document.getElementById('evalVisceral').value = match.visceral_fat ?? '';
+                btn.textContent = 'Actualizar evaluacion';
+            } else {
+                editingEvalId = null;
+                btn.textContent = 'Guardar evaluacion';
+            }
+            if (hint) hint.style.display = match ? 'block' : 'none';
+        }
+        document.getElementById('evalDate').addEventListener('change', checkExistingEval);
         document.getElementById('saveEvalBtn').addEventListener('click', async () => {
             const payload = {
                 client_id: currentClientId,
@@ -265,8 +292,10 @@
                 body_age: document.getElementById('evalBodyAge').value || null,
                 visceral_fat: document.getElementById('evalVisceral').value || null
             };
-            const res = await fetch('/api/admin/evaluations', {
-                method: 'POST',
+            const url = editingEvalId ? `/api/admin/evaluations/${editingEvalId}` : '/api/admin/evaluations';
+            const method = editingEvalId ? 'PUT' : 'POST';
+            const res = await fetch(url, {
+                method: method,
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
@@ -274,6 +303,8 @@
             if (res.ok) {
                 showMsg('✅ Evaluación guardada', true);
                 ['evalWeight','evalImc','evalBodyFat','evalMuscle','evalBasal','evalBodyAge','evalVisceral'].forEach(id => document.getElementById(id).value = '');
+                editingEvalId = null;
+                document.getElementById('saveEvalBtn').textContent = 'Guardar evaluacion';
                 loadProfile();
             } else {
                 showMsg(data.error || 'Error al guardar', false);

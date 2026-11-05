@@ -40,6 +40,9 @@ class Client(db.Model):
     health_views_used = db.Column(db.Integer, nullable=False, default=0)
     health_views_allowed = db.Column(db.Integer, nullable=False, default=2)
     admin_note = db.Column(db.Text, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    source = db.Column(db.String(20), nullable=True)
+    source_detail = db.Column(db.String(30), nullable=True)
     
     referral_code = db.Column(db.String(20), unique=True)
     referred_by = db.Column(db.Integer, db.ForeignKey('clients.id'), nullable=True)

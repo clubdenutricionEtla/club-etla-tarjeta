@@ -1,0 +1,11 @@
+{
+  "remoteName": "origin",
+  "projects": [
+    {
+      "id": "prj_1Spv98BAQR1zQF8I8g85OKT3q8dp",
+      "name": "club-etla-tarjeta",
+      "directory": ".",
+      "orgId": "team_bb5OkKxoey3jOAkS1OhX8jMv"
+    }
+  ]
+}

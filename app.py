@@ -18,6 +18,48 @@ app = Flask(__name__)
 app.config.from_object(Config)
 db.init_app(app)
 migrate = Migrate(app, db)
+
+try:
+    from sqlalchemy import text as _sqltext2
+    with app.app_context():
+        db.session.execute(_sqltext2("ALTER TABLE clients ADD COLUMN IF NOT EXISTS source VARCHAR(20)"))
+        db.session.execute(_sqltext2("ALTER TABLE clients ADD COLUMN IF NOT EXISTS source_detail VARCHAR(30)"))
+        db.session.commit()
+except Exception as _e2:
+    print("migracion source:", _e2)
+
+SOURCE_LABELS = {'anfitrion': 'Anfitrión del club', 'redes': 'Redes sociales', 'amigo': 'Amigo o conocido'}
+
+def source_label(client):
+    base = SOURCE_LABELS.get(getattr(client, 'source', None))
+    if not base:
+        return 'Sin dato'
+    if client.source == 'redes' and getattr(client, 'source_detail', None):
+        return base + ' (' + client.source_detail + ')'
+    return base
+
+# Agrega la columna created_at a clients si no existe (seguro de repetir)
+try:
+    from sqlalchemy import text as _sqltext
+    with app.app_context():
+        db.session.execute(_sqltext("ALTER TABLE clients ADD COLUMN IF NOT EXISTS created_at TIMESTAMP"))
+        db.session.commit()
+except Exception as _e:
+    print("migracion created_at:", _e)
+
+def notify_admin_new_client(client):
+    """Aviso por Telegram al administrador. Si no hay variables, no hace nada."""
+    token = os.environ.get('TELEGRAM_BOT_TOKEN')
+    chat_id = os.environ.get('TELEGRAM_CHAT_ID')
+    if not token or not chat_id:
+        return
+    try:
+        hora = (datetime.utcnow() - timedelta(hours=6)).strftime('%d/%m/%Y %H:%M')
+        texto = "🆕 Nuevo registro en Club Etla\n👤 %s\n📱 %s\n🕒 %s" % (client.name, client.whatsapp, hora) + "\n📍 " + source_label(client)
+        http_requests.post("https://api.telegram.org/bot%s/sendMessage" % token,
+                           json={'chat_id': chat_id, 'text': texto}, timeout=5)
+    except Exception as e:
+        print("telegram:", e)
 CORS(app)
 
 SUPABASE_URL = os.environ.get('SUPABASE_URL', 'https://ijxynllcahohcgfoqpzt.supabase.co')
@@ -131,6 +173,12 @@ def register():
         whatsapp = request.form.get('whatsapp')
         birthday = request.form.get('birthday')
         referral = request.form.get('referral')
+        source = request.form.get('source')
+        source_detail = (request.form.get('source_detail') or '').strip()[:30]
+        if source not in ('anfitrion', 'redes', 'amigo'):
+            source = None
+        if source != 'redes':
+            source_detail = None
 
         if not name or not whatsapp:
             return jsonify({'error': 'Nombre y WhatsApp son requeridos'}), 400
@@ -153,7 +201,9 @@ def register():
                 whatsapp=whatsapp,
                 birthday=datetime.strptime(birthday, '%Y-%m-%d').date() if birthday else None,
                 qr_secret=generate_qr_secret(),
-                referral_code=generate_referral_code(name)
+                referral_code=generate_referral_code(name),
+                source=source,
+                source_detail=source_detail
             )
 
             if referral:
@@ -166,6 +216,7 @@ def register():
             db.session.add(client)
             db.session.commit()
             generate_qr(client)
+            notify_admin_new_client(client)
             check_achievements(client)
 
             session['client_id'] = client.id
@@ -1320,6 +1371,23 @@ def api_create_evaluation():
     db.session.add(ev)
     db.session.commit()
     return jsonify({'success': True, 'id': ev.id})
+
+@app.route('/admin/registros')
+def admin_registros():
+    if 'employee_id' not in session:
+        return render_template('admin/login.html')
+    employee = Employee.query.get(session['employee_id'])
+    if not employee or employee.role != 'admin':
+        return render_template('admin/login.html')
+    rows = Client.query.filter(Client.created_at.isnot(None)).order_by(Client.created_at.desc()).limit(100).all()
+    local = lambda d: d - timedelta(hours=6)
+    hoy = local(datetime.utcnow()).date()
+    items = [{'name': c.name, 'whatsapp': c.whatsapp, 'source': source_label(c), 'when': local(c.created_at)} for c in rows]
+    hoy_count = sum(1 for i in items if i['when'].date() == hoy)
+    from collections import Counter
+    cnt = Counter(i['source'] for i in items)
+    resumen = ' · '.join('%s: %d' % (k, v) for k, v in cnt.most_common())
+    return render_template('admin/registros.html', items=items, hoy_count=hoy_count, resumen=resumen)
 
 @app.route('/admin/orders')
 def admin_orders():

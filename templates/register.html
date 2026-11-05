@@ -70,7 +70,9 @@
             .register-card { padding: 28px 18px 24px; }
             .register-title h1 { font-size: 20px; }
         }
-    </style>
+    .input-group select{width:100%;padding:16px 16px 16px 52px;font-size:16px;font-weight:500;font-family:inherit;background:#fff;border:2px solid rgba(0,0,0,0.06);border-radius:16px;color:#000;outline:none;appearance:none;-webkit-appearance:none;}
+        .input-group select:focus{border-color:#4a8c2a;}
+</style>
 </head>
 <body>
 
@@ -114,6 +116,33 @@
                     <input type="text" id="referral" name="referral" placeholder="Código de referido (opcional)" value="{{ ref_code or '' }}" autocapitalize="characters" />
                     <span class="input-icon">🔗</span>
                 </div>
+
+                <div class="input-group">
+                    <select id="source" name="source" required>
+                        <option value="" disabled {% if not ref_code %}selected{% endif %}>¿Cómo conociste la tarjeta?</option>
+                        <option value="anfitrion">Me la mostró el anfitrión del club</option>
+                        <option value="redes">La vi en redes sociales</option>
+                        <option value="amigo" {% if ref_code %}selected{% endif %}>Un amigo o conocido</option>
+                    </select>
+                    <span class="input-icon">📍</span>
+                </div>
+                <div class="input-group" id="sourceDetailBox" style="display:none;">
+                    <select id="source_detail" name="source_detail">
+                        <option value="Instagram">Instagram</option>
+                        <option value="Facebook">Facebook</option>
+                        <option value="TikTok">TikTok</option>
+                        <option value="WhatsApp">WhatsApp</option>
+                        <option value="Otra">Otra</option>
+                    </select>
+                    <span class="input-icon">📲</span>
+                </div>
+                <script>
+                    (function(){
+                        var s = document.getElementById('source'), b = document.getElementById('sourceDetailBox'), d = document.getElementById('source_detail');
+                        s.addEventListener('change', function(){ var on = s.value === 'redes'; b.style.display = on ? 'block' : 'none'; d.disabled = !on; });
+                        d.disabled = true;
+                    })();
+                </script>
 
                 <button type="submit" class="btn btn-primary" id="registerBtn">
                     Registrarme
