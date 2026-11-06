@@ -1666,6 +1666,113 @@ body {
     }
 }
 
+
+
+/* ETLA - LOGO LIBRE Y NACARADO VISIBLE */
+
+/* LOGO OFICIAL: conservar tamaño, quitar recuadro */
+.front-logo-wrap,
+.back-logo {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 4px auto 14px !important;
+    padding: 0 !important;
+    background: transparent !important;
+    background-image: none !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+
+.front-logo-wrap img,
+.back-logo-img {
+    display: block !important;
+    width: min(100%, 300px) !important;
+    max-width: 300px !important;
+    max-height: 110px !important;
+    height: auto !important;
+    object-fit: contain !important;
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    filter: none !important;
+}
+
+/* EFECTO NACARADO VISIBLE EN AMBAS CARAS */
+.card-front > .premium-card,
+.card-back > .premium-card {
+    background:
+        radial-gradient(
+            ellipse at 8% 15%,
+            rgba(255, 180, 205, .38),
+            transparent 48%
+        ),
+        radial-gradient(
+            ellipse at 92% 18%,
+            rgba(155, 235, 185, .40),
+            transparent 48%
+        ),
+        radial-gradient(
+            ellipse at 85% 85%,
+            rgba(190, 180, 255, .30),
+            transparent 48%
+        ),
+        radial-gradient(
+            ellipse at 12% 88%,
+            rgba(255, 220, 155, .38),
+            transparent 48%
+        ),
+        linear-gradient(
+            135deg,
+            #fffaf5 0%,
+            #f7f5ef 35%,
+            #f0f8ef 65%,
+            #fff3f1 100%
+        ) !important;
+
+    border: 1.5px solid rgba(255,255,255,.90) !important;
+
+    box-shadow:
+        0 18px 45px rgba(130,105,80,.12),
+        inset 0 1px 3px rgba(255,255,255,.95),
+        inset 0 0 25px rgba(255,255,255,.38) !important;
+}
+
+/* Evitar rectángulos interiores en el reverso */
+.card-back > .premium-card,
+.card-back .back-content {
+    border-radius: inherit;
+}
+
+.card-back > .premium-card::before,
+.card-back > .premium-card::after,
+.card-back .back-content::before,
+.card-back .back-content::after {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+}
+
+/* Evitar que el contenido del reverso cree otro marco */
+.card-back .back-content {
+    background: transparent !important;
+    box-shadow: none !important;
+    border: 0 !important;
+}
+
+/* Ajustes para pantallas pequeñas */
+@media(max-width:400px) {
+    .front-logo-wrap img,
+    .back-logo-img {
+        width: min(100%, 270px) !important;
+        max-height: 100px !important;
+    }
+}
+
 </style>
     <!-- ===== BARRA DE NAVEGACIÓN INFERIOR ===== -->
     <nav class="bottom-nav">
