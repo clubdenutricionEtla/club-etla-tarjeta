@@ -124,6 +124,32 @@
     font-weight: 700 !important;
 }
 
+
+/* LOGO OFICIAL CLUB ETLA - PNG ORIGINAL */
+.premium-header .logo-club-wrap {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 8px auto 10px;
+    position: relative;
+    z-index: 2;
+}
+.premium-header .logo-club-etla {
+    display: block;
+    width: min(100%, 390px);
+    height: auto;
+    max-height: 145px;
+    object-fit: contain;
+    filter: drop-shadow(0 5px 12px rgba(0,0,0,0.10));
+}
+@media (max-width: 400px) {
+    .premium-header .logo-club-etla {
+        width: min(100%, 340px);
+        max-height: 125px;
+    }
+}
+
 </style>
     <link rel="stylesheet" href="/static/fonts.css" />
 </head>
@@ -137,10 +163,7 @@
 
         <div class="premium-header fade-up">
             <div class="tag">★ MI TARJETA</div>
-            <div class="title-row">
-                <span class="club">MI CLUB</span>
-                <span class="etla">ETLA</span>
-            </div>
+            <div class="logo-club-wrap"><img class="logo-club-etla" src="/static/images/logo-club-etla.png" alt="Club de Nutrición Etla"></div>
             <div class="sub">Club de Nutrición Etla</div>
         </div>
 
