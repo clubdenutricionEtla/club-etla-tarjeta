@@ -973,6 +973,38 @@
             filter: drop-shadow(0 2px 5px rgba(0,0,0,0.10));
         }
 
+
+/* ===== AJUSTE FINAL LOGO REVERSO ETLA ===== */
+
+/* Quitar logo duplicado fuera de la tarjeta giratoria */
+#view-inicio > .container > .premium-header .logo-club-wrap,
+#view-inicio > .container > .premium-header > .sub {
+    display: none !important;
+}
+
+/* Fondo elegante para destacar el PNG original */
+.back-logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin: 0 auto 10px;
+    padding: 10px 12px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #173d20, #285b2b, #173d20);
+    border: 1px solid rgba(212,160,23,0.55);
+    box-shadow: 0 5px 16px rgba(0,0,0,0.14);
+}
+
+.back-logo-img {
+    display: block;
+    width: min(85%, 250px);
+    max-height: 90px;
+    height: auto;
+    object-fit: contain;
+    filter: none;
+}
+
 </style>
     <link rel="stylesheet" href="/static/fonts.css" />
 </head>
