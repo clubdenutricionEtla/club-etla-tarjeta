@@ -1027,6 +1027,11 @@
                 <!-- FRENTE -->
                 <div class="card-front">
                     <div class="premium-card tier-{{ client.get_tier_name()|lower }}">
+<div class="front-logo-wrap">
+    <img src="/static/images/logo-club-etla.png"
+         alt="Club de Nutrición Etla">
+</div>
+
                         {% if client.client_type not in ['DISTRIBUIDOR', 'CLIENTE_DISTRIBUIDOR'] %}
                         {% if client.has_welcome_scratch() and client.visits == 0 %}
                         <div style="display:block; text-align:center; background:linear-gradient(135deg,#d4a017,#f5d060); color:#3a2500; font-weight:800; font-size:13px; padding:10px 14px; border-radius:14px; margin-bottom:12px; position:relative; z-index:2;">
@@ -1136,8 +1141,7 @@
                                 <div class="formula">CONSTANCIA + HÁBITOS SALUDABLES = RESULTADOS</div>
                                 <div class="encouragement">¡Tú puedes, sigue así! <span class="heart">♡</span></div>
                             </div>
-                            <div class="back-divider"></div>
-                            <div class="back-social">
+<div class="back-social">
                                 <div class="social-title">S Í G U E N O S</div>
                                 <div class="social-icons">
                                     <a href="https://www.instagram.com/clubdenutricion_etla" target="_blank" class="instagram" title="Instagram"><i class="fab fa-instagram"></i></a>
@@ -1439,6 +1443,58 @@ body {
         animation: none !important;
     }
 }
+
+
+/* ===== LOGO OFICIAL EN AMBAS CARAS ===== */
+
+.front-logo-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: min(100%, 260px);
+    margin: 0 auto 12px;
+    padding: 6px 10px;
+    border-radius: 12px;
+    background: linear-gradient(135deg,#173d20,#285b2b,#173d20);
+    border: 1px solid rgba(212,160,23,.48);
+    box-shadow: 0 5px 14px rgba(0,0,0,.10);
+}
+
+.front-logo-wrap img {
+    display: block;
+    width: min(100%, 205px);
+    max-height: 78px;
+    height: auto;
+    object-fit: contain;
+}
+
+.back-logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: min(100%, 290px);
+    margin: 0 auto 8px;
+    padding: 6px 8px;
+    border-radius: 12px;
+    background: linear-gradient(135deg,#173d20,#285b2b,#173d20);
+    border: 1px solid rgba(212,160,23,.48);
+    box-shadow: 0 4px 12px rgba(0,0,0,.10);
+}
+
+.back-logo-img {
+    display: block;
+    width: min(100%, 225px);
+    max-height: 78px;
+    height: auto;
+    object-fit: contain;
+    filter: none;
+}
+
+.back-divider {
+    display: none !important;
+}
+
+/* ===== FIN AJUSTE LOGO CLUB ETLA ===== */
 
 </style>
     <!-- ===== BARRA DE NAVEGACIÓN INFERIOR ===== -->
