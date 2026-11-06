@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Rascar - Club Etla</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         *{margin:0;padding:0;box-sizing:border-box;}
         body{
@@ -316,6 +315,7 @@
             .result-modal .modal-content .btn-row{flex-direction:column;}
         }
     </style>
+    <link rel="stylesheet" href="/static/fonts.css" />
 </head>
 <body data-client-name="{{ client.name }}" data-client-whatsapp="{{ client.whatsapp }}" data-client-id="{{ client.id }}" data-server-reward="{{ client.scratch_reward or '' }}" data-is-welcome="{{ 'true' if is_welcome else 'false' }}" data-is-birthday="{{ 'true' if is_birthday else 'false' }}">
 

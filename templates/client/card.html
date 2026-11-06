@@ -15,8 +15,6 @@
             navigator.serviceWorker.register('/static/sw.js').catch(function(){});
         }
     </script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
     <style>
@@ -871,7 +869,14 @@
             font-weight: 600;
             cursor: pointer;
         }
+/* ===== tarjeta completa, sin cortes ===== */
+.card-flipper { display: grid; }
+.card-front, .card-back { position: relative; grid-area: 1 / 1; }
+.vasos-section { text-align: center; }
+.card-info-modal-overlay, .rewards-modal-overlay { z-index: 600 !important; }
+.card-info-modal { padding-bottom: 28px; }
 </style>
+    <link rel="stylesheet" href="/static/fonts.css" />
 </head>
 <body>
 
