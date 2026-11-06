@@ -1570,6 +1570,102 @@ body {
 
 /* ===== FIN AJUSTE LOGO CLUB ETLA ===== */
 
+
+/* AJUSTE VISUAL ETLA NOVIEMBRE 2026 */
+
+/* Logo frontal: recuadro compacto */
+.front-logo-wrap {
+    width: min(100%, 220px) !important;
+    max-width: 220px !important;
+    padding: 4px 7px !important;
+    margin: 0 auto 10px !important;
+    border-radius: 10px !important;
+}
+
+.front-logo-wrap img {
+    width: min(100%, 200px) !important;
+    max-height: 56px !important;
+}
+
+/* Logo del reverso: mismo tamaño y proporción */
+.back-logo {
+    width: min(100%, 220px) !important;
+    max-width: 220px !important;
+    padding: 4px 7px !important;
+    margin: 0 auto 10px !important;
+    border-radius: 10px !important;
+}
+
+.back-logo-img {
+    width: min(100%, 200px) !important;
+    max-height: 56px !important;
+}
+
+/* Quitar marco interior del reverso */
+.card-back > .premium-card {
+    background: transparent !important;
+    background-image: none !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+.card-back > .premium-card::before,
+.card-back > .premium-card::after,
+.card-back .back-content {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+}
+
+.card-back .back-divider {
+    display: none !important;
+}
+
+/* Cuadros de acceso rápido minimizados */
+.etla-auto-action.etla-minimized {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: min(100%, 230px) !important;
+    height: 44px !important;
+    min-height: 44px !important;
+    max-height: 44px !important;
+    padding: 8px 12px !important;
+    margin: 8px auto !important;
+    overflow: hidden !important;
+    border-radius: 16px !important;
+    font-size: 0 !important;
+    color: transparent !important;
+    transition: all .4s ease !important;
+}
+
+.etla-auto-action.etla-minimized * {
+    visibility: hidden !important;
+}
+
+.etla-auto-action.etla-minimized::after {
+    content: attr(data-etla-label);
+    visibility: visible !important;
+    color: white !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    white-space: nowrap;
+}
+
+@media(max-width:400px) {
+    .front-logo-wrap,
+    .back-logo {
+        max-width: 195px !important;
+    }
+
+    .front-logo-wrap img,
+    .back-logo-img {
+        max-height: 50px !important;
+    }
+}
+
 </style>
     <!-- ===== BARRA DE NAVEGACIÓN INFERIOR ===== -->
     <nav class="bottom-nav">
@@ -1843,5 +1939,62 @@ body {
             }
         }
     </script>
+
+<script id="etla-auto-minimize">
+document.addEventListener('DOMContentLoaded', function () {
+
+    function normalize(text) {
+        return (text || '').toLowerCase().replace(/\s+/g, ' ').trim();
+    }
+
+    function findAction(phrase) {
+        const candidates = [...document.querySelectorAll('a,button,div')]
+            .filter(el => normalize(el.innerText || el.textContent).includes(phrase));
+
+        candidates.sort((a,b) =>
+            (a.innerText || a.textContent).length -
+            (b.innerText || b.textContent).length
+        );
+
+        if (!candidates.length) return null;
+
+        return candidates[0].closest('a,button') || candidates[0];
+    }
+
+    const actions = [
+        {
+            phrase: 'mi salud',
+            label: '💚 Mi salud'
+        },
+        {
+            phrase: 'registra tu pedido',
+            label: '📦 Registrar pedido'
+        }
+    ];
+
+    actions.forEach(item => {
+        const el = findAction(item.phrase);
+        if (!el || el.dataset.etlaConfigured) return;
+
+        el.dataset.etlaConfigured = '1';
+        el.dataset.etlaLabel = item.label;
+        el.classList.add('etla-auto-action');
+
+        el.addEventListener('click', function(event) {
+            if (this.classList.contains('etla-minimized')) {
+                event.preventDefault();
+                event.stopImmediatePropagation();
+                this.classList.remove('etla-minimized');
+            }
+        }, true);
+
+        // Aparecen completos al entrar y se minimizan al minuto.
+        setTimeout(() => {
+            el.classList.add('etla-minimized');
+        }, 60000);
+    });
+});
+</script>
+
 </body>
 </html>
