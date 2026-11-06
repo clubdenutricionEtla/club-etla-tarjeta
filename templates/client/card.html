@@ -1773,6 +1773,78 @@ body {
     }
 }
 
+
+
+/* ETLA NACAR PROFUNDO V2 */
+
+/* Nacarado intenso con reflejos profundos */
+.card-front > .premium-card,
+.card-back > .premium-card {
+    background:
+        radial-gradient(
+            ellipse 85% 34% at 50% 10%,
+            rgba(9, 65, 43, .90) 0%,
+            rgba(22, 105, 70, .58) 38%,
+            transparent 76%
+        ),
+        radial-gradient(
+            ellipse 85% 65% at 0% 38%,
+            rgba(190, 65, 112, .32),
+            transparent 75%
+        ),
+        radial-gradient(
+            ellipse 85% 65% at 100% 38%,
+            rgba(35, 160, 135, .42),
+            transparent 75%
+        ),
+        radial-gradient(
+            ellipse 85% 55% at 85% 100%,
+            rgba(112, 76, 165, .30),
+            transparent 75%
+        ),
+        radial-gradient(
+            ellipse 85% 55% at 10% 100%,
+            rgba(213, 157, 65, .30),
+            transparent 75%
+        ),
+        linear-gradient(
+            140deg,
+            #eee8df 0%,
+            #e7eee7 42%,
+            #e8e3ee 72%,
+            #f0e5da 100%
+        ) !important;
+
+    border: 1.5px solid rgba(255,255,255,.85) !important;
+
+    box-shadow:
+        0 20px 55px rgba(25,45,35,.20),
+        inset 0 1px 3px rgba(255,255,255,.85),
+        inset 0 0 35px rgba(255,255,255,.16) !important;
+}
+
+/* Logo oficial sin recuadro */
+.front-logo-wrap,
+.back-logo {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* Mantener tamaño y mejorar ligeramente su definición */
+.front-logo-wrap img,
+.back-logo-img {
+    filter: drop-shadow(0 3px 5px rgba(0,0,0,.18)) !important;
+}
+
+/* Conservar el efecto en móviles */
+@media(max-width:400px) {
+    .card-front > .premium-card,
+    .card-back > .premium-card {
+        background-attachment: scroll !important;
+    }
+}
+
 </style>
     <!-- ===== BARRA DE NAVEGACIÓN INFERIOR ===== -->
     <nav class="bottom-nav">
