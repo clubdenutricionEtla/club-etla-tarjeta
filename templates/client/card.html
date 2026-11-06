@@ -955,6 +955,24 @@
     }
 }
 
+
+        /* LOGO OFICIAL EN EL REVERSO */
+        .back-logo {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            margin: 0 auto 8px;
+        }
+        .back-logo-img {
+            display: block;
+            width: min(85%, 260px);
+            max-height: 95px;
+            height: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.10));
+        }
+
 </style>
     <link rel="stylesheet" href="/static/fonts.css" />
 </head>
@@ -1074,9 +1092,9 @@
                     <div class="premium-card">
                         <div class="back-content">
                             <div class="back-logo">
-                                <div class="star">★</div>
-                                <div class="club-name">MI CLUB <span class="etla-script">ETLA</span></div>
-                                <div class="sub-title">CLUB DE NUTRICIÓN ETLA</div>
+                                <img class="back-logo-img"
+                                     src="/static/images/logo-club-etla.png"
+                                     alt="Club de Nutrición Etla">
                             </div>
                             <div class="back-quote">
                                 <div class="line1">CADA VISITA TE ACERCA</div>
