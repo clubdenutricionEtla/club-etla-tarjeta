@@ -1,0 +1,45 @@
+/* v4: composicion final */
+#cardWrapper .card-front .premium-card{display:flex !important;flex-direction:column !important;background:none !important;box-shadow:none !important;border:none !important;padding:0 !important;min-height:0 !important;height:auto !important;overflow:visible !important;backdrop-filter:none !important;-webkit-backdrop-filter:none !important}
+#cardWrapper .card-front .holo-overlay{display:none !important}
+#cardWrapper .card-front .client-info-row{order:1 !important;margin:0 0 14px !important;padding:0 4px !important}
+#cardWrapper .card-front .hq-front{order:2}
+#cardWrapper .card-front .vasos-section{order:3 !important}
+#cardWrapper .card-front .info-grid{order:4 !important}
+#cardWrapper .card-front .flip-hint{order:5 !important;color:rgba(255,255,255,.85) !important}
+#cardWrapper .client-avatar{background:#fff !important;color:#1b8a3a !important}
+#cardWrapper .client-info-row .client-name{color:#fff !important;font-size:20px !important}
+#cardWrapper .client-info-row .client-name::before{content:"¡Hola de nuevo!";display:block;font-size:12px;font-weight:400;color:#d9f5e0}
+#cardWrapper .client-info-row .client-status{color:#d9f5e0 !important}
+.hq-front{border-radius:26px;padding:14px;text-align:center;margin-bottom:14px;background-color:#f6f7f3;background-image:radial-gradient(circle at 0% 0%,rgba(255,170,210,.5),transparent 45%),radial-gradient(circle at 100% 0%,rgba(150,200,255,.5),transparent 45%),radial-gradient(circle at 100% 100%,rgba(255,225,130,.55),transparent 45%),radial-gradient(circle at 0% 100%,rgba(140,230,150,.5),transparent 45%);box-shadow:0 0 0 1.5px rgba(255,255,255,.8),0 10px 26px rgba(0,60,20,.35)}
+#cardWrapper .front-logo-wrap,#cardWrapper .back-logo{display:block !important;background:linear-gradient(160deg,#1f7a3a,#0f4a24) !important;border-radius:18px !important;padding:12px 10px !important;margin:0 0 10px !important}
+#cardWrapper .hq-front .qr-wrapper{background:none !important;box-shadow:none !important;border:none !important;padding:0 !important;margin:8px auto 0 !important}
+#cardWrapper .hq-front .qr-hint{color:#2f6f14 !important}
+#cardWrapper .card-front .vasos-section{background:rgba(255,255,255,.16) !important;border:.5px solid rgba(255,255,255,.35) !important;border-radius:20px !important;padding:12px !important;margin:0 0 12px !important}
+#cardWrapper .vasos-section::before{content:"TUS VISITAS";display:block;font-size:12px;letter-spacing:1.5px;font-weight:600;color:#fff;margin-bottom:2px}
+#cardWrapper .front-phrase{color:#fff !important;margin:2px 0 8px !important}
+#cardWrapper .vaso.cubierto::after{color:rgba(255,255,255,.55) !important}
+#cardWrapper .progress-text{background:none !important;color:#fff !important;text-align:center !important}
+#cardWrapper .progress-text .count{color:#ffd24a !important}
+#cardWrapper .card-front .reward-card{background:#fff !important;border:none !important}
+#cardWrapper .card-front .reward-card .label{color:#6b7a63 !important}
+#cardWrapper .card-front .reward-card .value{color:#12562a !important}
+#cardWrapper .card-back .premium-card{background-color:#f6f7f3 !important;background-image:radial-gradient(circle at 0% 0%,rgba(255,170,210,.5),transparent 45%),radial-gradient(circle at 100% 0%,rgba(150,200,255,.5),transparent 45%),radial-gradient(circle at 100% 100%,rgba(255,225,130,.55),transparent 45%),radial-gradient(circle at 0% 100%,rgba(140,230,150,.5),transparent 45%) !important;border-radius:26px !important;box-shadow:0 0 0 1.5px rgba(255,255,255,.8),0 10px 26px rgba(0,60,20,.35) !important;backdrop-filter:none !important;-webkit-backdrop-filter:none !important}
+#cardWrapper .card-back .holo-overlay{display:none !important}
+#cardWrapper .back-quote .line1{color:#111 !important}
+#cardWrapper .back-quote .line2{color:#2f8a14 !important}
+#cardWrapper .back-motivation .formula{color:#2f6f14 !important}
+#cardWrapper .back-motivation .encouragement{color:#222 !important}
+#cardWrapper .back-hours{display:flex !important;align-items:center;justify-content:center;gap:12px;padding:8px 0 !important;margin:10px 0 !important;border-top:.5px solid rgba(0,0,0,.12);border-bottom:.5px solid rgba(0,0,0,.12)}
+#cardWrapper .back-hours .hrs{font-size:14px;font-weight:500;line-height:1.3;text-align:left;color:#111}
+#cardWrapper .back-hours .ico{font-size:26px}
+#cardWrapper .back-social .social-title,#cardWrapper .back-social .social-info{display:none !important}
+#cardWrapper .back-social .social-icons{display:grid !important;gap:7px;width:100%;margin:0 !important}
+#cardWrapper .back-social a{display:flex !important;align-items:center;gap:10px;width:100% !important;height:auto !important;border-radius:14px !important;border:none !important;background:rgba(255,255,255,.88) !important;padding:8px 12px !important;text-decoration:none;box-sizing:border-box}
+#cardWrapper .back-social a svg,#cardWrapper .back-social a img{width:28px !important;height:28px !important;flex:none}
+#cardWrapper .back-social a::after{flex:1;text-align:left;font-size:14px;font-weight:500;color:#111;position:static;background:none;animation:none;width:auto;height:auto;transform:none}
+#cardWrapper .back-social a[href*="wa.me"]{order:-1}
+#cardWrapper .back-social a[href*="wa.me"]::after{content:"951 247 0417"}
+#cardWrapper .back-social a[href*="facebook"]::after{content:"Club de Nutrición Etla"}
+#cardWrapper .back-social a[href*="instagram"]::after{content:"@clubdenutricion_etla"}
+#cardWrapper .back-birthday{color:#7a5a12 !important}
+#cardWrapper .back-flip-hint{color:#555 !important}
