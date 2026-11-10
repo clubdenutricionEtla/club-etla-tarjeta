@@ -1190,6 +1190,7 @@
 
 </style>
     <link rel="stylesheet" href="/static/fonts.css" />
+<link rel="stylesheet" href="/static/tarjeta_v2.css?v=2" />
 </head>
 <body>
 <div class="etla-holo-layer" aria-hidden="true"></div>
@@ -1218,7 +1219,7 @@
 
 
                         {% if client.client_type not in ['DISTRIBUIDOR', 'CLIENTE_DISTRIBUIDOR'] %}
-                        {% if client.has_welcome_scratch() and client.visits == 0 %}
+                        {% if False and client.has_welcome_scratch() and client.visits == 0 %}
                         <div style="display:block; text-align:center; background:linear-gradient(135deg,#d4a017,#f5d060); color:#3a2500; font-weight:800; font-size:13px; padding:10px 14px; border-radius:14px; margin-bottom:12px; position:relative; z-index:2;">
                             🎁 ¡Visítanos para desbloquear tu Rasca y Gana Club Etla!
                         </div>
@@ -1273,6 +1274,7 @@
                             </div>
                         </div>
                         <div class="vasos-section">
+<div class="front-phrase">¡Cada visita te acerca a tu mejor versión!</div>
                             <div class="vasos-grid" id="vasosGrid">
                                 {% set cycle_progress = client.get_cycle_progress() %}
                                 {% for i in range(1, 11) %}
@@ -1326,11 +1328,12 @@
                                 <div class="formula">CONSTANCIA + HÁBITOS SALUDABLES = RESULTADOS</div>
                                 <div class="encouragement">¡Tú puedes, sigue así! <span class="heart">♡</span></div>
                             </div>
+<div class="back-hours"><b>7:00 AM – 3:00 PM</b><br><b>6:00 PM – 10:00 PM</b><br>WhatsApp 951 247 0417</div>
 <div class="back-social">
                                 <div class="social-title">S Í G U E N O S</div>
                                 <div class="social-icons">
                                     <a href="https://www.instagram.com/clubdenutricion_etla" target="_blank" class="instagram" title="Instagram"><i class="fab fa-instagram"></i></a>
-                                    <a href="https://www.facebook.com/ClubDeNutricionEtla" target="_blank" class="facebook" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                                    <a href="https://www.facebook.com/share/1MirhXJmTy/" target="_blank" class="facebook" title="Facebook"><i class="fab fa-facebook-f"></i></a>
                                     <a href="https://wa.me/529512470417" target="_blank" class="whatsapp" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
                                 </div>
                                 <div class="social-info">
@@ -2351,5 +2354,6 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 
+<script src="/static/tarjeta_v2.js?v=2" defer></script>
 </body>
 </html>
