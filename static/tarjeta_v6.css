@@ -80,3 +80,6 @@ body{background-color:#f7ecd9 !important;background-image:radial-gradient(circle
 #cardWrapper .v6 a{-webkit-tap-highlight-color:rgba(233,200,104,.35)}
 #cardWrapper .v6 .v6-follow{display:inline-block;margin-top:6px;padding:5px 16px;border-radius:999px;font-size:10px;font-weight:800;letter-spacing:1.5px;color:#2a1c00;background:linear-gradient(135deg,#f0d27a,#d4a62f 45%,#9a7015)}
 #cardWrapper .v6 .v6-soc a{padding:6px 0}
+/* v6.2: la cara oculta no recibe toques */
+#cardWrapper .card-flipper.flipped .card-front{pointer-events:none !important}
+#cardWrapper .card-flipper:not(.flipped) .card-back{pointer-events:none !important}
