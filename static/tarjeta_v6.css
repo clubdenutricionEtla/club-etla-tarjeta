@@ -1,0 +1,75 @@
+/* v6: estilo flyer Club Abierto */
+@keyframes avisoRasca{0%,80%{max-height:90px;opacity:1}100%{max-height:0;opacity:0;margin:0;padding-top:0;padding-bottom:0}}
+@keyframes barridoDorado{0%{background-position:130% 0}35%,100%{background-position:-30% 0}}
+@keyframes brilloEstrella{0%,100%{text-shadow:0 0 3px rgba(212,160,31,.7)}50%{text-shadow:0 0 10px rgba(240,200,70,1)}}
+html,body{overflow-x:hidden !important;max-width:100% !important}
+body{background-color:#f7ecd9 !important;background-image:radial-gradient(circle at 0% 0%,rgba(70,140,50,.45),transparent 38%),radial-gradient(circle at 100% 45%,rgba(70,140,50,.30),transparent 34%),radial-gradient(circle at 0% 100%,rgba(70,140,50,.25),transparent 36%),linear-gradient(115deg,rgba(255,255,255,.55) 0%,transparent 42%) !important;color:#111}
+#view-inicio .container{padding-bottom:120px !important;max-width:100% !important}
+#view-inicio .premium-header .tag{background:linear-gradient(135deg,#f0d27a,#c9962e 45%,#9a7015) !important;color:#2a1c00 !important;font-weight:700 !important;letter-spacing:2.5px !important;box-shadow:none !important}
+#view-inicio .premium-header .sub,#view-inicio .premium-header .logo-club-wrap{display:none !important}
+#cardWrapper .v6.premium-card{background:none !important;box-shadow:none !important;border:none !important;backdrop-filter:none !important;-webkit-backdrop-filter:none !important;padding:0 !important;min-height:0 !important;height:auto !important;overflow:visible !important;display:block !important;color:#111 !important;font-family:'Montserrat',sans-serif !important}
+#cardWrapper .v6.premium-card::before,#cardWrapper .v6.premium-card::after{display:none !important}
+#cardWrapper .v6 .v6-alerts{display:block;margin:0 0 10px}
+#cardWrapper .v6 .v6-alerts a{display:block !important;text-align:center !important;border-radius:14px !important;padding:11px 12px !important;font-weight:700 !important;font-size:12px !important;text-decoration:none !important;margin:0 0 8px !important;border:none !important;box-shadow:none !important;background:linear-gradient(135deg,#f0d27a,#d4a62f 45%,#9a7015) !important;color:#2a1c00 !important}
+#cardWrapper .v6 .v6-alerts a:not([href="/scratch"]){background:#0e2a14 !important;color:#e9c868 !important}
+#cardWrapper .v6 .v6-alerts a[href="/scratch"]{overflow:hidden;animation:avisoRasca 9s ease forwards}
+#cardWrapper .v6 .v6-hello{display:flex;align-items:center;gap:10px;margin:0 0 12px;padding:0 4px}
+#cardWrapper .v6 .v6-avatar{width:44px;height:44px;border-radius:50%;background:#0e2a14;border:1.5px solid #c9962e;color:#e9c868;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px;flex:none}
+#cardWrapper .v6 .v6-who{flex:1;min-width:0}
+#cardWrapper .v6 .v6-hi{font-family:'Dancing Script',cursive;font-weight:700;font-size:20px;line-height:1;color:#b8862a}
+#cardWrapper .v6 .v6-name{font-size:18px !important;font-weight:800 !important;color:#111 !important;line-height:1.15 !important;margin:2px 0 0 !important}
+#cardWrapper .v6 .v6-tier{font-size:9px;letter-spacing:1.5px;font-weight:700;color:#2a1c00;padding:4px 11px;border-radius:999px;background:linear-gradient(135deg,#f0d27a,#c9962e 45%,#9a7015)}
+#cardWrapper .v6 .v6-dark{position:relative;overflow:hidden;border-radius:26px;text-align:center;color:#fff;padding:18px 16px 16px;background-color:#0e2a14;background-image:radial-gradient(circle at 15% 0%,rgba(60,150,70,.55),transparent 50%),radial-gradient(circle at 100% 100%,rgba(40,120,60,.5),transparent 55%),radial-gradient(circle at 85% 25%,rgba(212,166,47,.18),transparent 45%),radial-gradient(circle at 0% 90%,rgba(60,150,70,.35),transparent 45%);box-shadow:0 0 0 1.5px #c9962e,0 12px 28px rgba(40,25,0,.35)}
+#cardWrapper .v6 img.v6-logo{display:block !important;margin:0 auto !important;max-width:85% !important;width:auto !important;height:auto !important;background:none !important;box-shadow:none !important;border:none !important;padding:0 !important;border-radius:0 !important}
+#cardWrapper .v6 .v6-title{margin:14px 0 0;font-size:19px;font-weight:800;letter-spacing:.5px}
+#cardWrapper .v6 .v6-sub{margin:3px 0 12px;font-size:10px;letter-spacing:1.5px;font-weight:500;color:#cfe3d1}
+#cardWrapper .v6 .v6-main .qr-wrapper{display:inline-block !important;padding:3px !important;margin:0 auto !important;border-radius:20px !important;background:linear-gradient(135deg,#f0d27a,#d4a62f 45%,#9a7015) !important;box-shadow:none !important;border:none !important;width:auto !important;height:auto !important}
+#cardWrapper .v6 .v6-main .qr-code{display:block !important;background:#fff !important;border-radius:17px !important;padding:10px !important;width:auto !important;height:auto !important;margin:0 !important;border:none !important;box-shadow:none !important;cursor:zoom-in}
+#cardWrapper .v6 .v6-main .qr-code img{display:block !important;width:125px !important;height:125px !important;margin:0 !important}
+#cardWrapper .v6 .v6-scan{margin:12px auto 0;max-width:230px;border-radius:12px;padding:9px 10px;font-size:11px;font-weight:800;letter-spacing:.5px;color:#2a1c00;background-color:#d4a62f;background-image:linear-gradient(100deg,transparent 40%,rgba(255,255,255,.7) 50%,transparent 60%),linear-gradient(135deg,#f0d27a,#d4a62f 45%,#9a7015);background-size:300% 100%,100% 100%;background-repeat:no-repeat;animation:barridoDorado 4s ease-in-out infinite}
+#cardWrapper .v6 .qr-hint{margin:7px 0 0;font-size:10px;color:#b9d4bd;text-align:center}
+#cardWrapper .v6 .v6-active{display:inline-block;margin-top:8px;font-size:9px;letter-spacing:1.5px;font-weight:700;color:#e9c868;border:1px solid #c9962e;padding:3px 12px;border-radius:999px}
+#cardWrapper .v6 .vasos-section{display:block !important;background:rgba(255,255,255,.65) !important;border:1px solid #d9b559 !important;border-radius:22px !important;padding:14px 12px 12px !important;margin:14px 0 0 !important;box-shadow:none !important;color:#111 !important}
+#cardWrapper .v6 .vasos-section::before{content:"TUS VISITAS";display:block;font-size:12px;letter-spacing:2.5px;font-weight:700;color:#111}
+#cardWrapper .v6 .front-phrase{font-family:'Dancing Script',cursive;font-weight:700;font-size:21px;line-height:1.15;color:#b8862a !important;margin:4px 0 8px !important;text-align:left}
+#cardWrapper .v6 .vasos-grid{display:grid !important;grid-template-columns:repeat(5,1fr) !important;gap:6px 0 !important}
+#cardWrapper .v6 .vaso{display:block !important;font-size:0 !important;background:none !important;border:none !important;box-shadow:none !important;text-align:center !important;min-height:36px;width:auto !important;height:auto !important;animation:none !important}
+#cardWrapper .v6 .vaso::before{display:none !important}
+#cardWrapper .v6 .vaso .cover{display:none !important}
+#cardWrapper .v6 .vaso::after{display:block !important;content:"☆";font-size:32px;line-height:1.1;color:#cdbf98;text-align:center;opacity:1}
+#cardWrapper .v6 .vaso.destapado::after{content:"★";color:#d4a01f;animation:brilloEstrella 2.4s ease-in-out infinite}
+#cardWrapper .v6 .vaso.trofeo::after{content:"🏆";font-size:28px;color:#d4a01f}
+#cardWrapper .v6 .vaso.trofeo-bloqueado::after{content:"🏆";font-size:28px;opacity:.4}
+#cardWrapper .v6 .progress-text{background:none !important;color:#444 !important;text-align:center !important;font-size:13px !important;box-shadow:none !important;margin-top:6px !important}
+#cardWrapper .v6 .progress-text .count{color:#c98a00 !important;font-weight:800 !important}
+#cardWrapper .v6 .info-grid{display:block !important;margin:12px 0 0 !important}
+#cardWrapper .v6 .reward-card{display:block !important;grid-column:auto !important;background-color:rgba(255,255,255,.65) !important;background-image:linear-gradient(100deg,transparent 40%,rgba(255,215,120,.55) 50%,transparent 60%) !important;background-size:300% 100% !important;background-repeat:no-repeat !important;border:1px solid #d9b559 !important;border-radius:16px !important;padding:12px 14px !important;box-shadow:none !important;text-align:left !important;animation:barridoDorado 4s ease-in-out infinite}
+#cardWrapper .v6 .reward-card .label{font-size:12px !important;font-weight:800 !important;letter-spacing:1px !important;color:#111 !important;opacity:1 !important}
+#cardWrapper .v6 .reward-card .value{font-size:12px !important;color:#6b5a2a !important;font-weight:500 !important;opacity:1 !important}
+#cardWrapper .v6 .flip-hint{text-align:center;font-size:11px;color:#7a6a3a !important;letter-spacing:1px;margin:10px 0 0;opacity:1}
+#cardWrapper .v6 .v6-q1{margin:14px 0 0;font-size:12px;letter-spacing:4px;font-weight:300}
+#cardWrapper .v6 .v6-q2{font-family:'Dancing Script',cursive;font-weight:700;font-size:34px;line-height:1.1;color:#e9c868}
+#cardWrapper .v6 .v6-rule{width:70%;height:2px;margin:4px auto 10px;border-radius:2px;background:linear-gradient(135deg,#f0d27a,#c9962e 45%,#9a7015)}
+#cardWrapper .v6 .v6-formula{font-size:9px;letter-spacing:1.5px;font-weight:700;color:#e9c868}
+#cardWrapper .v6 .v6-enc{margin:5px 0 14px;font-size:12px;color:#fff}
+#cardWrapper .v6 .v6-row{display:flex;align-items:center;gap:12px;text-align:left;padding:10px 0;color:#fff;text-decoration:none}
+#cardWrapper .v6 .v6-hours{justify-content:center;border-top:.5px solid rgba(233,200,104,.4);border-bottom:.5px solid rgba(233,200,104,.4)}
+#cardWrapper .v6 .v6-ic{width:30px;height:30px;flex:none;color:#e9c868;display:block}
+#cardWrapper .v6 .v6-ic svg{width:30px;height:30px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+#cardWrapper .v6 .v6-sepv{width:1px;align-self:stretch;background:#c9962e;flex:none}
+#cardWrapper .v6 .v6-txt{font-size:14px;font-weight:500;line-height:1.35}
+#cardWrapper .v6 .v6-txt b{display:block;font-weight:800}
+#cardWrapper .v6 .v6-txt small{display:block;font-size:10px;letter-spacing:.8px;color:#cfe3d1;font-weight:500}
+#cardWrapper .v6 .v6-soc{display:flex;gap:10px;align-items:stretch;margin-top:6px;padding-top:12px;border-top:.5px solid rgba(233,200,104,.4)}
+#cardWrapper .v6 .v6-soc a{flex:1;text-align:center;color:#fff;text-decoration:none;display:block}
+#cardWrapper .v6 .v6-soc .v6-ic{margin:0 auto}
+#cardWrapper .v6 .v6-soc b{display:block;font-size:11px;font-weight:700;line-height:1.2;margin-top:2px}
+#cardWrapper .v6 .v6-soc small{display:block;font-size:8px;letter-spacing:1px;color:#b9d4bd}
+#cardWrapper .v6 .v6-slogan{font-family:'Dancing Script',cursive;font-weight:700;font-size:22px;color:#e9c868;margin-top:14px}
+#cardWrapper .v6 .back-birthday{font-size:12px !important;color:#e9c868 !important;margin-top:8px !important;background:none !important;opacity:1 !important}
+#cardWrapper .v6 .back-flip-hint{font-size:10px !important;color:#b9d4bd !important;margin-top:8px !important;opacity:1 !important}
+.nav-btn{background-image:linear-gradient(100deg,transparent 40%,rgba(255,215,120,.55) 50%,transparent 60%) !important;background-size:300% 100% !important;background-repeat:no-repeat !important;animation:barridoDorado 4s ease-in-out infinite}
+#qrBig{position:fixed !important;left:0;top:0;width:100%;height:100%;box-sizing:border-box;padding:0 20px;background:#fff;z-index:999999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:#111;font-family:'Montserrat',sans-serif}
+#qrBig img{width:min(78vw,420px);height:auto;border:2px solid #111;border-radius:14px;padding:14px;background:#fff}
+#qrBig p{margin:0;text-align:center}
+@media (prefers-reduced-motion:reduce){.nav-btn,.v6-scan,.reward-card,.vaso::after{animation:none !important}}

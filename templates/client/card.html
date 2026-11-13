@@ -1190,8 +1190,7 @@
 
 </style>
     <link rel="stylesheet" href="/static/fonts.css" />
-<link rel="stylesheet" href="/static/tarjeta_v2.css?v=2" />
-<link rel="stylesheet" href="/static/tarjeta_v5.css?v=1" />
+<link rel="stylesheet" href="/static/tarjeta_v6.css?v=1" />
 </head>
 <body>
 <div class="etla-holo-layer" aria-hidden="true"></div>
@@ -1211,15 +1210,9 @@
 
                 <!-- FRENTE -->
                 <div class="card-front">
-                    <div class="premium-card tier-{{ client.get_tier_name()|lower }}">
-                        <div class="front-logo-wrap">
-                            <img src="/static/images/logo-club-etla.png"
-                                 alt="Club de Nutrición Etla">
-                        </div>
-
-
-
-                        {% if client.client_type not in ['DISTRIBUIDOR', 'CLIENTE_DISTRIBUIDOR'] %}
+<div class="premium-card v6 tier-{{ client.get_tier_name()|lower }}">
+<div class="v6-alerts">
+{% if client.client_type not in ['DISTRIBUIDOR', 'CLIENTE_DISTRIBUIDOR'] %}
                         {% if False and client.has_welcome_scratch() and client.visits == 0 %}
                         <div style="display:block; text-align:center; background:linear-gradient(135deg,#d4a017,#f5d060); color:#3a2500; font-weight:800; font-size:13px; padding:10px 14px; border-radius:14px; margin-bottom:12px; position:relative; z-index:2;">
                             🎁 ¡Visítanos para desbloquear tu Rasca y Gana Club Etla!
@@ -1234,29 +1227,20 @@
                         </a>
                         {% endif %}
                         {% endif %}
-                        {% if not client.evaluations %}
-                        <a href="/health" class="health-banner">
-                            <span class="health-banner-icon">💚</span>
-                            <span class="health-banner-text">
-                                <span class="health-banner-title">MI SALUD</span>
-                                <span class="health-banner-sub">Conoce tu progreso →</span>
-                            </span>
-                        </a>
-                        {% else %}
-                        <a href="/health" class="health-banner health-banner-track">
-                            <span class="health-banner-icon">💚</span>
-                            <span class="health-banner-text">
-                                <span class="health-banner-title">MI SALUD</span>
-                                <span class="health-banner-sub">Ver mi progreso →</span>
-                            </span>
-                        </a>
-                        {% endif %}
-                        {% if client.client_type in ['DISTRIBUIDOR', 'CLIENTE_DISTRIBUIDOR'] %}
+                        
+{% if client.client_type in ['DISTRIBUIDOR', 'CLIENTE_DISTRIBUIDOR'] %}
                         <a href="/pedido" style="display:block; text-align:center; background:linear-gradient(135deg,#2e7d32,#66bb6a); color:#fff; font-weight:800; font-size:13px; padding:10px 14px; border-radius:14px; text-decoration:none; margin-bottom:12px; position:relative; z-index:2;">
                             📦 Registra tu pedido para tu siguiente evaluación
                         </a>
                         {% endif %}
-                        <div class="qr-wrapper">
+</div>
+<div class="v6-hello"><div class="v6-avatar">{{ client.name[0]|upper }}</div><div class="v6-who"><div class="v6-hi">¡Hola de nuevo!</div><div class="client-name v6-name">{{ client.name }}</div></div><div class="v6-tier">{{ client.get_tier_name()|upper }}</div></div>
+<div class="v6-dark v6-main">
+<img class="v6-logo" src="/static/images/logo-club-etla.png"
+                                 alt="Club de Nutrición Etla">
+<div class="v6-title">TARJETA DIGITAL</div>
+<div class="v6-sub">ACUMULA VISITAS Y OBTÉN RECOMPENSAS</div>
+<div class="qr-wrapper">
                             <div class="qr-code">
                                 {% if client.qr_code %}
                                     <img src="{{ client.qr_code }}" alt="QR" />
@@ -1265,16 +1249,11 @@
                                 {% endif %}
                             </div>
                         </div>
-                        <div class="client-info-row">
-                            <div class="client-avatar">{{ client.name[0]|upper }}</div>
-                            <div>
-                                <div class="client-name">{{ client.name }}</div>
-                                <div class="client-status">
-                                    <span class="dot"></span> MIEMBRO ACTIVO · {{ client.get_tier_name() }}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="vasos-section">
+<div class="v6-scan">ESCANEA Y REGISTRA TUS VISITAS</div>
+<div class="qr-hint">👆 Toca el QR para ampliarlo</div>
+<div class="v6-active">MIEMBRO ACTIVO</div>
+</div>
+<div class="vasos-section">
 <div class="front-phrase">¡Cada visita te acerca a tu mejor versión!</div>
                             <div class="vasos-grid" id="vasosGrid">
                                 {% set cycle_progress = client.get_cycle_progress() %}
@@ -1299,7 +1278,7 @@
                                 Visitas: <span class="count" id="visitsCount">{{ cycle_progress }}</span> / 10
                             </div>
                         </div>
-                        <div class="info-grid" style="margin-top:0;">
+<div class="info-grid" style="margin-top:0;">
                             <div class="info-card reward-card" style="grid-column: span 2; cursor: pointer;" onclick="event.stopPropagation(); openRewardsModal();">
                                 <div class="label">Mis Recompensas</div>
                                 <div class="value gold" id="recompensaText">
@@ -1307,43 +1286,28 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="flip-hint">👆 Toca la tarjeta para ver el reverso</div>
-                        <div class="holo-overlay"></div>
-                    </div>
-                </div>
+<div class="flip-hint">👆 Toca la tarjeta para ver el reverso</div>
+</div>
+</div>
 
                 <!-- REVERSO -->
                 <div class="card-back">
-                    <div class="premium-card">
-                        <div class="back-content">
-                            <div class="back-logo">
-        <img class="back-logo-img"
+<div class="premium-card v6">
+<div class="v6-dark v6-backcard">
+<img class="back-logo-img v6-logo"
              src="/static/images/logo-club-etla.png"
              alt="Club de Nutrición Etla">
-    </div>
-                            <div class="back-quote">
-                                <div class="line1">CADA VISITA TE ACERCA</div>
-                                <div class="line2">a tu mejor versión <span class="heart">♡</span></div>
-                            </div>
-                            <div class="back-motivation">
-                                <div class="formula">CONSTANCIA + HÁBITOS SALUDABLES = RESULTADOS</div>
-                                <div class="encouragement">¡Tú puedes, sigue así! <span class="heart">♡</span></div>
-                            </div>
-<div class="back-hours"><b>7:00 AM – 3:00 PM</b><br><b>6:00 PM – 10:00 PM</b><br>WhatsApp 951 247 0417</div>
-<div class="back-social">
-                                <div class="social-title">S Í G U E N O S</div>
-                                <div class="social-icons">
-                                    <a href="https://www.instagram.com/clubdenutricion_etla" target="_blank" class="instagram" title="Instagram"><i class="fab fa-instagram"></i></a>
-                                    <a href="https://www.facebook.com/share/1MirhXJmTy/" target="_blank" class="facebook" title="Facebook"><i class="fab fa-facebook-f"></i></a>
-                                    <a href="https://wa.me/529512470417" target="_blank" class="whatsapp" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
-                                </div>
-                                <div class="social-info">
-                                    <span class="username">@clubdenutricion_etla</span><br />
-                                    Club De Nutrición Etla<br />
-                                    951 247 0417
-                                </div>
-                            </div>
-                            <div class="back-birthday">
+<div class="v6-q1">CADA VISITA TE ACERCA</div>
+<div class="v6-q2">a tu mejor versión ♡</div>
+<div class="v6-rule"></div>
+<div class="v6-formula">CONSTANCIA + HÁBITOS SALUDABLES = RESULTADOS</div>
+<div class="v6-enc">¡Tú puedes, sigue así!</div>
+<div class="v6-row v6-hours"><span class="v6-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><span class="v6-sepv"></span><span class="v6-txt">7:00 AM – 3:00 PM<br>5:00 PM – 10:00 PM</span></div>
+<div class="v6-row"><span class="v6-ic"><svg viewBox="0 0 24 24"><path d="M12 21s-6-5.5-6-10a6 6 0 1112 0c0 4.5-6 10-6 10z"/><circle cx="12" cy="11" r="2"/></svg></span><span class="v6-txt"><b>VILLA DE ETLA</b><small>SOBRE CARRETERA,<br>JUNTO A CUCO PANADEROS</small></span></div>
+<a class="v6-row" href="https://wa.me/529512470417" target="_blank" rel="noopener"><span class="v6-ic"><svg viewBox="0 0 24 24"><path d="M4 20l1.3-4.2A8 8 0 1 1 8.4 18.8L4 20z"/><path d="M9 9c.5 3 2.5 5 6 6l1.3-1.3-2-1-1 .8c-1-.5-1.8-1.3-2.3-2.3l.8-1-1-2L9 9z"/></svg></span><span class="v6-txt"><b>951 247 0417</b><small>CONTÁCTANOS POR WHATSAPP</small></span></a>
+<div class="v6-soc"><a href="https://www.facebook.com/share/1MirhXJmTy/" target="_blank" rel="noopener"><span class="v6-ic"><svg viewBox="0 0 24 24"><path d="M14 8h3V4h-3a4 4 0 00-4 4v3H7v4h3v6h4v-6h3l1-4h-4V8z"/></svg></span><b>Club de<br>Nutrición Etla</b><small>SÍGUENOS EN FACEBOOK</small></a><span class="v6-sepv"></span><a href="https://www.instagram.com/clubdenutricion_etla" target="_blank" rel="noopener"><span class="v6-ic"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r=".6"/></svg></span><b>@clubdenutricion_etla</b><small>SÍGUENOS EN INSTAGRAM</small></a></div>
+<div class="v6-slogan">Nutrición en cada paso ♡</div>
+<div class="back-birthday">
                                 🎂 Cumpleaños: 
                                 {% if client.birthday %}
                                     {{ client.birthday.strftime('%d/%m') }}
@@ -1352,11 +1316,10 @@
                                 {% endif %}
                                 <span class="heart">♡</span>
                             </div>
-                            <div class="back-flip-hint">☝️ Toca para volver</div>
-                            <div class="holo-overlay"></div>
-                        </div>
-                    </div>
-                </div>
+<div class="back-flip-hint">☝️ Toca para volver</div>
+</div>
+</div>
+</div>
 
             </div>
         </div>
@@ -2355,7 +2318,6 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 
-<script src="/static/tarjeta_v2.js?v=2" defer></script>
-<script src="/static/tarjeta_v5.js?v=1" defer></script>
+<script src="/static/tarjeta_v6.js?v=1" defer></script>
 </body>
 </html>
