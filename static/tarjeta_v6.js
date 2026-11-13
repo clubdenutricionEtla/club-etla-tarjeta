@@ -16,3 +16,8 @@ o.addEventListener('click',function(ev){ev.stopPropagation();o.remove();});
 document.body.appendChild(o);
 });
 })();
+(function(){
+document.querySelectorAll('#cardWrapper a[href]').forEach(function(a){
+a.addEventListener('click',function(e){e.stopPropagation();});
+});
+})();
