@@ -21,3 +21,10 @@ document.querySelectorAll('#cardWrapper a[href]').forEach(function(a){
 a.addEventListener('click',function(e){e.stopPropagation();});
 });
 })();
+(function(){
+['click','touchstart','touchend','pointerdown','pointerup','mousedown','mouseup'].forEach(function(t){
+document.addEventListener(t,function(e){
+if(e.target.closest&&e.target.closest('#cardWrapper .v6 a[href]'))e.stopPropagation();
+},true);
+});
+})();
