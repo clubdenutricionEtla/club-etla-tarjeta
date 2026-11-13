@@ -91,3 +91,11 @@ body{background-color:#f7ecd9 !important;background-image:radial-gradient(circle
 #cardWrapper .v6 .v6-hi{font-size:17px !important;line-height:1.2 !important}
 #cardWrapper .v6 .v6-wa{justify-content:center;border-bottom:.5px solid rgba(233,200,104,.4)}
 #cardWrapper .v6 .v6-wa .v6-txt{flex:none}
+/* v6.3: banner fijo, saludo, WhatsApp centrado */
+#view-inicio .container{padding-top:52px !important}
+#view-inicio .premium-header .tag{position:fixed !important;top:10px !important;left:12px !important;right:62px !important;z-index:900 !important;height:34px !important;display:flex !important;align-items:center !important;justify-content:center !important;overflow:hidden !important;padding:0 14px !important;margin:0 !important;width:auto !important;transform:none !important;border-radius:999px !important;background:#0e2a14 !important;border:1px solid #c9962e !important;box-shadow:0 4px 12px rgba(0,0,0,.25) !important;color:#e9c868 !important;letter-spacing:.3px !important;font-size:12px !important;font-weight:700 !important;text-transform:none !important}
+.v6-tk{position:relative;width:100%;overflow:hidden;white-space:nowrap;text-align:center}
+.v6-tk span{display:inline-block;will-change:transform,opacity;transform:translateX(110%);opacity:0}
+#cardWrapper .v6 .v6-hi{font-size:17px !important;line-height:1.2 !important}
+#cardWrapper .v6 .v6-wa{justify-content:center;border-bottom:.5px solid rgba(233,200,104,.4)}
+#cardWrapper .v6 .v6-wa .v6-txt{flex:none}
